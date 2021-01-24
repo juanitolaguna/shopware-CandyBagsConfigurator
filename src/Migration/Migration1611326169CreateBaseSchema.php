@@ -17,11 +17,9 @@ class Migration1611326169CreateBaseSchema extends MigrationStep
         $connection->executeUpdate('
             CREATE TABLE IF NOT EXISTS `eccb_candy_bag` (
                 `id` BINARY(16) NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
-                `description` VARCHAR(255) NULL,
-                `min_steps` INT(11) NULL,
+                `min_steps` INT(11) NULL DEFAULT 2,
                 `active` TINYINT(1) NULL DEFAULT 0,
-                `position` INT(11) NULL,
+                `position` INT(11) NULL DEFAULT 0,
                 `media_id` BINARY(16) NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
@@ -52,11 +50,10 @@ class Migration1611326169CreateBaseSchema extends MigrationStep
         $connection->executeUpdate('
             CREATE TABLE IF NOT EXISTS `eccb_step` (
                 `id` BINARY(16) NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
-                `description` VARCHAR(255) NULL,
                 `type` VARCHAR(255) NULL,
                 `active` TINYINT(1) NULL DEFAULT 0,
                 `position` INT(11) NULL,
+                `candy_bag_id` BINARY(16) NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
@@ -101,11 +98,10 @@ class Migration1611326169CreateBaseSchema extends MigrationStep
         $connection->executeUpdate('
             CREATE TABLE IF NOT EXISTS `eccb_card` (
                 `id` BINARY(16) NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
-                `description` VARCHAR(255) NULL,
                 `active` TINYINT(1) NULL DEFAULT 0,
                 `position` INT(11) NULL,
                 `media_id` BINARY(16) NULL,
+                `step_id` BINARY(16) NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),

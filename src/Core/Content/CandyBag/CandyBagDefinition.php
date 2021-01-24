@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -46,10 +47,9 @@ class CandyBagDefinition extends EntityDefinition
             (new IdField('id', 'id'))
                 ->addFlags(new Required(), new PrimaryKey()),
 
-            (new StringField('name', 'name'))
-                ->addFlags(new Required()),
+            new TranslatedField('name'),
 
-            (new StringField('description', 'description')),
+            new TranslatedField('description'),
 
             (new IntField('min_steps', 'minSteps')),
 
@@ -67,7 +67,7 @@ class CandyBagDefinition extends EntityDefinition
                 MediaDefinition::class
             ),
 
-            new TranslationsAssociationField(CandyBagTranslationDefinition::class, 'eccb_candy_bag_id'),
+            (new TranslationsAssociationField(CandyBagTranslationDefinition::class, 'eccb_candy_bag_id'))->addFlags(new Required())
         ]);
     }
 }

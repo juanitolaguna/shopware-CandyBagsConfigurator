@@ -1,0 +1,16 @@
+{% block sw_media_field_upload_component %}
+    <sw-upload-listener
+            :uploadTag="uploadTag"
+            autoUpload
+            @media-upload-finish="exposeNewId">
+    </sw-upload-listener>
+    <sw-media-upload-v2
+            v-if="showUploadField"
+            variant="regular"
+            :allowMultiSelect="false"
+            :uploadTag="uploadTag"
+            :disabled="disabled"
+            :defaultFolder="mediaFolderId"
+            :targetFolderId="mediaFolderId">
+    </sw-media-upload-v2>
+{% endblock %}

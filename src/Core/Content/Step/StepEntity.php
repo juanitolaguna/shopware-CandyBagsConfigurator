@@ -4,6 +4,7 @@ namespace EventCandyCandyBags\Core\Content\Step;
 
 use EventCandyCandyBags\Core\Content\CandyBag\CandyBagEntity;
 use EventCandyCandyBags\Core\Content\Card\CardCollection;
+use EventCandyCandyBags\Core\Content\Step\Aggregate\StepTranslation\StepTranslationCollection;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -11,16 +12,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 class StepEntity extends Entity
 {
     use EntityIdTrait;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string|null
-     */
-    protected $description;
 
     /**
      * @var bool
@@ -53,6 +44,27 @@ class StepEntity extends Entity
     protected $candyBag;
 
     /**
+     * @var StepTranslationCollection|null
+     */
+    protected $translations;
+
+    /**
+     * @return StepTranslationCollection|null
+     */
+    public function getTranslations(): ?StepTranslationCollection
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param StepTranslationCollection|null $translations
+     */
+    public function setTranslations(?StepTranslationCollection $translations): void
+    {
+        $this->translations = $translations;
+    }
+
+    /**
      * @return CandyBagEntity
      */
     public function getCandyBag(): CandyBagEntity
@@ -66,38 +78,6 @@ class StepEntity extends Entity
     public function setCandyBag(CandyBagEntity $candyBag): void
     {
         $this->candyBag = $candyBag;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string|null $description
-     */
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
     }
 
     /**

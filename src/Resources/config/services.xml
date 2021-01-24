@@ -34,5 +34,36 @@
             <tag name="shopware.entity.definition" entity="eccb_step_product"/>
         </service>
 
+
+        <!-- DemoDataService -->
+
+        <service id="EventCandyCandyBags\DemoDataService">
+            <argument type="service" id="Shopware\Core\Framework\Api\Controller\SyncController"/>
+            <argument type="tagged" tag="eccb.demo_data.data_provider"/>
+        </service>
+
+        <!--  DemoDataProviders -->
+        <service id="EventCandyCandyBags\DataProvider\DemoDataProvider" abstract="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver"/>
+        </service>
+
+        <!-- Create Plugin Media Folder and Data -->
+        <service id="EventCandyCandyBags\DataProvider\BaseMediaProvider">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver"/>
+            <argument type="service" id="media_folder.repository"/>
+            <argument type="service" id="media_folder_configuration.repository"/>
+
+            <tag name="eccb.demo_data.data_provider" priority="1100"/>
+        </service>
+
+        <!-- Commands  -->
+        <service id="EventCandyCandyBags\Commands\EccbCommands">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="media_folder.repository"/>
+            <tag name="console.command"/>
+        </service>
+
     </services>
 </container>

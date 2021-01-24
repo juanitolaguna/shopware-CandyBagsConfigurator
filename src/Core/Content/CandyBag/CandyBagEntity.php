@@ -2,6 +2,8 @@
 
 namespace EventCandyCandyBags\Core\Content\CandyBag;
 
+use EventCandyCandyBags\Core\Content\CandyBag\Aggregate\CandyBagTranslation\CandyBagTranslationCollection;
+use EventCandyCandyBags\Core\Content\Step\StepCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -9,16 +11,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 class CandyBagEntity extends Entity
 {
     use EntityIdTrait;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string|null
-     */
-    protected $description;
 
     /**
      * @var int
@@ -29,6 +21,11 @@ class CandyBagEntity extends Entity
      * @var StepCollection|null
      */
     protected $steps;
+
+    /**
+     * @var CandyBagTranslationCollection|null
+     */
+    protected $translations;
 
     /**
      * @var bool
@@ -46,36 +43,21 @@ class CandyBagEntity extends Entity
     protected $media;
 
     /**
-     * @return string
+     * @return CandyBagTranslationCollection|null
      */
-    public function getName(): string
+    public function getTranslations(): ?CandyBagTranslationCollection
     {
-        return $this->name;
+        return $this->translations;
     }
 
     /**
-     * @param string $name
+     * @param CandyBagTranslationCollection|null $translations
      */
-    public function setName(string $name): void
+    public function setTranslations(?CandyBagTranslationCollection $translations): void
     {
-        $this->name = $name;
+        $this->translations = $translations;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string|null $description
-     */
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
-    }
 
     /**
      * @return int

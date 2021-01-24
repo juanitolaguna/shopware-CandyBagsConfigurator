@@ -14,7 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -44,10 +44,9 @@ class CardDefinition extends EntityDefinition
             (new IdField('id', 'id'))
                 ->addFlags(new Required(), new PrimaryKey()),
 
-            (new StringField('name', 'name'))
-                ->addFlags(new Required()),
+            new TranslatedField('name'),
 
-            (new StringField('description', 'description')),
+            new TranslatedField('description'),
 
             (new BoolField('active', 'active')),
 
@@ -60,6 +59,8 @@ class CardDefinition extends EntityDefinition
                 'media_id',
                 MediaDefinition::class
             ),
+
+            new FkField('step_id', 'step', MediaDefinition::class),
 
             new ManyToOneAssociationField(
                 'step',

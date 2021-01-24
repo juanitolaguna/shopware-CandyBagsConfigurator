@@ -2,6 +2,7 @@
 
 namespace EventCandyCandyBags\Core\Content\Card;
 
+use EventCandyCandyBags\Core\Content\Step\Aggregate\StepTranslation\StepTranslationCollection;
 use EventCandyCandyBags\Core\Content\Step\StepEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -11,15 +12,6 @@ class CardEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string|null
-     */
-    protected $description;
 
     /**
      * @var bool
@@ -42,6 +34,27 @@ class CardEntity extends Entity
     protected $step;
 
     /**
+     * @var StepTranslationCollection|null
+     */
+    protected $translations;
+
+    /**
+     * @return StepTranslationCollection|null
+     */
+    public function getTranslations(): ?StepTranslationCollection
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param StepTranslationCollection|null $translations
+     */
+    public function setTranslations(?StepTranslationCollection $translations): void
+    {
+        $this->translations = $translations;
+    }
+
+    /**
      * @return StepEntity
      */
     public function getStep(): StepEntity
@@ -55,38 +68,6 @@ class CardEntity extends Entity
     public function setStep(StepEntity $step): void
     {
         $this->step = $step;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string|null $description
-     */
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
     }
 
     /**

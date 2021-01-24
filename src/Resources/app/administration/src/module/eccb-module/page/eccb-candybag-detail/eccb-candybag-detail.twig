@@ -1,0 +1,83 @@
+{% block eccb_candybag_detail %}
+    <sw-page class="eccb-candybag-detail">
+
+        <template #smart-bar-header>
+            <h2 v-html="candyBag ? candyBag.name : 'Candy Bag Detail'"></h2>
+        </template>
+
+        <template #language-switch>
+            <sw-language-switch
+                    v-if="candyBag"
+                    :disabled="candyBag._isNew"
+                    @on-change="changeLanguage">
+            </sw-language-switch>
+        </template>
+
+        {% block eccb_candybag_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_candybag_detail_smart_bar_actions_save %}
+                    <sw-button variant="primary" @click="onClickSave()" :isLoading="isLoading">
+                        {{ $tc('eccb.candybag-detail.saveBlogEntry') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block eccb_candybag_detail_smart_bar_actions_cancel %}
+                    <sw-button :disabled="candyBag && candyBag.isLoading" @click="onCancel">
+                        {{ $tc('eccb.candybag-detail.buttonCancel') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            <sw-card-view v-if="candyBag" :large="false">
+                <sw-card :large="false">
+                    <sw-text-field
+                            :label="$tc('eccb.candybag-detail.candyBagName')"
+                            v-model="candyBag.name">
+                    </sw-text-field>
+
+                    <sw-text-field
+                            :label="$tc('eccb.candybag-detail.candyBagDescription')"
+                            v-model="candyBag.description"
+                    >
+                    </sw-text-field>
+
+                    <eccb-media-field
+                            :label="$tc('eccb.image')"
+                            v-model="candyBag.mediaId"
+                            :showUploadField="false"
+                            :showControls="false"
+                            @media-id-change="onMediaSelect"
+                             :mediaFolderName="'Candy Bags'"
+                    >
+                    </eccb-media-field>
+
+                    <sw-checkbox-field :label="$t('eccb.active')" v-model="candyBag.active"></sw-checkbox-field>
+
+                    <sw-number-field
+                            :label="$tc('eccb.candybag-detail.minSteps')"
+                            v-model="candyBag.minSteps"
+                            numberType="int"
+                            :min="0"
+                            :max="100"
+                            :value="null">
+                    </sw-number-field>
+
+
+                </sw-card>
+            </sw-card-view>
+        </template>
+
+        <template #sidebar>
+            <sw-sidebar>
+                <sw-sidebar-item ref="candyBagSidebar" title="Image" icon="default-object-image">
+                    <div class="image-container">
+                        <img v-if="candyBag && candyBag.media && candyBag.media.url" class="image"
+                             :src="candyBag.media.url"/>
+                    </div>
+                </sw-sidebar-item>
+            </sw-sidebar>
+        </template>
+    </sw-page>
+{% endblock %}

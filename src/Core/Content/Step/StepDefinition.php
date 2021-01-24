@@ -10,6 +10,7 @@ use EventCandyCandyBags\Core\Content\Step\Aggregate\StepTranslation\StepTranslat
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -19,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationFiel
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -48,10 +50,9 @@ class StepDefinition extends EntityDefinition
             (new IdField('id', 'id'))
                 ->addFlags(new Required(), new PrimaryKey()),
 
-            (new StringField('name', 'name'))
-                ->addFlags(new Required()),
+            new TranslatedField('name'),
 
-            (new StringField('description', 'description')),
+            new TranslatedField('description'),
 
             (new StringField('type', 'type')),
 
@@ -63,13 +64,15 @@ class StepDefinition extends EntityDefinition
 
             (new OneToManyAssociationField('cards', CardDefinition::class, 'step_id', 'id'))->addFlags(new CascadeDelete()),
 
+            new FkField('candy_bag_id', 'candyBag', CandyBagDefinition::class),
+
             new ManyToOneAssociationField(
                 'candyBag',
                 'candy_bag_id',
                 CandyBagDefinition::class
             ),
 
-            new TranslationsAssociationField(StepTranslationDefinition::class, 'eccb_step_id'),
+            (new TranslationsAssociationField(StepTranslationDefinition::class, 'eccb_step_id'))->addFlags(new Required())
 
         ]);
     }
