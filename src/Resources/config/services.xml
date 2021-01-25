@@ -5,6 +5,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- new schema -->
+        <service id="EventCandyCandyBags\Core\Content\ConfiguratorStep\ConfiguratorStepDefinition">
+            <tag name="shopware.entity.definition" entity="eccb_configurator_step"/>
+        </service>
+
+
+        <service id="EventCandyCandyBags\Core\Content\ConfiguratorStep\Aggregate\ConfiguratorStepTranslation\ConfiguratorStepTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="eccb_configurator_step_translation"/>
+        </service>
+
+
+
+        <!-- old schema -->
         <service id="EventCandyCandyBags\Core\Content\CandyBag\CandyBagDefinition">
             <tag name="shopware.entity.definition" entity="eccb_candy_bag"/>
         </service>

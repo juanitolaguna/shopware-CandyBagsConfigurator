@@ -13,6 +13,13 @@ import './page/eccb-candybag-list'
 import './page/eccb-candybag-create'
 import './page/eccb-candybag-detail'
 
+/**
+ * Step
+ */
+import './page/eccb-step-list'
+import './page/eccb-step-create'
+import './page/eccb-step-detail'
+
 
 /**
  * Components
@@ -36,12 +43,12 @@ Module.register('eccb-module', {
 
     routes: {
         index: {
-            component: 'eccb-candybag-list',
+            component: 'eccb-step-list',
             path: 'index'
         },
 
         create: {
-            component: 'eccb-candybag-create',
+            component: 'eccb-step-create',
             path: 'create',
             meta: {
                 parentPath: 'eccb.module.index'
@@ -49,17 +56,38 @@ Module.register('eccb-module', {
         },
 
         detail: {
-            component: 'eccb-candybag-detail',
+            component: 'eccb-step-detail',
             path: 'detail/:id',
             meta: {
                 parentPath: 'eccb.module.index'
             }
         }
+
+        // index: {
+        //     component: 'eccb-candybag-list',
+        //     path: 'index'
+        // },
+
+        // create: {
+        //     component: 'eccb-candybag-create',
+        //     path: 'create',
+        //     meta: {
+        //         parentPath: 'eccb.module.index'
+        //     }
+        // },
+
+        // detail: {
+        //     component: 'eccb-candybag-detail',
+        //     path: 'detail/:id',
+        //     meta: {
+        //         parentPath: 'eccb.module.index'
+        //     }
+        // }
     },
 
     navigation: [
         {
-            id: 'eccb-candy-bags',
+            id: 'eccb-step',
             label: 'eccb.general.mainMenuItemGeneral',
             path: 'eccb.module.index',
             icon: 'default-object-lab-flask',

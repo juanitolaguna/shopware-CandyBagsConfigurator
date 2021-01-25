@@ -1,0 +1,76 @@
+{% block eccb_step_detail %}
+    <sw-page class="eccb-step-detail">
+
+        <template #smart-bar-header>
+            <h2 v-html="configuratorStep ? configuratorStep.name : 'Candy Bag Detail'"></h2>
+        </template>
+
+        <template #language-switch>
+            <sw-language-switch
+                    v-if="configuratorStep"
+                    :disabled="configuratorStep._isNew"
+                    @on-change="changeLanguage">
+            </sw-language-switch>
+        </template>
+
+        {% block eccb_step_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_step_detail_smart_bar_actions_save %}
+                    <sw-button variant="primary" @click="onClickSave()" :isLoading="isLoading">
+                        {{ $tc('eccb.step-detail.save') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block eccb_step_detail_smart_bar_actions_cancel %}
+                    <sw-button :disabled="configuratorStep && configuratorStep.isLoading" @click="onCancel">
+                        {{ $tc('eccb.step-detail.cancel') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            <sw-card-view :large="false">
+                <sw-card :large="false">
+                    <sw-text-field
+                            :label="$tc('eccb.step-detail.candyBagName')"
+                            v-model="configuratorStep.name">
+                    </sw-text-field>
+
+                    <sw-text-field
+                            :label="$tc('eccb.step-detail.candyBagDescription')"
+                            v-model="configuratorStep.description"
+                    >
+                    </sw-text-field>
+
+                    <eccb-media-field
+                            :label="$tc('eccb.image')"
+                            v-model="configuratorStep.mediaId"
+                            :showUploadField="false"
+                            :showControls="false"
+                            @media-id-change="onMediaSelect"
+                            :mediaFolderName="'Candy Bags'"
+                    >
+                    </eccb-media-field>
+
+                    <sw-checkbox-field :label="$t('eccb.active')"
+                                       v-model="configuratorStep.active"></sw-checkbox-field>
+
+
+                </sw-card>
+            </sw-card-view>
+        </template>
+
+        <template #sidebar>
+            <sw-sidebar>
+                <sw-sidebar-item ref="candyBagSidebar" title="Image" icon="default-object-image">
+                    <div class="image-container">
+                        <img v-if="configuratorStep && configuratorStep.media && configuratorStep.media.url"
+                             class="image"
+                             :src="configuratorStep.media.url"/>
+                    </div>
+                </sw-sidebar-item>
+            </sw-sidebar>
+        </template>
+    </sw-page>
+{% endblock %}
