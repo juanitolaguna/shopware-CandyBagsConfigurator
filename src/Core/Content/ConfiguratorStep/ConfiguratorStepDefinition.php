@@ -80,7 +80,7 @@ class ConfiguratorStepDefinition extends EntityDefinition
             new ChildCountField(),
             new ParentFkField(self::class),
 
-            (new ParentAssociationField(self::class, 'id'))->addFlags(new CascadeDelete()),
+            (new ParentAssociationField(self::class, 'id')),
             new ChildrenAssociationField(self::class),
 
             (new TranslationsAssociationField(ConfiguratorStepTranslationDefinition::class, 'eccb_configurator_step_id'))

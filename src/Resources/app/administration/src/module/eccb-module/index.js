@@ -55,6 +55,14 @@ Module.register('eccb-module', {
             }
         },
 
+        createChild: {
+            component: 'eccb-step-create',
+            path: 'createChild/:parentId',
+            // meta: {
+            //     parentPath: 'eccb.module.index'
+            // }
+        },
+
         detail: {
             component: 'eccb-step-detail',
             path: 'detail/:id',

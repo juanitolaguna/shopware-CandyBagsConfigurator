@@ -23,7 +23,9 @@ Component.register('eccb-step-detail', {
         return {
             configuratorStep: null,
             isLoading: true,
-            currentLanguageId: Context.api.languageId
+            currentLanguageId: Context.api.languageId,
+            sortBy: 'position',
+            sortDirection: 'ASC',
         }
     },
 
@@ -38,6 +40,35 @@ Component.register('eccb-step-detail', {
     computed: {
         configuratorStepRepository() {
             return this.repositoryFactory.create('eccb_configurator_step');
+        },
+
+        productRepository() {
+            return this.repositoryFactory.create('product');
+        },
+
+        columns() {
+            return [
+                {
+                    property: 'name',
+                    dataIndex: 'name',
+                    label: 'Name',
+                    inlineEdit: 'string',
+                    routerLink: 'eccb.module.detail',
+                    primary: true
+                },
+
+                {
+                    property: 'position',
+                    label: 'Position',
+                    inlineEdit: 'number',
+                },
+
+                {
+                    property: 'active',
+                    label: 'Active',
+                    inlineEdit: 'boolean',
+                }
+            ]
         }
     },
 
@@ -48,13 +79,57 @@ Component.register('eccb-step-detail', {
 
         getConfiguratorStep() {
             const criteria = new Criteria();
-            criteria.addAssociation('media')
+            criteria.addAssociation('media');
+            criteria.addAssociation('product');
+            criteria.addAssociation('parent');
+            criteria.addAssociation('children');
+
 
             return this.configuratorStepRepository.get(this.$route.params.id, Context.api, criteria)
                 .then((result) => {
+                    console.log('getStep')
                     this.configuratorStep = result;
                     this.isLoading = false
-                })
+                });
+        },
+
+        deleteChild(item) {
+
+            this.configuratorStep.children.remove(item.id);
+            this.onClickSave();
+        },
+
+        editChild(item) {
+            this.$router.push({name: 'eccb.module.detail', params: {id: item.id}});
+            this.createdComponent();
+        },
+
+        onInlineEditChild(item) {
+            this.configuratorStepRepository.save(item, Context.api).then(() => {
+                this.createdComponent();
+            });
+
+        },
+
+        onSortColumn(column) {
+            // this.$refs.childrenGrid.loading = true;
+
+            console.log(this.$refs.childrenGrid);
+            // return this.configuratorStepRepository.search(this.$refs.childrenGrid.items.criteria, Contect.api)
+            //     .then((result) => {
+            //         this.configuratorStep.hil
+            //     });
+
+        },
+
+        onColumnSort(column) {
+            this.$refs.swProductGrid.loading = true;
+
+            const context = Object.assign({}, Shopware.Context.api);
+            context.currencyId = column.currencyId;
+
+            return this.$refs.swProductGrid.repository.search(this.$refs.swProductGrid.items.criteria, context)
+                .then(this.$refs.swProductGrid.applyResult);
         },
 
         changeLanguage(newLanguageId) {
@@ -63,7 +138,18 @@ Component.register('eccb-step-detail', {
         },
 
         onCancel() {
-            this.$router.push({name: 'eccb.module.index'});
+            if (this.configuratorStep.parentId) {
+                console.log('parentId: ' + this.configuratorStep.parentId);
+                this.$router.push({name: 'eccb.module.detail', params: {id: this.configuratorStep.parentId}});
+                this.createdComponent();
+            } else {
+                this.$router.push({name: 'eccb.module.index'});
+            }
+        },
+
+        onSelectProduct(id, product) {
+            this.configuratorStep.productVersionId = product.versionId;
+            this.configuratorStep.product = product;
         },
 
         onMediaSelect() {

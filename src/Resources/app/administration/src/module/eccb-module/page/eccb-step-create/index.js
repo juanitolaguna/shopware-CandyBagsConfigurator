@@ -15,11 +15,12 @@ Component.extend('eccb-step-create','eccb-step-detail', {
                 }
             }
 
-            this.getConfigurationStep();
+            this.getConfiguratorStep();
         },
 
-        getConfigurationStep() {
+        getConfiguratorStep() {
             this.configuratorStep = this.configuratorStepRepository.create(Context.api);
+            this.configuratorStep.parentId = this.$route.params.parentId;
             this.isLoading = false;
         },
 
@@ -34,6 +35,7 @@ Component.extend('eccb-step-create','eccb-step-detail', {
                         title: this.$tc('eccb.step-detail.notification.save-success.title'),
                         message: this.$tc('eccb.step-detail.notification.save-success.text')
                     });
+
                 }).catch((exception) => {
                 this.isLoading = false;
                 this.createNotificationError({

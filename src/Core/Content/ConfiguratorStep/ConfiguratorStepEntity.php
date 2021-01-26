@@ -23,7 +23,7 @@ class ConfiguratorStepEntity extends Entity
     protected $childCount;
 
     /**
-     * @var self|null
+     * @var ConfiguratorStepEntity|null
      */
     protected $parent;
 
