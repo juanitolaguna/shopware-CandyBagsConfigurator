@@ -4,6 +4,7 @@ namespace EventCandyCandyBags\Core\Content\TreeNode;
 
 use EventCandyCandyBags\Core\Content\Item\ItemDefinition;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetDefinition;
+use EventCandyCandyBags\Core\Content\StepSet\StepSetDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation\TreeNodeTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
@@ -63,6 +64,13 @@ class TreeNodeDefinition extends EntityDefinition
                 'itemSet',
                 'item_set_id',
                 ItemSetDefinition::class
+            ),
+
+            new FkField('step_set_id', 'stepSetId', StepSetDefinition::class),
+            new ManyToOneAssociationField(
+                'stepSet',
+                'step_set_id',
+                StepSetDefinition::class
             ),
 
             new ParentFkField(self::class),

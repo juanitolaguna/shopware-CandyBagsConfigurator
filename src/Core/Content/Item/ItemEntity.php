@@ -53,7 +53,7 @@ class ItemEntity extends Entity
 
     /**
      * ItemSet
-     * @var ItemSetEntity
+     * @var ItemSetEntity|null
      */
     protected $itemSet;
 
@@ -177,17 +177,17 @@ class ItemEntity extends Entity
     }
 
     /**
-     * @return ItemSetEntity
+     * @return ItemSetEntity|null
      */
-    public function getItemSet(): ItemSetEntity
+    public function getItemSet(): ?ItemSetEntity
     {
         return $this->itemSet;
     }
 
     /**
-     * @param ItemSetEntity $itemSet
+     * @param ItemSetEntity|null $itemSet
      */
-    public function setItemSet(ItemSetEntity $itemSet): void
+    public function setItemSet(?ItemSetEntity $itemSet): void
     {
         $this->itemSet = $itemSet;
     }

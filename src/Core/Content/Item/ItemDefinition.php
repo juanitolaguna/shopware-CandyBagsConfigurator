@@ -68,7 +68,6 @@ class ItemDefinition extends EntityDefinition
                 ItemSetDefinition::class
             ),
 
-
             new FkField('media_id', 'mediaId', MediaDefinition::class),
             new ManyToOneAssociationField(
                 'media',

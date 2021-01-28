@@ -10,30 +10,20 @@
             <tag name="shopware.entity.definition" entity="eccb_step_set"/>
         </service>
 
-        <service id="EventCandyCandyBags\Core\Content\StepSet\Aggregate\StepSetTranslation\StepSetTranslationDefinition">
+        <service
+                id="EventCandyCandyBags\Core\Content\StepSet\Aggregate\StepSetTranslation\StepSetTranslationDefinition">
             <tag name="shopware.entity.definition" entity="eccb_step_set_translation"/>
         </service>
-
-
-
-        <service id="EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_tree_node"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation">
-            <tag name="shopware.entity.definition" entity="eccb_tree_node_translation"/>
-        </service>
-
 
 
         <service id="EventCandyCandyBags\Core\Content\ItemSet\ItemSetDefinition">
             <tag name="shopware.entity.definition" entity="eccb_item_set"/>
         </service>
 
-        <service id="EventCandyCandyBags\Core\Content\ItemSet\Aggregate\ItemSetTranslation\ItemSetTranslationDefinition">
+        <service
+                id="EventCandyCandyBags\Core\Content\ItemSet\Aggregate\ItemSetTranslation\ItemSetTranslationDefinition">
             <tag name="shopware.entity.definition" entity="eccb_item_set_translation"/>
         </service>
-
 
 
         <service id="EventCandyCandyBags\Core\Content\Item\ItemDefinition">
@@ -42,6 +32,16 @@
 
         <service id="EventCandyCandyBags\Core\Content\Item\Aggregate\ItemTranslation\ItemTranslationDefinition">
             <tag name="shopware.entity.definition" entity="eccb_item_translation"/>
+        </service>
+
+
+        <service id="EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition">
+            <tag name="shopware.entity.definition" entity="eccb_tree_node"/>
+        </service>
+
+        <service
+                id="EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation\TreeNodeTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="eccb_tree_node_translation"/>
         </service>
 
 

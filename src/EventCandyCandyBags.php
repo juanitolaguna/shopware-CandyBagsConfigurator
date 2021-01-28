@@ -19,12 +19,12 @@ class EventCandyCandyBags extends Plugin
     {
         $connection = $this->container->get(Connection::class);
 
-        $sql = "select count(*) from eccb_candy_bag";
-        $result = $connection->fetchArray($sql);
-        // data should exist, quit migration
-        if ($result[0] != 0) {
-            return;
-        }
+//        $sql = "select count(*) from eccb_step_set";
+//        $result = $connection->fetchArray($sql);
+//        // data should exist, quit migration
+//        if ($result[0] != 0) {
+//            return;
+//        }
 
         $this->demoDataService->generate($context->getContext());
     }
@@ -36,13 +36,14 @@ class EventCandyCandyBags extends Plugin
             return;
         }
 
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_card_translation');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_card');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_product');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_translation');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_candy_bag_translation');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_candy_bag');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node_translation');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_translation');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_set_translation');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_set');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set_translation');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set');
     }
 
     /**

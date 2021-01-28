@@ -2,6 +2,7 @@
 
 namespace EventCandyCandyBags\Core\Content\StepSet;
 
+use EventCandyCandyBags\Core\Content\StepSet\Aggregate\StepSetTranslation\StepSetTranslationDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;

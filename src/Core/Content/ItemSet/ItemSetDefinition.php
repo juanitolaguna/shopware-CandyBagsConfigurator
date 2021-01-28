@@ -40,7 +40,7 @@ class ItemSetDefinition extends EntityDefinition
             (new IdField('id', 'id'))
                 ->addFlags(new Required(), new PrimaryKey()),
 
-            (new OneToManyAssociationField('items', ItemDefinition::class, 'item_id', 'id'))->addFlags(new CascadeDelete()),
+            (new OneToManyAssociationField('items', ItemDefinition::class, 'item_set_id', 'id'))->addFlags(new CascadeDelete()),
 
             new TranslatedField('name'),
             new TranslationsAssociationField(ItemSetTranslationDefinition::class, 'eccb_item_set_id'),
