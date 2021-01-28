@@ -17,37 +17,6 @@
 
 
 
-        <!-- old schema -->
-        <service id="EventCandyCandyBags\Core\Content\CandyBag\CandyBagDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_candy_bag"/>
-        </service>
-
-        <service
-                id="EventCandyCandyBags\Core\Content\CandyBag\Aggregate\CandyBagTranslation\CandyBagTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_candy_bag_translation"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\Card\CardDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_card"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\Card\Aggregate\CardTranslation\CardTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_card_translation"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\Step\StepDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_step"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\Step\Aggregate\StepTranslation\StepTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_step_translation"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\Step\Aggregate\StepProduct\StepProductDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_step_product"/>
-        </service>
-
-
         <!-- DemoDataService -->
 
         <service id="EventCandyCandyBags\DemoDataService">

@@ -6,12 +6,6 @@ import { Module } from 'src/core/shopware';
 import deDE from '../snippet/de-DE.json';
 import enGB from '../snippet/en-GB.json';
 
-/**
- * Candy Bags
- */
-import './page/eccb-candybag-list'
-import './page/eccb-candybag-create'
-import './page/eccb-candybag-detail'
 
 /**
  * Step
@@ -58,9 +52,6 @@ Module.register('eccb-module', {
         createChild: {
             component: 'eccb-step-create',
             path: 'createChild/:parentId',
-            // meta: {
-            //     parentPath: 'eccb.module.index'
-            // }
         },
 
         detail: {
@@ -70,27 +61,6 @@ Module.register('eccb-module', {
                 parentPath: 'eccb.module.index'
             }
         }
-
-        // index: {
-        //     component: 'eccb-candybag-list',
-        //     path: 'index'
-        // },
-
-        // create: {
-        //     component: 'eccb-candybag-create',
-        //     path: 'create',
-        //     meta: {
-        //         parentPath: 'eccb.module.index'
-        //     }
-        // },
-
-        // detail: {
-        //     component: 'eccb-candybag-detail',
-        //     path: 'detail/:id',
-        //     meta: {
-        //         parentPath: 'eccb.module.index'
-        //     }
-        // }
     },
 
     navigation: [
