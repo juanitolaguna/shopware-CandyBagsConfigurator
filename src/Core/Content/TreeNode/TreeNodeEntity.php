@@ -3,7 +3,6 @@
 namespace EventCandyCandyBags\Core\Content\TreeNode;
 
 use EventCandyCandyBags\Core\Content\Item\ItemEntity;
-use EventCandyCandyBags\Core\Content\ItemSet\ItemSetCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\StepSet\StepSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation\TreeNodeTranslationCollection;
@@ -50,7 +49,7 @@ class TreeNodeEntity extends Entity
     protected $itemSet;
 
     /**
-     * @var StepSetEntity
+     * @var StepSetEntity|null
      */
     protected $stepSet;
 
@@ -187,17 +186,17 @@ class TreeNodeEntity extends Entity
     }
 
     /**
-     * @return StepSetEntity
+     * @return StepSetEntity|null
      */
-    public function getStepSet(): StepSetEntity
+    public function getStepSet(): ?StepSetEntity
     {
         return $this->stepSet;
     }
 
     /**
-     * @param StepSetEntity $stepSet
+     * @param StepSetEntity|null $stepSet
      */
-    public function setStepSet(StepSetEntity $stepSet): void
+    public function setStepSet(?StepSetEntity $stepSet): void
     {
         $this->stepSet = $stepSet;
     }

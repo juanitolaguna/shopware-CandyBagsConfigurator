@@ -1,0 +1,108 @@
+{% block eccb_step_set_detail %}
+    <sw-page class="eccb-step-set-detail">
+
+        <template #smart-bar-header>
+            <h2 style="display: inline;" v-html="stepSet ? stepSet.name : 'Step Set Detail'"></h2>
+        </template>
+
+        <template #language-switch>
+            <sw-language-switch  v-if="stepSet"
+                                 :disabled="stepSet._isNew"
+                                 @on-change="changeLanguage">
+            </sw-language-switch>
+        </template>
+
+        {% block eccb_step_set_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_step_set_detail_smart_bar_actions_save %}
+                    <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
+                        {{ $tc('eccb.step-set.detail.save') }}
+                    </sw-button>
+                {% endblock %}
+
+                {# {% block eccb_step_set_detail_smart_bar_actions_cancel %} #}
+                {# <sw-button :disabled="stepSet && stepSet.isLoading" #}
+                {# @click="onClickCancel"> #}
+                {# {{ $tc('eccb.step-set.detail.back') }} #}
+                {# </sw-button> #}
+                {# {% endblock %} #}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            <sw-card-view v-if="stepSet" :large="false">
+                <sw-card :large="false">
+                    <sw-text-field
+                            :label="$tc('eccb.name')"
+                            v-model="stepSet.name">
+                    </sw-text-field>
+
+                    <sw-text-field
+                            :label="$tc('eccb.description')"
+                            v-model="stepSet.description"
+                    >
+                    </sw-text-field>
+
+
+                    <eccb-media-field
+                            :label="$tc('eccb.image')"
+                            v-model="stepSet.mediaId"
+                            :showUploadField="false"
+                            :showControls="false"
+                            @media-id-change="onMediaSelect"
+                            :mediaFolderName="mediaFolderName"
+                    >
+                    </eccb-media-field>
+
+                    <sw-checkbox-field :label="$tc('eccb.active')"
+                                       v-model="stepSet.active"></sw-checkbox-field>
+
+                </sw-card>
+
+
+                <sw-card :large="false" v-if="!stepSet._isNew">
+
+                    <template #title>
+                        <h2>
+                            {{ $tc('eccb.step-set.detail.steps') }}
+                        </h2>
+                    </template>
+
+                    <template #toolbar>
+                        <sw-button
+                                v-if="stepSet"
+                                variant="primary"
+                                :routerLink="{name: 'eccb.module.createChild', params: { parentId: stepSet.id }}"
+                        >
+                            {{ $tc('eccb.step-set.detail.addStep') }}
+                        </sw-button>
+                    </template>
+
+                    <template #grid>
+                        <sw-entity-listing
+                                v-if="steps"
+                                :items="steps"
+                                :repository="treeNodeRepository"
+                                :columns="treeNodeColumns"
+                                :showSelection="false"
+                                detailRoute="eccb.plugin.treeNode"
+                        >
+                        </sw-entity-listing>
+                    </template>
+                </sw-card>
+            </sw-card-view>
+        </template>
+
+        <template #sidebar>
+            <sw-sidebar>
+                <sw-sidebar-item ref="stepSetSidebar" title="Image" icon="default-object-image">
+                    <div class="image-container">
+                        <img v-if="stepSet && stepSet.media && stepSet.media.url"
+                             class="image"
+                             :src="stepSet.media.url"/>
+                    </div>
+                </sw-sidebar-item>
+            </sw-sidebar>
+        </template>
+    </sw-page>
+{% endblock %}

@@ -13,12 +13,24 @@ class StepSetEntity extends Entity
     use EntityIdTrait;
 
     /**
+     * ItemSet
+     * @var int
+     */
+    protected $position;
+
+    /**
+     * ItemSet
+     * @var bool
+     */
+    protected $active;
+
+    /**
      * @var MediaEntity
      */
     protected $media;
 
     /**
-     * @var TreeNodeCollection
+     * @var TreeNodeCollection|null
      */
     protected $steps;
 
@@ -26,6 +38,38 @@ class StepSetEntity extends Entity
      * @var StepSetTranslationCollection
      */
     protected $translations;
+
+    /**
+     * @return int
+     */
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     */
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
 
     /**
      * @return MediaEntity
@@ -44,17 +88,17 @@ class StepSetEntity extends Entity
     }
 
     /**
-     * @return TreeNodeCollection
+     * @return TreeNodeCollection|null
      */
-    public function getSteps(): TreeNodeCollection
+    public function getSteps(): ?TreeNodeCollection
     {
         return $this->steps;
     }
 
     /**
-     * @param TreeNodeCollection $steps
+     * @param TreeNodeCollection|null $steps
      */
-    public function setSteps(TreeNodeCollection $steps): void
+    public function setSteps(?TreeNodeCollection $steps): void
     {
         $this->steps = $steps;
     }
@@ -74,4 +118,8 @@ class StepSetEntity extends Entity
     {
         $this->translations = $translations;
     }
+
+
+
+
 }

@@ -4,7 +4,7 @@ import Criteria from 'src/core/data-new/criteria.data';
 import template from './eccb-step-detail.twig';
 import './eccb-step-detail.scss';
 
-Component.register('eccb-step-detail', {
+Component.register('eccb-step-set-detail', {
     template,
 
     mixins: [

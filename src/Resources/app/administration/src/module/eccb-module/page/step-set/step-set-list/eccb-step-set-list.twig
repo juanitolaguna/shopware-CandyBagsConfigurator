@@ -1,0 +1,44 @@
+{% block eccb_step_set_list %}
+    <sw-page class="eccb-step-set-list">
+        <template #smart-bar-header>
+            <h2>
+                {% block eccb_step_set_list_smart_bar_header_title %}
+                    {{ $tc('eccb.step-set-list.title') }}
+                {% endblock %}
+            </h2>
+        </template>
+        <template #language-switch>
+            <sw-language-switch @on-change="changeLanguage"></sw-language-switch>
+        </template>
+
+
+        {% block eccb_step_set_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_step_set_list_smart_bar_actions_add %}
+                    <sw-button :routerLink="{ name: 'eccb.plugin.create' }" variant="primary">
+                        {{ $tc('eccb.step-set-list.buttonAddStep') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            {% block eccb_step_set_list_content %}
+                <sw-entity-listing
+                        :items="stepSets"
+                        :repository="stepSetRepository"
+                        :columns="columns"
+                        :showSelection="false"
+                        detailRoute="eccb.plugin.detail"
+                >
+                </sw-entity-listing>
+
+            {% endblock %}
+        </template>
+
+
+
+
+    </sw-page>
+
+{% endblock %}

@@ -1,17 +1,16 @@
-import {Component} from 'src/core/shopware';
+import {Component, Context} from 'src/core/shopware';
 import Criteria from 'src/core/data-new/criteria.data';
 
-import template from './eccb-step-list.twig'
-import './eccb-step-list.scss';
+import template from './eccb-step-set-list.twig'
 
-Component.register('eccb-step-list', {
+Component.register('eccb-step-set-list', {
     template,
 
     inject: ['repositoryFactory'],
 
     data() {
         return {
-            configuratorSteps: null,
+            stepSets: null,
             isLoading: true,
             currentLanguageId: Shopware.Context.api.languageId
         }
@@ -21,15 +20,14 @@ Component.register('eccb-step-list', {
         this.componentCreated();
     },
 
+
     computed: {
-        configuratorStepRepository() {
-            return this.repositoryFactory.create('eccb_configurator_step');
+        stepSetRepository() {
+            return this.repositoryFactory.create('eccb_step_set');
         },
 
-        configuratorStepCriteria() {
-            const criteria = new Criteria();
-            criteria.addFilter(Criteria.equals('parentId', null));
-            return criteria;
+        stepSetCriteria() {
+            return new Criteria();
         },
 
         columns() {
@@ -39,7 +37,14 @@ Component.register('eccb-step-list', {
                     dataIndex: 'name',
                     label: 'Name',
                     inlineEdit: 'string',
-                    routerLink: 'eccb.module.detail',
+                    routerLink: 'eccb.plugin.detail',
+                    primary: true
+                },
+
+                {
+                    property: 'description',
+                    label: 'Description',
+                    inlineEdit: 'string',
                     primary: true
                 },
 
@@ -53,33 +58,32 @@ Component.register('eccb-step-list', {
                     property: 'active',
                     label: 'Active',
                     inlineEdit: 'boolean',
-                }
+                },
             ]
         }
     },
 
     methods: {
+        componentCreated() {
+            this.getSetSteps();
+        },
+
         changeLanguage(newLanguageId) {
             this.currentLanguageId = newLanguageId;
             this.componentCreated();
         },
 
-        componentCreated() {
-            this.getCandyBags();
-        },
 
-        getCandyBags() {
+        getSetSteps() {
             this.isLoading = true;
-            return this.configuratorStepRepository
-                .search(this.configuratorStepCriteria, Shopware.Context.api)
+            return this.stepSetRepository
+                .search(this.stepSetCriteria, Context.api)
                 .then((result) => {
-                    this.configuratorSteps = result;
+                    this.stepSets = result;
                     this.isLoading = false;
                 })
         }
     }
 
 
-
-
-})
+});

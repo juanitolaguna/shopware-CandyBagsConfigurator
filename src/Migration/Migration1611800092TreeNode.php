@@ -17,7 +17,7 @@ class Migration1611800092TreeNode extends MigrationStep
         $connection->executeUpdate("
             CREATE TABLE `eccb_tree_node` (
                 `id` BINARY(16) NOT NULL,
-                `position` INT(11) NULL,
+                `position` INT(11) NULL DEFAULT 0,
                 `active` TINYINT(1) NULL DEFAULT 0,
                 `terminal` TINYINT(1) NULL DEFAULT 0,
                 `purchasable` TINYINT(1) NULL DEFAULT 0,

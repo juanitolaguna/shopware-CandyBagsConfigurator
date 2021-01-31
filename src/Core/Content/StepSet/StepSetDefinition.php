@@ -6,11 +6,13 @@ use EventCandyCandyBags\Core\Content\StepSet\Aggregate\StepSetTranslation\StepSe
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
@@ -43,7 +45,10 @@ class StepSetDefinition extends EntityDefinition
             (new IdField('id', 'id'))
                 ->addFlags(new Required(), new PrimaryKey()),
 
-            (new OneToManyAssociationField('steps', TreeNodeDefinition::class, 'step_id', 'id'))->addFlags(new CascadeDelete()),
+            new IntField('position', 'position'),
+            new BoolField('active', 'active'),
+
+            (new OneToManyAssociationField('steps', TreeNodeDefinition::class, 'step_set_id'))->addFlags(new CascadeDelete()),
 
             new FkField('media_id', 'mediaId', MediaDefinition::class),
             new ManyToOneAssociationField(

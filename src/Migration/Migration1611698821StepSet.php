@@ -17,6 +17,8 @@ class Migration1611698821StepSet extends MigrationStep
         $connection->executeUpdate("        
             CREATE TABLE `eccb_step_set` (
                 `id` BINARY(16) NOT NULL,
+                `position` INT(11) NULL DEFAULT 0,
+                `active` TINYINT(1) NULL DEFAULT 1,
                 `media_id` BINARY(16) NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,

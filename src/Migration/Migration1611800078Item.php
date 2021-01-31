@@ -18,7 +18,7 @@ class Migration1611800078Item extends MigrationStep
             CREATE TABLE `eccb_item` (
                 `id` BINARY(16) NOT NULL,
                 `item_set_id` BINARY(16) NULL,
-                `position` INT(11) NULL,
+                `position` INT(11) NULL DEFAULT 0,
                 `active` TINYINT(1) NULL DEFAULT 1,
                 `terminal` TINYINT(1) NULL DEFAULT 0,
                 `purchasable` TINYINT(1) NULL DEFAULT 0,
