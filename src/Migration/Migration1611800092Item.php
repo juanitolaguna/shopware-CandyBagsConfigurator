@@ -18,6 +18,7 @@ class Migration1611800078Item extends MigrationStep
             CREATE TABLE `eccb_item` (
                 `id` BINARY(16) NOT NULL,
                 `item_set_id` BINARY(16) NULL,
+                `tree_node_id` BINARY(16) NULL,
                 `position` INT(11) NULL DEFAULT 0,
                 `active` TINYINT(1) NULL DEFAULT 1,
                 `terminal` TINYINT(1) NULL DEFAULT 0,
@@ -32,9 +33,11 @@ class Migration1611800078Item extends MigrationStep
                 PRIMARY KEY (`id`),
                 CONSTRAINT `json.eccb_item.translated` CHECK (JSON_VALID(`translated`)),
                 KEY `fk.eccb_item.item_set_id` (`item_set_id`),
+                KEY `fk.eccb_item.tree_node_id` (`tree_node_id`),
                 KEY `fk.eccb_item.media_id` (`media_id`),
                 KEY `fk.eccb_item.product_id` (`product_id`,`product_version_id`),
                 CONSTRAINT `fk.eccb_item.item_set_id` FOREIGN KEY (`item_set_id`) REFERENCES `eccb_item_set` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.eccb_item.tree_node_id` FOREIGN KEY (`tree_node_id`) REFERENCES `eccb_tree_node` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT `fk.eccb_item.media_id` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
                 CONSTRAINT `fk.eccb_item.product_id` FOREIGN KEY (`product_id`,`product_version_id`) REFERENCES `product` (`id`,`version_id`) ON DELETE SET NULL ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;            
