@@ -10,11 +10,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ChildrenAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ParentAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ParentFkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
@@ -46,18 +47,10 @@ class TreeNodeDefinition extends EntityDefinition
 
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
 
-            new IntField('position', 'position'),
-            new BoolField('active', 'active'),
-            new BoolField('terminal', 'terminal'),
-            new BoolField('purchasable', 'purchasable'),
             new BoolField('set_node', 'setNode'),
 
-            new FkField('item_id', 'itemId', ItemDefinition::class),
-            new ManyToOneAssociationField(
-                'item',
-                'item_id',
-                ItemDefinition::class
-            ),
+
+            (new OneToOneAssociationField('item', 'id', 'tree_node_id', ItemDefinition::class)),
 
             new FkField('item_set_id', 'itemSetId', ItemSetDefinition::class),
             new ManyToOneAssociationField(

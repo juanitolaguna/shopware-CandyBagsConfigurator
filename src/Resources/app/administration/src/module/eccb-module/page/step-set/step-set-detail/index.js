@@ -11,6 +11,11 @@ Component.register('eccb-step-set-detail', {
         Mixin.getByName('notification')
     ],
 
+    shortcuts: {
+        'SYSTEMKEY+S': 'onSave',
+        ESCAPE: 'onClickCancel'
+    },
+
     inject: ['repositoryFactory'],
 
     metaInfo() {
@@ -26,6 +31,8 @@ Component.register('eccb-step-set-detail', {
             isLoading: true,
             mediaFolderName: 'Candy Bags',
             currentLanguageId: Context.api.languageId,
+            inlineEdit: false,
+            currentInlineEditId: null
         }
     },
 
@@ -34,31 +41,43 @@ Component.register('eccb-step-set-detail', {
     },
 
     mounted() {
-        this.$refs.stepSetSidebar.openContent();
+        this.$refs.sidebar.openContent();
     },
 
     computed: {
         treeNodeColumns() {
             return [
                 {
-                    property: 'name',
-                    label: 'Name',
+                    property: 'stepDescription',
+                    label: 'Step Description',
                     inlineEdit: 'string',
-                    routerLink: 'eccb.tree-node.detail',
+                    routerLink: 'eccb.plugin.tree-node.detail',
                     primary: true
                 },
 
                 {
-                    property: 'position',
+                    property: 'item.position',
                     label: 'Position',
                     inlineEdit: 'number',
                 },
 
                 {
-                    property: 'active',
+                    property: 'item.active',
                     label: 'Active',
                     inlineEdit: 'boolean',
-                }
+                },
+
+                {
+                    property: 'item.purchasable',
+                    label: 'Purchasable',
+                    inlineEdit: 'boolean',
+                },
+
+                {
+                    property: 'item.terminal',
+                    label: 'Terminal',
+                    inlineEdit: 'boolean',
+                },
             ]
         },
 
@@ -70,10 +89,16 @@ Component.register('eccb-step-set-detail', {
             return this.repositoryFactory.create('eccb_tree_node');
         },
 
+        itemRepository() {
+            return this.repositoryFactory.create('eccb_item');
+        },
+
         treeNodeCriteria() {
             const criteria = new Criteria();
-            criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id))
+            criteria.addAssociation('item');
+            criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
             return criteria;
+
         }
     },
 
@@ -83,37 +108,31 @@ Component.register('eccb-step-set-detail', {
 
             await Promise.all([
                 this.getStepSet(),
-                 this.getSteps()
-            ])
+                this.getSteps()
+            ]);
 
-            this.isLoading = false
-
-            return Promise.resolve();
-
+            this.isLoading = false;
         },
 
 
         async getStepSet() {
             const criteria = new Criteria();
             criteria.addAssociation('media');
-            criteria.addAssociation('steps');
+            this.stepSet = await this.stepSetRepository.get(this.$route.params.id, Context.api, criteria)
 
 
-            return this.stepSetRepository.get(this.$route.params.id, Context.api, criteria)
-                .then((result) => {
-                    this.stepSet = result;
-                    return Promise.resolve();
-                });
+
         },
 
         async getSteps() {
-            this.treeNodeRepository.search(this.treeNodeCriteria, Context.api)
-                .then((result) => {
-                    this.steps = result
+                const criteria = new Criteria();
+                criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
+                criteria.addAssociation('item');
+                criteria.addSorting(Criteria.sort('item.position', 'desc'));
+                return this.treeNodeRepository.search(criteria, Context.api).then((result) => {
+                    this.steps = result;
                     return Promise.resolve();
-                }).catch((e) => {
-                console.log(e);
-            })
+                })
         },
 
 
@@ -123,20 +142,16 @@ Component.register('eccb-step-set-detail', {
 
         async onSave() {
             this.isLoading = true;
-
-            this.stepSetRepository
-                .save(this.stepSet, Context.api)
-                .then(() => {
-                    this.createdComponent();
-                }).catch((exception) => {
-                this.isLoading = false;
+            try {
+                await this.stepSetRepository.save(this.stepSet, Context.api);
+                await this.createdComponent();
+            } catch (error) {
                 this.createNotificationError({
                     title: this.$tc('eccb.step-set.detail.error'),
-                    message: exception
+                    message: error
                 });
-            })
+            }
         },
-
 
         changeLanguage(newLanguageId) {
             this.currentLanguageId = newLanguageId;
@@ -145,7 +160,56 @@ Component.register('eccb-step-set-detail', {
 
         onClickCancel() {
             this.$router.push({name: 'eccb.plugin.index'});
+        },
+
+        async onInlineEditTreeNodes(item) {
+            await Promise.all([
+                this.treeNodeRepository.save(item, Context.api)
+            ]).then(() => {
+                this.inlineEdit = false;
+                this.getSteps();
+                this.createNotificationSuccess({
+                    title: this.$tc('eccb.step-set.save-success.title'),
+                    message: this.$tc('eccb.step-set.save-success.text')
+                });
+            }).catch((error) => {
+                this.createNotificationError({
+                    title: this.$tc('eccb.step-set.error'),
+                    message: error
+                });
+            })
+        },
+
+        deleteTreeNode(item) {
+            this.steps.remove(item.id);
+            this.treeNodeRepository.delete(item.id, Context.api).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$tc('eccb.step-set.save-success.title'),
+                    message: this.$tc('eccb.step-set.save-success.text')
+                });
+            }).catch((exception) => {
+                this.createNotificationError({
+                    title: this.$tc('eccb.step-set.error'),
+                    message: exception
+                });
+                this.createdComponent();
+            })
+        },
+
+        editTreeNode(item) {
+            // this.$router.push({name: 'eccb.module.detail', params: {id: item.id}});
+            // this.createdComponent();
+        },
+
+        setInlineEdit(payload, id) {
+            this.inlineEdit = true;
+            this.currentInlineEditId = id;
+        },
+
+        getInlineEdit(item) {
+            return this.inlineEdit && this.currentInlineEditId === item['id'];
         }
+
     },
 
 

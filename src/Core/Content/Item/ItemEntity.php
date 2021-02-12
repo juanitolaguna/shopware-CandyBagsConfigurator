@@ -2,11 +2,9 @@
 
 namespace EventCandyCandyBags\Core\Content\Item;
 
-use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemTranslation\ItemTranslationCollection;
+use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardEntity;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
-use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
-use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Product\ProductEntity;
+use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -39,17 +37,18 @@ class ItemEntity extends Entity
      */
     protected $purchasable;
 
-    /**
-     * TreeNode
-     * @var string|null
-     */
-    protected $internalName;
 
     /**
      * ItemSet|TreeNode
      * @var string
      */
     protected $type;
+
+
+    /**
+     * @var string|null
+     */
+    protected $itemSetId;
 
     /**
      * ItemSet
@@ -58,27 +57,30 @@ class ItemEntity extends Entity
     protected $itemSet;
 
     /**
-     * ItemSet|TreeNode
-     * @var MediaEntity|null
+     * @var string|null
      */
-    protected $media;
-
-    /**
-     * ItemSet|TreeNode
-     * @var ProductEntity|null
-     */
-    protected $product;
+    protected $treeNodeId;
 
     /**
      * TreeNode
-     * @var TreeNodeCollection
+     * @var TreeNodeEntity|null
      */
-    protected $treeNodes;
+    protected $treeNode;
+
+
+
+    /** Concrete Item Types */
 
     /**
-     * @var ItemTranslationCollection|null
+     * @var string|null
      */
-    protected $translations;
+    protected $itemCardId;
+
+
+    /**
+     * @var ItemCardEntity|null
+     */
+    protected $itemCard;
 
     /**
      * @return int
@@ -145,22 +147,6 @@ class ItemEntity extends Entity
     }
 
     /**
-     * @return string|null
-     */
-    public function getInternalName(): ?string
-    {
-        return $this->internalName;
-    }
-
-    /**
-     * @param string|null $internalName
-     */
-    public function setInternalName(?string $internalName): void
-    {
-        $this->internalName = $internalName;
-    }
-
-    /**
      * @return string
      */
     public function getType(): string
@@ -174,6 +160,22 @@ class ItemEntity extends Entity
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getItemSetId(): ?string
+    {
+        return $this->itemSetId;
+    }
+
+    /**
+     * @param string|null $itemSetId
+     */
+    public function setItemSetId(?string $itemSetId): void
+    {
+        $this->itemSetId = $itemSetId;
     }
 
     /**
@@ -193,67 +195,67 @@ class ItemEntity extends Entity
     }
 
     /**
-     * @return MediaEntity|null
+     * @return string|null
      */
-    public function getMedia(): ?MediaEntity
+    public function getTreeNodeId(): ?string
     {
-        return $this->media;
+        return $this->treeNodeId;
     }
 
     /**
-     * @param MediaEntity|null $media
+     * @param string|null $treeNodeId
      */
-    public function setMedia(?MediaEntity $media): void
+    public function setTreeNodeId(?string $treeNodeId): void
     {
-        $this->media = $media;
+        $this->treeNodeId = $treeNodeId;
     }
 
     /**
-     * @return ProductEntity|null
+     * @return TreeNodeEntity|null
      */
-    public function getProduct(): ?ProductEntity
+    public function getTreeNode(): ?TreeNodeEntity
     {
-        return $this->product;
+        return $this->treeNode;
     }
 
     /**
-     * @param ProductEntity|null $product
+     * @param TreeNodeEntity|null $treeNode
      */
-    public function setProduct(?ProductEntity $product): void
+    public function setTreeNode(?TreeNodeEntity $treeNode): void
     {
-        $this->product = $product;
+        $this->treeNode = $treeNode;
     }
 
     /**
-     * @return TreeNodeCollection
+     * @return string|null
      */
-    public function getTreeNodes(): TreeNodeCollection
+    public function getItemCardId(): ?string
     {
-        return $this->treeNodes;
+        return $this->itemCardId;
     }
 
     /**
-     * @param TreeNodeCollection $treeNodes
+     * @param string|null $itemCardId
      */
-    public function setTreeNodes(TreeNodeCollection $treeNodes): void
+    public function setItemCardId(?string $itemCardId): void
     {
-        $this->treeNodes = $treeNodes;
+        $this->itemCardId = $itemCardId;
     }
 
     /**
-     * @return ItemTranslationCollection|null
+     * @return ItemCardEntity|null
      */
-    public function getTranslations(): ?ItemTranslationCollection
+    public function getItemCard(): ?ItemCardEntity
     {
-        return $this->translations;
+        return $this->itemCard;
     }
 
     /**
-     * @param ItemTranslationCollection|null $translations
+     * @param ItemCardEntity|null $itemCard
      */
-    public function setTranslations(?ItemTranslationCollection $translations): void
+    public function setItemCard(?ItemCardEntity $itemCard): void
     {
-        $this->translations = $translations;
+        $this->itemCard = $itemCard;
     }
 
 }

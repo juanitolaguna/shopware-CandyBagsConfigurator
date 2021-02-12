@@ -20,18 +20,9 @@
             <tag name="shopware.entity.definition" entity="eccb_item_set"/>
         </service>
 
-        <service
-                id="EventCandyCandyBags\Core\Content\ItemSet\Aggregate\ItemSetTranslation\ItemSetTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_item_set_translation"/>
-        </service>
-
 
         <service id="EventCandyCandyBags\Core\Content\Item\ItemDefinition">
             <tag name="shopware.entity.definition" entity="eccb_item"/>
-        </service>
-
-        <service id="EventCandyCandyBags\Core\Content\Item\Aggregate\ItemTranslation\ItemTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="eccb_item_translation"/>
         </service>
 
 
@@ -43,6 +34,16 @@
                 id="EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation\TreeNodeTranslationDefinition">
             <tag name="shopware.entity.definition" entity="eccb_tree_node_translation"/>
         </service>
+
+        <service id="EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardDefinition">
+            <tag name="shopware.entity.definition" entity="eccb_item_card"/>
+        </service>
+
+
+        <service id="EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardTranslation\ItemCardTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="eccb_item_card_translation"/>
+        </service>
+
 
 
         <!-- DemoDataService -->

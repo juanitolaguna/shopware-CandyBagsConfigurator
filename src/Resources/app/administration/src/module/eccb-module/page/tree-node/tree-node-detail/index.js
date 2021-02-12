@@ -1,0 +1,252 @@
+import {Component, Mixin, Context} from 'src/core/shopware';
+import Criteria from 'src/core/data-new/criteria.data';
+
+import template from './tree-node-detail.twig'
+import './tree-node-detail.scss';
+
+Component.register('eccb-tree-node-detail', {
+    template,
+
+    mixins: [
+        Mixin.getByName('notification')
+    ],
+
+    inject: ['repositoryFactory'],
+
+    shortcuts: {
+        'SYSTEMKEY+S': 'onSave',
+        ESCAPE: 'onClickCancel'
+    },
+
+    metaInfo() {
+        return {
+            title: this.$createTitle()
+        };
+    },
+
+    data() {
+        return {
+            treeNode: null,
+            isLoading: true,
+            itemCard: null,
+            itemCardList: null,
+            mediaFolderName: 'Candy Bags',
+            currentLanguageId: Context.api.languageId,
+        }
+    },
+
+    created() {
+        this.createdComponent()
+    },
+
+    mounted() {
+        this.$refs.sidebar.openContent();
+    },
+
+    computed: {
+        parentRoute() {
+            if (this.treeNode.parentId) {
+                return {name: 'eccb.plugin.tree-node.detail', params: {id: this.treeNode.parentId}}
+            } else {
+                return {name: 'eccb.plugin.detail', params: {id: this.treeNode.stepSetId}}
+            }
+        },
+        treeNodeRepository() {
+            return this.repositoryFactory.create('eccb_tree_node');
+        },
+
+        treeNodeCriteria() {
+            const criteria = new Criteria();
+            criteria.addAssociation('item');
+            return criteria
+        },
+
+        itemCardRepository() {
+            return this.repositoryFactory.create('eccb_item_card');
+        },
+
+        itemCardCriteria() {
+            const criteria = new Criteria();
+            criteria.addAssociation('media');
+            return criteria;
+        },
+
+        itemCardListCriteria() {
+            const criteria = new Criteria();
+            criteria.addFilter(Criteria.not(
+                'AND',
+                [Criteria.equals('internalName', null)]
+            ));
+            return criteria
+        },
+
+        itemCardOptions() {
+            return this.itemCardList.map((itemCard) => {
+                return {
+                    value: itemCard.id,
+                    label: itemCard.internalName,
+                }
+            });
+        },
+    },
+
+    methods: {
+        createNewItemCard() {
+            this.itemCard = this.itemCardRepository.create(Context.api);
+            this.treeNode.item.itemCardId = null;
+        },
+
+        async createdComponent() {
+            this.isLoading = true;
+
+            /** load itemCardList in parallel */
+            this.itemCardRepository.search(this.itemCardListCriteria, Context.api).then((result) => {
+                this.itemCardList = result;
+            });
+
+            this.treeNode = await this.treeNodeRepository.get(this.$route.params.id, Context.api, this.treeNodeCriteria);
+
+            if (this.treeNode.item.itemCardId) {
+                this.itemCard = await this.itemCardRepository.get(this.treeNode.item.itemCardId, Context.api, this.itemCardCriteria);
+            } else {
+                this.itemCard = this.itemCardRepository.create(Context.api);
+            }
+            this.isLoading = false;
+        },
+
+        changeLanguage(newLanguageId) {
+            this.currentLanguageId = newLanguageId;
+            this.createdComponent();
+        },
+
+        onClickCancel() {
+            this.$router.push(this.parentRoute);
+        },
+
+        onChangeMedia(payload) {
+            if (payload) {
+                this.onSave();
+            }
+        },
+
+        async onSave() {
+            if (!this.validate()) return;
+            this.isLoading = true;
+
+            try {
+                const type = this.treeNode.item.type;
+                if (type === 'card') {
+                    this.treeNode.item.itemCardId = this.itemCard.id;
+                    await this.itemCardRepository.save(this.itemCard, Context.api);
+                }
+
+                await this.treeNodeRepository.save(this.treeNode, Context.api);
+                await this.createdComponent();
+
+            } catch (error) {
+                this.isLoading = false;
+                this.createNotificationError({
+                    title: this.$tc('eccb.tree-node.error'),
+                    message: this.createErrorMessage(error)
+                });
+            }
+
+        },
+
+        validate() {
+            let validated = true;
+
+            if (!this.treeNode.stepDescription) {
+                this.createNotificationError({
+                    message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.stepDescription')
+                });
+                validated = false;
+            }
+            const type = this.treeNode.item.type;
+            if (type === 'card') {
+                if (!this.itemCard.name) {
+                    this.createNotificationError({
+                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.itemCard.name')
+                    });
+                    validated = false;
+                }
+
+                if (!this.itemCard.internalName) {
+                    this.createNotificationError({
+                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.itemCard.internalName')
+                    });
+                    validated = false;
+                }
+            }
+            return validated;
+        },
+
+        createErrorMessage(exception) {
+            let error = '';
+            exception.response.data.errors.forEach(e => {
+                error += `Error.. o_0: ${e.detail}\n ${e.source.pointer} \n\n`
+            })
+            return error;
+        },
+
+        async changeCard(id) {
+            if (id) {
+                this.itemCard = this.itemCardList.filter((e) => e.id === id)[0];
+                this.treeNode.item.itemCardId = this.itemCard.id;
+            }
+        },
+
+        async searchCard(payload) {
+            const criteria = new Criteria();
+            if (payload !== '') {
+                criteria.addFilter(Criteria.contains('internalName', payload));
+            }
+            this.itemCardRepository.search(criteria, Context.api)
+                .then((result) => {
+                    this.itemCardList = result;
+                    if (!result.length) {
+                        const noCards = {
+                            id: '000000',
+                            name: 'No results found'
+                        }
+                        this.itemCardList.push(noCards);
+                    }
+                })
+        },
+
+        searchProduct(payload) {
+            const criteria = new Criteria();
+            if (payload !== '') {
+                criteria.addFilter(Criteria.contains('name', payload));
+            }
+            this.productRepository
+                .search(criteria, Shopware.Context.api)
+                .then((result) => {
+                    this.products = result;
+                    if (!result.length) {
+                        const noProducts = {
+                            id: '000000',
+                            name: 'No results found'
+                        }
+                        this.products.push(noProducts);
+                    }
+                });
+        },
+
+        deleteItemCard(payload) {
+            console.log(payload.value);
+            const id = payload.value;
+            this.itemCardRepository.delete(id, Context.api).then(() => {
+              this.createdComponent();
+            }).catch((error) => {
+                this.createNotificationError({
+                    title: this.$tc('eccb.tree-node.error'),
+                    message: error
+                });
+            })
+
+        }
+
+    }
+
+});

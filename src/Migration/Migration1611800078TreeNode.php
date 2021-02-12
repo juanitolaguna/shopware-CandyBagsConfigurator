@@ -5,11 +5,12 @@ namespace EventCandyCandyBags\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1611800092TreeNode extends MigrationStep
+class Migration1611800078TreeNode extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
-        return 1611800092;
+
+        return 1611800078;
     }
 
     public function update(Connection $connection): void

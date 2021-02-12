@@ -1,6 +1,10 @@
 import { Module } from 'src/core/shopware';
 
 /**
+ * Overrides
+ */
+import './component/eccb-data-grid'
+/**
  * Snippets
  */
 import deDE from '../snippet/de-DE.json';
@@ -10,9 +14,15 @@ import enGB from '../snippet/en-GB.json';
 /**
  * Step Set
  */
-import './page/step-set/step-set-list'
-import './page/step-set/step-set-create'
-import './page/step-set/step-set-detail'
+import './page/step-set/step-set-list';
+import './page/step-set/step-set-create';
+import './page/step-set/step-set-detail';
+
+/**
+ * Tree Node
+ */
+import './page/tree-node/tree-node-create';
+import './page/tree-node/tree-node-detail';
 
 
 /**
@@ -52,6 +62,22 @@ Module.register('eccb-plugin', {
         detail: {
             component: 'eccb-step-set-detail',
             path: 'detail/:id',
+            meta: {
+                parentPath: 'eccb.plugin.index'
+            }
+        },
+
+        'tree-node.create': {
+            component: 'eccb-tree-node-create',
+            path:'tree-node/create/:stepSetId/:parentId',
+            meta: {
+                parentPath: 'eccb.plugin.index'
+            }
+        },
+
+        'tree-node.detail': {
+            component: 'eccb-tree-node-detail',
+            path:'tree-node/detail/:id',
             meta: {
                 parentPath: 'eccb.plugin.index'
             }

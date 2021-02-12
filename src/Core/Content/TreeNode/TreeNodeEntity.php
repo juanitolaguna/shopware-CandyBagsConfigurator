@@ -14,29 +14,10 @@ class TreeNodeEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var int
-     */
-    protected $position;
-
-    /**
-     * @var bool
-     */
-    protected $active;
-
-    /**
-     * @var bool
-     */
-    protected $terminal;
-
-    /**
-     * @var bool
-     */
-    protected $purchasable;
-
-    /**
      * @var bool
      */
     protected $setNode;
+
 
     /**
      * @var ItemEntity|null
@@ -72,70 +53,6 @@ class TreeNodeEntity extends Entity
      * @var TreeNodeTranslationCollection|null
      */
     protected $translations;
-
-    /**
-     * @return int
-     */
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    /**
-     * @param int $position
-     */
-    public function setPosition(int $position): void
-    {
-        $this->position = $position;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    /**
-     * @param bool $active
-     */
-    public function setActive(bool $active): void
-    {
-        $this->active = $active;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isTerminal(): bool
-    {
-        return $this->terminal;
-    }
-
-    /**
-     * @param bool $terminal
-     */
-    public function setTerminal(bool $terminal): void
-    {
-        $this->terminal = $terminal;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isPurchasable(): bool
-    {
-        return $this->purchasable;
-    }
-
-    /**
-     * @param bool $purchasable
-     */
-    public function setPurchasable(bool $purchasable): void
-    {
-        $this->purchasable = $purchasable;
-    }
 
     /**
      * @return bool
@@ -264,5 +181,9 @@ class TreeNodeEntity extends Entity
     {
         $this->translations = $translations;
     }
+
+
+
+
 
 }

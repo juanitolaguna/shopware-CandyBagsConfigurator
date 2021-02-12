@@ -37,7 +37,9 @@ class TreeNodeTranslationDefinition extends EntityTranslationDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            new StringField('step_description', 'stepDescription')
+            (new StringField('step_description', 'stepDescription'))
+                ->addFlags(new Required())
+
         ]);
     }
 }

@@ -3,28 +3,23 @@
 namespace EventCandyCandyBags\Core\Content\Item;
 
 
-use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemTranslation\ItemTranslationDefinition;
+use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardDefinition;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition;
-use Shopware\Core\Content\Media\MediaDefinition;
-use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
-class ItemDefinition extends EntityDefinition
+class   ItemDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'eccb_item';
 
@@ -58,40 +53,33 @@ class ItemDefinition extends EntityDefinition
             new BoolField('terminal', 'terminal'),
             new BoolField('purchasable', 'purchasable'),
 
-            new StringField('internal_name', 'internalName'),
             (new StringField('type', 'type'))->addFlags(new Required()),
 
-            new FkField('item_set_id', 'itemSet', ItemSetDefinition::class),
+
+            new FkField('tree_node_id', 'treeNodeId', TreeNodeDefinition::class),
+            (new OneToOneAssociationField('treeNode', 'tree_node_id', 'id', TreeNodeDefinition::class, false)),
+
+
+            // Nur für navigationszwecke
+            new FkField('item_set_id', 'itemSetId', ItemSetDefinition::class),
             new ManyToOneAssociationField(
                 'itemSet',
                 'item_set_id',
                 ItemSetDefinition::class
             ),
 
-            new FkField('media_id', 'mediaId', MediaDefinition::class),
+            /** Concrete Item Types */
+
+            new FkField('item_card_id', 'itemCardId', ItemCardDefinition::class),
             new ManyToOneAssociationField(
-                'media',
-                'media_id',
-                MediaDefinition::class
+                'itemCard',
+                'item_card_id',
+                ItemCardDefinition::class
             ),
 
-            (new ReferenceVersionField(ProductDefinition::class))->addFlags(new Inherited()),
-            new FkField('product_id', 'productId', MediaDefinition::class),
-            new ManyToOneAssociationField(
-                'product',
-                'product_id',
-                ProductDefinition::class
-            ),
-
-            // An Item may be associated to many nodes
-            // treeNodes are mutually exclusive with the itemSet property
-            (new OneToManyAssociationField('treeNodes', TreeNodeDefinition::class, 'tree_node_id', 'id')),
-
-            new TranslatedField('name'),
-            new TranslatedField('description'),
-            new TranslatedField('additionalItemData'),
-            new TranslationsAssociationField(ItemTranslationDefinition::class, 'eccb_item_id'),
         ]);
     }
 
 }
+
+/** ToDo: Add ManyToOne Field - ProductItem */

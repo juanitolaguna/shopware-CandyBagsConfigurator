@@ -1,0 +1,208 @@
+{% block eccb_tree_node_detail %}
+    <sw-page class="eccb-tree-node-detail" ref="page">
+
+        <template #smart-bar-back>
+            <router-link v-if="treeNode && $refs.page"
+                         class="smart-bar__back-btn"
+                         :to="parentRoute"
+                         :style="{ 'color': $refs.page.pageColor }">
+                <sw-icon name="default-arrow-head-left" small></sw-icon>
+                <sw-icon :name="$refs.page.module.icon" v-if="$refs.page.module && $refs.page.module.icon"
+                         small></sw-icon>
+            </router-link>
+        </template>
+
+        <template #smart-bar-header>
+            <h2 style="display: inline;" v-html="treeNode ? treeNode.stepDescription : 'New Step Title'"></h2>
+        </template>
+
+        <template #language-switch>
+            <sw-language-switch v-if="treeNode"
+                                :disabled="treeNode._isNew"
+                                @on-change="changeLanguage">
+            </sw-language-switch>
+        </template>
+
+        {% block eccb_tree_node_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_tree_node_detail_smart_bar_actions_save %}
+                    <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
+                        {{ $tc('eccb.tree-node.detail.save') }}
+                    </sw-button>
+                {% endblock %}
+
+                {# {% block eccb_tree_node_detail_smart_bar_actions_cancel %} #}
+                {# <sw-button :disabled="treeNode && treeNode.isLoading" #}
+                {# @click="onClickCancel"> #}
+                {# {{ $tc('eccb.tree-node.detail.back') }} #}
+                {# </sw-button> #}
+                {# {% endblock %} #}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            <sw-card-view v-if="treeNode" :large="false">
+                <sw-card :large="false">
+
+                    <sw-text-field
+                            :label="$tc('eccb.stepDescription')"
+                            v-model="treeNode.stepDescription">
+                    </sw-text-field>
+
+                    <sw-checkbox-field
+                            style="display: inline-block; margin-right: 2em"
+                            :label="$tc('eccb.item.active')"
+                            v-model="treeNode.item.active"></sw-checkbox-field>
+
+                    <sw-checkbox-field
+                            style="display: inline-block; margin-right: 2em"
+                            :label="$tc('eccb.item.purchasable')"
+                            v-model="treeNode.item.purchasable"></sw-checkbox-field>
+
+                    <sw-checkbox-field
+                            style="display: inline-block; margin-right: 2em"
+                            :label="$tc('eccb.item.terminal')"
+                            v-model="treeNode.item.terminal"></sw-checkbox-field>
+
+                    <sw-select-field v-model="treeNode.item.type"
+                                     :label="$tc('eccb.item.type')">
+                        <option value="card">Card</option>
+                        <option value="product">Product</option>
+                    </sw-select-field>
+                </sw-card>
+
+
+                <sw-card v-if="treeNode.item.type == 'card'">
+                    <div class="group">
+                        <sw-button
+                                style="margin-right: 1em;"
+                                variant="primary"
+                                @click="createNewItemCard">
+                            New Card
+                        </sw-button>
+
+                        <sw-single-select
+                                style="display: inline-block; margin-right: 1em;"
+                                ref="select"
+                                v-if="itemCard && itemCardList && itemCardList.length"
+                                :options="itemCardOptions"
+                                labelValue="label"
+                                valueProperty="value"
+                                :placeholder="'Select a card...'"
+                                :label="'Card'"
+                                :value="treeNode.item.itemCardId"
+                                @change="changeCard"
+                                @search="searchCard"
+                                required
+                        >
+
+                            <template
+                                    #result-item="{ item, index, labelProperty, searchTerm, highlightSearchTerm, isSelected, setValue, getKey }">
+                                <li is="sw-select-result"
+                                    :class="'sw-select-option--' + item.value"
+                                    :selected="isSelected(item)"
+                                    @item-select="setValue"
+                                    v-bind="{ item, index }">
+                                    <slot name="result-label-property"
+                                          v-bind="{ item, index, labelProperty, searchTerm, highlightSearchTerm, getKey }">
+                                        <sw-highlight-text
+                                                v-if="highlightSearchTerm"
+                                                :text="getKey(item, labelProperty)"
+                                                :searchTerm="searchTerm">
+                                        </sw-highlight-text>
+                                        <template v-else>
+                                            {{ getKey(item, labelProperty) }}
+                                        </template>
+                                        <sw-icon
+                                                @click.stop="deleteItemCard(item)"
+                                                size="12px"
+                                                name="small-trash"
+                                                :color="$refs.page.pageColor">
+                                        </sw-icon>
+                                    </slot>
+                                </li>
+                            </template>
+                        </sw-single-select>
+
+
+                        <sw-text-field
+                                v-if="itemCard"
+                                style="display: inline-block;"
+                                :label="$tc('eccb.itemCard.internalName')"
+                                v-model="itemCard.internalName">
+                        </sw-text-field>
+
+                    </div>
+
+                    <sw-text-field
+                            v-if="itemCard"
+                            :label="$tc('eccb.itemCard.name')"
+                            v-model="itemCard.name">
+                    </sw-text-field>
+
+                    <sw-text-field
+                            v-if="itemCard"
+                            :label="$tc('eccb.itemCard.description')"
+                            v-model="itemCard.description">
+                    </sw-text-field>
+
+                    <eccb-media-field
+                            v-if="itemCard"
+                            :label="$tc('eccb.image')"
+                            v-model="itemCard.mediaId"
+                            :showUploadField="false"
+                            :showControls="false"
+                            @eccb-media-id-change="onChangeMedia"
+                            :mediaFolderName="'Candy Bags'"
+                    >
+                    </eccb-media-field>
+                </sw-card>
+
+
+                <sw-card :large="false" v-if="!treeNode.isNew()">
+                    <template #title>
+                        <h2>
+                            {{ $tc('eccb.tree-node.detail.children') }}
+                        </h2>
+                    </template>
+
+                    {# <template #toolbar> #}
+                    {# <sw-button #}
+                    {# v-if="treeNode" #}
+                    {# variant="primary" #}
+                    {# :routerLink="{name: 'eccb.module.createChild', params: { parentId: treeNode.id }}" #}
+                    {# > #}
+                    {# {{ $tc('eccb.tree-node.detail.addStep') }} #}
+                    {# </sw-button> #}
+                    {# </template> #}
+
+                    {# <template #grid> #}
+                    {# <sw-entity-listing #}
+                    {# v-if="steps" #}
+                    {# :items="steps" #}
+                    {# :repository="treeNodeRepository" #}
+                    {# :columns="treeNodeColumns" #}
+                    {# :showSelection="false" #}
+                    {# detailRoute="eccb.plugin.treeNode" #}
+                    {# > #}
+                    {# </sw-entity-listing> #}
+                    {# </template> #}
+                </sw-card>
+
+
+            </sw-card-view>
+        </template>
+
+        <template #sidebar>
+            <sw-sidebar>
+                <sw-sidebar-item ref="sidebar" title="Image" icon="default-object-image">
+                    <div class="image-container">
+                        <img v-if="itemCard && itemCard.media && itemCard.media.url && treeNode.item.type === 'card'"
+                             class="image"
+                             :src="itemCard.media.url"/>
+                    </div>
+                </sw-sidebar-item>
+            </sw-sidebar>
+        </template>
+    </sw-page>
+{% endblock %}

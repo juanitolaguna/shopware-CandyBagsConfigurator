@@ -49,7 +49,7 @@
                             v-model="stepSet.mediaId"
                             :showUploadField="false"
                             :showControls="false"
-                            @media-id-change="onMediaSelect"
+                            @eccb-media-id-change="onMediaSelect"
                             :mediaFolderName="mediaFolderName"
                     >
                     </eccb-media-field>
@@ -72,22 +72,73 @@
                         <sw-button
                                 v-if="stepSet"
                                 variant="primary"
-                                :routerLink="{name: 'eccb.module.createChild', params: { parentId: stepSet.id }}"
+                                :routerLink="{name: 'eccb.plugin.tree-node.create', params: { stepSetId: stepSet.id, parentId: '#'}}"
                         >
                             {{ $tc('eccb.step-set.detail.addStep') }}
                         </sw-button>
                     </template>
 
                     <template #grid>
-                        <sw-entity-listing
-                                v-if="steps"
-                                :items="steps"
-                                :repository="treeNodeRepository"
+                        <eccb-data-grid
+                                v-if="steps && !isLoading"
+                                ref="treeNodeGrid"
+                                :dataSource="steps"
                                 :columns="treeNodeColumns"
+                                @inline-edit-save="onInlineEditTreeNodes"
+                                :allowInlineEdit="true"
                                 :showSelection="false"
-                                detailRoute="eccb.plugin.treeNode"
+                                :naturalSorting="true"
+                                @is-inline-edit="setInlineEdit"
+                                :isLoading="isLoading"
                         >
-                        </sw-entity-listing>
+                            <template #actions="{ item }">
+                                <sw-context-menu-item @click="editTreeNode(item)">
+                                    Edit
+                                </sw-context-menu-item>
+
+                                <sw-context-menu-item variant="danger" @click="deleteTreeNode(item)">
+                                    Remove
+                                </sw-context-menu-item>
+                            </template>
+
+                            <template #column-item.position="{item, column}">
+                                <template v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                        <sw-data-grid-inline-edit
+                                                v-if="item.item"
+                                                :column="column"
+                                                :compact="true"
+                                                :value="item.item.position"
+                                                @input="item.item.position = $event">
+                                        </sw-data-grid-inline-edit>
+                                </template>
+                            </template>
+
+                            <template  #column-item.active="{item, column}">
+                                <sw-data-grid-column-boolean
+                                        v-if="item.item"
+                                        v-model="item.item.active"
+                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                </sw-data-grid-column-boolean>
+                            </template>
+
+                            <template #column-item.purchasable="{item, column}">
+                                <sw-data-grid-column-boolean
+                                        v-if="item.item"
+                                        v-model="item.item.purchasable"
+                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                </sw-data-grid-column-boolean>
+                            </template>
+
+                            <template #column-item.terminal="{item, column}">
+                                <sw-data-grid-column-boolean
+                                        v-if="item.item"
+                                        v-model="item.item.terminal"
+                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                </sw-data-grid-column-boolean>
+                            </template>
+
+                        </eccb-data-grid>
+
                     </template>
                 </sw-card>
             </sw-card-view>
@@ -95,7 +146,7 @@
 
         <template #sidebar>
             <sw-sidebar>
-                <sw-sidebar-item ref="stepSetSidebar" title="Image" icon="default-object-image">
+                <sw-sidebar-item ref="sidebar" title="Image" icon="default-object-image">
                     <div class="image-container">
                         <img v-if="stepSet && stepSet.media && stepSet.media.url"
                              class="image"

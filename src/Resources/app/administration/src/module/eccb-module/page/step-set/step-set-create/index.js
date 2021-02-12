@@ -31,12 +31,11 @@ Component.extend('eccb-step-set-create','eccb-step-set-detail', {
                 .save(this.stepSet, Context.api)
                 .then(() => {
                     this.isLoading = false
-                    this.$router.push({ name: 'eccb.plugin.detail', params: {id: this.stepSet.id} });
-
                     this.createNotificationSuccess({
                         title: this.$tc('eccb.step-set.save-success.title'),
                         message: this.$tc('eccb.step-set.save-success.text')
                     });
+                    this.$router.push({ name: 'eccb.plugin.detail', params: {id: this.stepSet.id} });
                 }).catch((exception) => {
                 this.isLoading = false;
                 this.createNotificationError({

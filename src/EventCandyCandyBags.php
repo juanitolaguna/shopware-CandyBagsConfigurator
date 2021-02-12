@@ -36,12 +36,18 @@ class EventCandyCandyBags extends Plugin
             return;
         }
 
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node_translation');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node');
+
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_translation');
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item');
-        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_set_translation');
+
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_card_translation');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_card');
+
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node_translation');
+        $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node');
+
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_set');
+
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set_translation');
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set');
     }

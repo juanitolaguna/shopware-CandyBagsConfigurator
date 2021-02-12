@@ -12,14 +12,30 @@ class ItemSetEntity extends Entity {
     use EntityIdTrait;
 
     /**
+     * @var string|null
+     */
+    protected $internalName;
+
+    /**
      * @var ItemCollection|null
      */
     protected $items;
 
     /**
-     * @var ItemSetTranslationCollection
+     * @return string|null
      */
-    protected $translations;
+    public function getInternalName(): ?string
+    {
+        return $this->internalName;
+    }
+
+    /**
+     * @param string|null $internalName
+     */
+    public function setInternalName(?string $internalName): void
+    {
+        $this->internalName = $internalName;
+    }
 
     /**
      * @return ItemCollection|null
@@ -35,22 +51,6 @@ class ItemSetEntity extends Entity {
     public function setItems(?ItemCollection $items): void
     {
         $this->items = $items;
-    }
-
-    /**
-     * @return ItemSetTranslationCollection
-     */
-    public function getTranslations(): ItemSetTranslationCollection
-    {
-        return $this->translations;
-    }
-
-    /**
-     * @param ItemSetTranslationCollection $translations
-     */
-    public function setTranslations(ItemSetTranslationCollection $translations): void
-    {
-        $this->translations = $translations;
     }
 
 }

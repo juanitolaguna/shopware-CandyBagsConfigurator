@@ -1,0 +1,42 @@
+// Image in sidebar
+.eccb-tree-node-detail .image-container {
+  margin: 0 auto 40px auto;
+  padding: 10px;
+
+  .image {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 5px;
+  }
+}
+
+.sw-modal {
+  z-index: 9999;
+}
+
+.sw-select-result span.sw-select-result__result-item-text {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 100%;
+
+  .sw-icon {
+    margin-left: 0px;
+    margin-right: 5px;
+    visibility: hidden;
+  }
+
+  .sw-icon:hover {
+    color: #ed1c24 !important;
+  }
+}
+
+.group {
+  display: flex;
+  align-items: center;
+}
+
+li.sw-select-result:hover .sw-icon {
+  visibility: visible;
+  color: gray !important;
+}

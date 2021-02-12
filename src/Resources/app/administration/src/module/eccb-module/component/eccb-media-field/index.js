@@ -1,5 +1,5 @@
-const { Component, Context, Utils } = Shopware;
-const { Criteria } = Shopware.Data;
+const {Component, Context, Utils} = Shopware;
+const {Criteria} = Shopware.Data;
 
 import template from './eccb-media-field.twig';
 
@@ -16,6 +16,14 @@ Component.extend('eccb-media-field', 'sw-media-field', {
     data() {
         return {
             mediaFolderId: ''
+        }
+    },
+
+    watch: {
+        mediaId(newValue) {
+            this.fetchItem(newValue);
+            this.$emit('media-id-change', newValue);
+            this.$emit('eccb-media-id-change', newValue);
         }
     },
 

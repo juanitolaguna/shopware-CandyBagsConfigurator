@@ -45,7 +45,6 @@ Component.register('eccb-step-set-list', {
                     property: 'description',
                     label: 'Description',
                     inlineEdit: 'string',
-                    primary: true
                 },
 
                 {
