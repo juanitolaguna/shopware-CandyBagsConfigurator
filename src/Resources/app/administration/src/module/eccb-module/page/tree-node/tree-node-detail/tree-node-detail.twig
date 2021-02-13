@@ -159,34 +159,86 @@
                 </sw-card>
 
 
-                <sw-card :large="false" v-if="!treeNode.isNew()">
+                {# Child Grid #}
+                <sw-card :large="false" v-if="!treeNode._isNew">
                     <template #title>
                         <h2>
                             {{ $tc('eccb.tree-node.detail.children') }}
                         </h2>
                     </template>
 
-                    {# <template #toolbar> #}
-                    {# <sw-button #}
-                    {# v-if="treeNode" #}
-                    {# variant="primary" #}
-                    {# :routerLink="{name: 'eccb.module.createChild', params: { parentId: treeNode.id }}" #}
-                    {# > #}
-                    {# {{ $tc('eccb.tree-node.detail.addStep') }} #}
-                    {# </sw-button> #}
-                    {# </template> #}
+                    <template #toolbar>
+                        <sw-button
+                                v-if="!treeNode._isNew"
+                                variant="primary"
+                                :routerLink="{name: 'eccb.plugin.tree-node.create', params: { stepSetId: treeNode.stepSetId, parentId: treeNode.id}}"
+                        >
+                            {{ $tc('eccb.tee-node.detail.addChild') }}
+                        </sw-button>
+                    </template>
 
-                    {# <template #grid> #}
-                    {# <sw-entity-listing #}
-                    {# v-if="steps" #}
-                    {# :items="steps" #}
-                    {# :repository="treeNodeRepository" #}
-                    {# :columns="treeNodeColumns" #}
-                    {# :showSelection="false" #}
-                    {# detailRoute="eccb.plugin.treeNode" #}
-                    {# > #}
-                    {# </sw-entity-listing> #}
-                    {# </template> #}
+                    <template #grid>
+                        <eccb-data-grid
+                                v-if="children && !isLoading"
+                                ref="treeNodeGrid"
+                                :dataSource="children"
+                                :columns="childColumns"
+{#                                @inline-edit-save="onInlineEditTreeNodes"#}
+                                :allowInlineEdit="true"
+                                :showSelection="false"
+                                :naturalSorting="true"
+{#                                @is-inline-edit="setInlineEdit"#}
+                                :isLoading="isLoading"
+                        >
+                            <template #actions="{ item }">
+{#                                <sw-context-menu-item @click="editTreeNode(item)">#}
+{#                                    Edit#}
+{#                                </sw-context-menu-item>#}
+
+                                <sw-context-menu-item variant="danger" @click="deleteTreeNode(item)">
+                                    Remove
+                                </sw-context-menu-item>
+                            </template>
+
+{#                            <template #column-item.position="{item, column}">#}
+{#                                <template v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
+{#                                    <sw-data-grid-inline-edit#}
+{#                                            v-if="item.item"#}
+{#                                            :column="column"#}
+{#                                            :compact="true"#}
+{#                                            :value="item.item.position"#}
+{#                                            @input="item.item.position = $event">#}
+{#                                    </sw-data-grid-inline-edit>#}
+{#                                </template>#}
+{#                            </template>#}
+
+{#                            <template  #column-item.active="{item, column}">#}
+{#                                <sw-data-grid-column-boolean#}
+{#                                        v-if="item.item"#}
+{#                                        v-model="item.item.active"#}
+{#                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
+{#                                </sw-data-grid-column-boolean>#}
+{#                            </template>#}
+
+{#                            <template #column-item.purchasable="{item, column}">#}
+{#                                <sw-data-grid-column-boolean#}
+{#                                        v-if="item.item"#}
+{#                                        v-model="item.item.purchasable"#}
+{#                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
+{#                                </sw-data-grid-column-boolean>#}
+{#                            </template>#}
+
+{#                            <template #column-item.terminal="{item, column}">#}
+{#                                <sw-data-grid-column-boolean#}
+{#                                        v-if="item.item"#}
+{#                                        v-model="item.item.terminal"#}
+{#                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
+{#                                </sw-data-grid-column-boolean>#}
+{#                            </template>#}
+
+                        </eccb-data-grid>
+
+                    </template>
                 </sw-card>
 
 
@@ -205,4 +257,5 @@
             </sw-sidebar>
         </template>
     </sw-page>
+
 {% endblock %}

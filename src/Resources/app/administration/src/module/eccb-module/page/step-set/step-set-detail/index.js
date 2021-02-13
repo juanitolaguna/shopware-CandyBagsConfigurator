@@ -93,12 +93,12 @@ Component.register('eccb-step-set-detail', {
             return this.repositoryFactory.create('eccb_item');
         },
 
+        /** ToDo: not used? */
         treeNodeCriteria() {
             const criteria = new Criteria();
             criteria.addAssociation('item');
             criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
             return criteria;
-
         }
     },
 
@@ -127,6 +127,7 @@ Component.register('eccb-step-set-detail', {
         async getSteps() {
                 const criteria = new Criteria();
                 criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
+                criteria.addFilter(Criteria.equals('parentId', null));
                 criteria.addAssociation('item');
                 criteria.addSorting(Criteria.sort('item.position', 'desc'));
                 return this.treeNodeRepository.search(criteria, Context.api).then((result) => {
@@ -197,8 +198,7 @@ Component.register('eccb-step-set-detail', {
         },
 
         editTreeNode(item) {
-            // this.$router.push({name: 'eccb.module.detail', params: {id: item.id}});
-            // this.createdComponent();
+            this.$router.push({name: 'eccb.plugin.tree-node.detail', params: {id: item.id}})
         },
 
         setInlineEdit(payload, id) {

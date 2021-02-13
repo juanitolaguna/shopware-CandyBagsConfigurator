@@ -30,6 +30,7 @@ Component.register('eccb-tree-node-detail', {
             isLoading: true,
             itemCard: null,
             itemCardList: null,
+            children: null,
             mediaFolderName: 'Candy Bags',
             currentLanguageId: Context.api.languageId,
         }
@@ -61,6 +62,14 @@ Component.register('eccb-tree-node-detail', {
             return criteria
         },
 
+        treeNodeChildrenCriteria() {
+            const criteria = new Criteria();
+            criteria.addAssociation('item');
+            criteria.addFilter(Criteria.equals('parentId', this.$route.params.id));
+            criteria.addSorting(Criteria.sort('item.position', 'desc'));
+            return criteria;
+        },
+
         itemCardRepository() {
             return this.repositoryFactory.create('eccb_item_card');
         },
@@ -88,6 +97,42 @@ Component.register('eccb-tree-node-detail', {
                 }
             });
         },
+
+        childColumns() {
+            return [
+                {
+                    property: 'stepDescription',
+                    label: 'Step Description',
+                    inlineEdit: 'string',
+                    routerLink: 'eccb.plugin.tree-node.detail',
+                    primary: true
+                },
+
+                {
+                    property: 'item.position',
+                    label: 'Position',
+                    inlineEdit: 'number',
+                },
+
+                {
+                    property: 'item.active',
+                    label: 'Active',
+                    inlineEdit: 'boolean',
+                },
+
+                {
+                    property: 'item.purchasable',
+                    label: 'Purchasable',
+                    inlineEdit: 'boolean',
+                },
+
+                {
+                    property: 'item.terminal',
+                    label: 'Terminal',
+                    inlineEdit: 'boolean',
+                },
+            ]
+        },
     },
 
     methods: {
@@ -104,6 +149,11 @@ Component.register('eccb-tree-node-detail', {
                 this.itemCardList = result;
             });
 
+            /** load children in parallel */
+            this.treeNodeRepository.search(this.treeNodeChildrenCriteria, Context.api).then((result) => {
+                this.children = result;
+            });
+
             this.treeNode = await this.treeNodeRepository.get(this.$route.params.id, Context.api, this.treeNodeCriteria);
 
             if (this.treeNode.item.itemCardId) {
@@ -111,6 +161,7 @@ Component.register('eccb-tree-node-detail', {
             } else {
                 this.itemCard = this.itemCardRepository.create(Context.api);
             }
+
             this.isLoading = false;
         },
 
@@ -237,7 +288,7 @@ Component.register('eccb-tree-node-detail', {
             console.log(payload.value);
             const id = payload.value;
             this.itemCardRepository.delete(id, Context.api).then(() => {
-              this.createdComponent();
+                this.createdComponent();
             }).catch((error) => {
                 this.createNotificationError({
                     title: this.$tc('eccb.tree-node.error'),
@@ -245,7 +296,23 @@ Component.register('eccb-tree-node-detail', {
                 });
             })
 
-        }
+        },
+
+        deleteTreeNode(item) {
+            this.children.remove(item.id);
+            this.treeNodeRepository.delete(item.id, Context.api).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$tc('eccb.step-set.save-success.title'),
+                    message: this.$tc('eccb.step-set.save-success.text')
+                });
+            }).catch((exception) => {
+                this.createNotificationError({
+                    title: this.$tc('eccb.step-set.error'),
+                    message: exception
+                });
+                this.createdComponent();
+            })
+        },
 
     }
 
