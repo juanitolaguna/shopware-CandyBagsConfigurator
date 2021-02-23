@@ -4,11 +4,14 @@ namespace EventCandyCandyBags\Core\Content\ItemSet;
 
 use EventCandyCandyBags\Core\Content\Item\ItemDefinition;
 use EventCandyCandyBags\Core\Content\ItemSet\Aggregate\ItemSetTranslation\ItemSetTranslationDefinition;
+use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetDefinition;
+use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
@@ -43,6 +46,14 @@ class ItemSetDefinition extends EntityDefinition
             (new StringField('internal_name', 'internalName'))->addFlags(new Required()),
             (new OneToManyAssociationField('items', ItemDefinition::class, 'item_set_id', 'id'))
                 ->addFlags(new CascadeDelete()),
+
+            new ManyToManyAssociationField(
+                'treeNodes',
+                TreeNodeDefinition::class,
+                TreeNodeItemSetDefinition::class,
+                'item_set_id',
+                'tree_node_id'
+            )
 
         ]);
     }

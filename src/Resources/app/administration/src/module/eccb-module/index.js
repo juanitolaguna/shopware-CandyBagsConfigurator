@@ -24,11 +24,19 @@ import './page/step-set/step-set-detail';
 import './page/tree-node/tree-node-create';
 import './page/tree-node/tree-node-detail';
 
+/**
+ * Item Set
+ */
+import './page/item-set/item-set-create';
+import './page/item-set/item-set-detail';
+import './page/item-set/item-set-list';
+
 
 /**
  * Components
  */
-import './component/eccb-media-field'
+import './component/eccb-media-field';
+import './page/tree-node/component/item-set-list';
 
 
 
@@ -69,7 +77,7 @@ Module.register('eccb-plugin', {
 
         'tree-node.create': {
             component: 'eccb-tree-node-create',
-            path:'tree-node/create/:stepSetId/:parentId',
+            path:'tree-node/create',
             meta: {
                 parentPath: 'eccb.plugin.index'
             }
@@ -81,7 +89,49 @@ Module.register('eccb-plugin', {
             meta: {
                 parentPath: 'eccb.plugin.index'
             }
-        }
+        },
+
+        'item-set.create': {
+            component: 'eccb-item-set-create',
+            path:'item-set/create',
+            meta: {
+                parentPath: 'eccb.plugin.index'
+            }
+        },
+
+        'item-set.detail': {
+            component: 'eccb-item-set-detail',
+            path:'item-set/detail/:id',
+            meta: {
+                parentPath: 'eccb.plugin.index'
+
+            }
+        },
+
+        'item-set.list': {
+            component: 'eccb-item-set-list',
+            path:'item-set/list',
+            meta: {
+                parentPath: 'eccb.plugin.index'
+            }
+        },
+
+        'item-set.item.create': {
+            component: 'eccb-item-set-item-create',
+            path:'item-set/item/create',
+            meta: {
+                parentPath: 'eccb.plugin.item-set.detail'
+            }
+        },
+
+        'item-set.item.detail': {
+            component: 'eccb-item-set-item-detail',
+            path:'item-set/item/detail',
+            meta: {
+                parentPath: 'eccb.plugin.item-set.detail'
+            }
+        },
+
     },
 
     navigation: [

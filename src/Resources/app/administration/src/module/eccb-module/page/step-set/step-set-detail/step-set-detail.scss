@@ -1,5 +1,7 @@
+@import "~scss/mixins";
 // Image in sidebar
 .eccb-step-set-detail .image-container {
+
   margin: 0 auto 40px auto;
   padding: 10px;
 
@@ -12,4 +14,33 @@
 
 .sw-modal {
   z-index: 9999;
+}
+
+.eccb-header-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+.eccb-header-icon {
+  @include size(40px);
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 0;
+
+  > svg {
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+  }
+
+  &.eccb-icon--small {
+    @include size(16px);
+  }
+
+  &.eccb-icon--large {
+    @include size(32px);
+  }
 }

@@ -5,6 +5,7 @@ namespace EventCandyCandyBags\Core\Content\TreeNode;
 use EventCandyCandyBags\Core\Content\Item\ItemDefinition;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetDefinition;
 use EventCandyCandyBags\Core\Content\StepSet\StepSetDefinition;
+use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation\TreeNodeTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
@@ -14,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ParentAssociationField;
@@ -47,17 +49,12 @@ class TreeNodeDefinition extends EntityDefinition
 
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
 
-            new BoolField('set_node', 'setNode'),
-
-
             (new OneToOneAssociationField('item', 'id', 'tree_node_id', ItemDefinition::class)),
 
-            new FkField('item_set_id', 'itemSetId', ItemSetDefinition::class),
-            new ManyToOneAssociationField(
-                'itemSet',
-                'item_set_id',
-                ItemSetDefinition::class
-            ),
+
+            (new FkField('tree_node_item_set_id', 'treeNodeItemSetId', TreeNodeItemSetDefinition::class)),
+            (new OneToOneAssociationField('treeNodeItemSet', 'tree_node_item_set_id', 'id', TreeNodeItemSetDefinition::class)),
+
 
             new FkField('step_set_id', 'stepSetId', StepSetDefinition::class),
             new ManyToOneAssociationField(
@@ -73,7 +70,15 @@ class TreeNodeDefinition extends EntityDefinition
 
             new TranslatedField('stepDescription'),
             (new TranslationsAssociationField(TreeNodeTranslationDefinition::class, 'eccb_tree_node_id'))
-                ->addFlags(new Required())
+                ->addFlags(new Required()),
+
+            new ManyToManyAssociationField(
+                'itemSets',
+                ItemSetDefinition::class,
+                TreeNodeItemSetDefinition::class,
+                'tree_node_id',
+                'item_set_id'
+            )
         ]);
     }
 }

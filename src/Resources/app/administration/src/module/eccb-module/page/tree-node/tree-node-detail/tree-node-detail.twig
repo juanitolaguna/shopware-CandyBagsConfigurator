@@ -13,6 +13,11 @@
         </template>
 
         <template #smart-bar-header>
+            <span v-if="treeNode && treeNode.item && children">
+                <img v-if="!treeNode.item.active" class="eccb-header-icon"
+                     :src="'eventcandycandybags/static/img/inactive.svg' | asset">
+                <img v-else class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-2.svg' | asset">
+            </span>
             <h2 style="display: inline;" v-html="treeNode ? treeNode.stepDescription : 'New Step Title'"></h2>
         </template>
 
@@ -49,30 +54,37 @@
                             v-model="treeNode.stepDescription">
                     </sw-text-field>
 
+
+                    <sw-select-field
+                            :disabled="!treeNode.parentId"
+                            v-model="treeNode.item.type"
+                            :label="$tc('eccb.item.type')">
+                        <option value="card">Card</option>
+                        <option v-if="!treeNode.parentId" value="step">Step</option>
+                    </sw-select-field>
+
+
                     <sw-checkbox-field
                             style="display: inline-block; margin-right: 2em"
                             :label="$tc('eccb.item.active')"
                             v-model="treeNode.item.active"></sw-checkbox-field>
 
                     <sw-checkbox-field
+                            v-if="treeNode.item.type !== 'step'"
                             style="display: inline-block; margin-right: 2em"
                             :label="$tc('eccb.item.purchasable')"
                             v-model="treeNode.item.purchasable"></sw-checkbox-field>
 
                     <sw-checkbox-field
+                            v-if="treeNode.item.type !== 'step'"
                             style="display: inline-block; margin-right: 2em"
                             :label="$tc('eccb.item.terminal')"
                             v-model="treeNode.item.terminal"></sw-checkbox-field>
-
-                    <sw-select-field v-model="treeNode.item.type"
-                                     :label="$tc('eccb.item.type')">
-                        <option value="card">Card</option>
-                        <option value="product">Product</option>
-                    </sw-select-field>
                 </sw-card>
 
 
-                <sw-card v-if="treeNode.item.type == 'card'">
+                <sw-card v-if="treeNode.item.type == 'card' && itemCard">
+
                     <div class="group">
                         <sw-button
                                 style="margin-right: 1em;"
@@ -99,7 +111,7 @@
                             <template
                                     #result-item="{ item, index, labelProperty, searchTerm, highlightSearchTerm, isSelected, setValue, getKey }">
                                 <li is="sw-select-result"
-                                    :class="'sw-select-option--' + item.value"
+                                    :class="'sw-select-option--' + item.value + ' eccb-tree-node-item-card-select'"
                                     :selected="isSelected(item)"
                                     @item-select="setValue"
                                     v-bind="{ item, index }">
@@ -163,7 +175,7 @@
                 <sw-card :large="false" v-if="!treeNode._isNew">
                     <template #title>
                         <h2>
-                            {{ $tc('eccb.tree-node.detail.children') }}
+                            {{ $tc('eccb.tree-node.detail.items') }}
                         </h2>
                     </template>
 
@@ -171,7 +183,7 @@
                         <sw-button
                                 v-if="!treeNode._isNew"
                                 variant="primary"
-                                :routerLink="{name: 'eccb.plugin.tree-node.create', params: { stepSetId: treeNode.stepSetId, parentId: treeNode.id}}"
+                                :routerLink="{name: 'eccb.plugin.tree-node.create', query: { stepSetId: treeNode.stepSetId, parentId: treeNode.id}}"
                         >
                             {{ $tc('eccb.tee-node.detail.addChild') }}
                         </sw-button>
@@ -179,75 +191,93 @@
 
                     <template #grid>
                         <eccb-data-grid
-                                v-if="children && !isLoading"
+                                v-if="children"
                                 ref="treeNodeGrid"
                                 :dataSource="children"
                                 :columns="childColumns"
-{#                                @inline-edit-save="onInlineEditTreeNodes"#}
                                 :allowInlineEdit="true"
                                 :showSelection="false"
                                 :naturalSorting="true"
-{#                                @is-inline-edit="setInlineEdit"#}
                                 :isLoading="isLoading"
+                                @is-inline-edit="setInlineEdit"
+                                @inline-edit-save="onInlineEdit"
                         >
                             <template #actions="{ item }">
-{#                                <sw-context-menu-item @click="editTreeNode(item)">#}
-{#                                    Edit#}
-{#                                </sw-context-menu-item>#}
-
                                 <sw-context-menu-item variant="danger" @click="deleteTreeNode(item)">
                                     Remove
                                 </sw-context-menu-item>
                             </template>
 
-{#                            <template #column-item.position="{item, column}">#}
-{#                                <template v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
-{#                                    <sw-data-grid-inline-edit#}
-{#                                            v-if="item.item"#}
-{#                                            :column="column"#}
-{#                                            :compact="true"#}
-{#                                            :value="item.item.position"#}
-{#                                            @input="item.item.position = $event">#}
-{#                                    </sw-data-grid-inline-edit>#}
-{#                                </template>#}
-{#                            </template>#}
 
-{#                            <template  #column-item.active="{item, column}">#}
-{#                                <sw-data-grid-column-boolean#}
-{#                                        v-if="item.item"#}
-{#                                        v-model="item.item.active"#}
-{#                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
-{#                                </sw-data-grid-column-boolean>#}
-{#                            </template>#}
+                            <template #column-item.position="{item, column}">
+                                <template v-if="item.item">
+                                    <sw-data-grid-inline-edit
+                                            v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')"
+                                            :column="column"
+                                            :compact="true"
+                                            :value="item.item['position']"
+                                            @input="item.item['position'] = $event">
+                                    </sw-data-grid-inline-edit>
+                                </template>
+                            </template>
 
-{#                            <template #column-item.purchasable="{item, column}">#}
-{#                                <sw-data-grid-column-boolean#}
-{#                                        v-if="item.item"#}
-{#                                        v-model="item.item.purchasable"#}
-{#                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
-{#                                </sw-data-grid-column-boolean>#}
-{#                            </template>#}
+                            <template #column-item.active="{item, column}">
+                                <template v-if="item.item">
+                                    <sw-data-grid-column-boolean
+                                            v-if="item.item"
+                                            :column="column"
+                                            :compact="true"
+                                            :value="item.item['active']"
+                                            @input="item.item['active'] = $event"
+                                            :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                    </sw-data-grid-column-boolean>
+                                </template>
+                            </template>
 
-{#                            <template #column-item.terminal="{item, column}">#}
-{#                                <sw-data-grid-column-boolean#}
-{#                                        v-if="item.item"#}
-{#                                        v-model="item.item.terminal"#}
-{#                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">#}
-{#                                </sw-data-grid-column-boolean>#}
-{#                            </template>#}
+                            <template #column-item.purchasable="{item, column}">
+                                <template v-if="item.item">
+                                    <sw-data-grid-column-boolean
+                                            v-if="item.item"
+                                            :column="column"
+                                            :compact="true"
+                                            :value="item.item['purchasable']"
+                                            @input="item.item['purchasable'] = $event"
+                                            :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                    </sw-data-grid-column-boolean>
+                                </template>
+                            </template>
+
+                            <template #column-item.terminal="{item, column}">
+                                <template v-if="item.item">
+                                    <sw-data-grid-column-boolean
+                                            v-if="item.item"
+                                            :column="column"
+                                            :compact="true"
+                                            :value="item.item['terminal']"
+                                            @input="item.item['terminal'] = $event"
+                                            :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                                    </sw-data-grid-column-boolean>
+                                </template>
+                            </template>
 
                         </eccb-data-grid>
+
 
                     </template>
                 </sw-card>
 
-
+                <eccb-item-set-list-component
+                        :treeNode="treeNode">
+                </eccb-item-set-list-component>
             </sw-card-view>
+            <sw-loader v-else size="50px">
+                --
+            </sw-loader>
         </template>
 
         <template #sidebar>
             <sw-sidebar>
-                <sw-sidebar-item ref="sidebar" title="Image" icon="default-object-image">
+                <sw-sidebar-item  ref="sidebar" title="Image" icon="default-object-image">
                     <div class="image-container">
                         <img v-if="itemCard && itemCard.media && itemCard.media.url && treeNode.item.type === 'card'"
                              class="image"

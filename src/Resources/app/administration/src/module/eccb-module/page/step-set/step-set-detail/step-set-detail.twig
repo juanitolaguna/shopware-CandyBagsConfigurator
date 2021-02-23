@@ -2,13 +2,15 @@
     <sw-page class="eccb-step-set-detail">
 
         <template #smart-bar-header>
+            <img v-if="stepSet && !stepSet.active" class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1-inactive.svg' | asset">
+            <img v-else class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1.svg' | asset">
             <h2 style="display: inline;" v-html="stepSet ? stepSet.name : 'Step Set Detail'"></h2>
         </template>
 
         <template #language-switch>
-            <sw-language-switch  v-if="stepSet"
-                                 :disabled="stepSet._isNew"
-                                 @on-change="changeLanguage">
+            <sw-language-switch v-if="stepSet"
+                                :disabled="stepSet._isNew"
+                                @on-change="changeLanguage">
             </sw-language-switch>
         </template>
 
@@ -72,7 +74,7 @@
                         <sw-button
                                 v-if="stepSet"
                                 variant="primary"
-                                :routerLink="{name: 'eccb.plugin.tree-node.create', params: { stepSetId: stepSet.id, parentId: '#'}}"
+                                :routerLink="{name: 'eccb.plugin.tree-node.create', query: { stepSetId: stepSet.id }}"
                         >
                             {{ $tc('eccb.step-set.detail.addStep') }}
                         </sw-button>
@@ -103,40 +105,23 @@
 
                             <template #column-item.position="{item, column}">
                                 <template v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
-                                        <sw-data-grid-inline-edit
-                                                v-if="item.item"
-                                                :column="column"
-                                                :compact="true"
-                                                :value="item.item.position"
-                                                @input="item.item.position = $event">
-                                        </sw-data-grid-inline-edit>
+                                    <sw-data-grid-inline-edit
+                                            v-if="item.item"
+                                            :column="column"
+                                            :compact="true"
+                                            :value="item.item.position"
+                                            @input="item.item.position = $event">
+                                    </sw-data-grid-inline-edit>
                                 </template>
                             </template>
 
-                            <template  #column-item.active="{item, column}">
+                            <template #column-item.active="{item, column}">
                                 <sw-data-grid-column-boolean
                                         v-if="item.item"
                                         v-model="item.item.active"
                                         :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
                                 </sw-data-grid-column-boolean>
                             </template>
-
-                            <template #column-item.purchasable="{item, column}">
-                                <sw-data-grid-column-boolean
-                                        v-if="item.item"
-                                        v-model="item.item.purchasable"
-                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
-                                </sw-data-grid-column-boolean>
-                            </template>
-
-                            <template #column-item.terminal="{item, column}">
-                                <sw-data-grid-column-boolean
-                                        v-if="item.item"
-                                        v-model="item.item.terminal"
-                                        :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
-                                </sw-data-grid-column-boolean>
-                            </template>
-
                         </eccb-data-grid>
 
                     </template>

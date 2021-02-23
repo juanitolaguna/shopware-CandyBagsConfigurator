@@ -13,9 +13,10 @@ Component.register('eccb-tree-node-detail', {
 
     inject: ['repositoryFactory'],
 
+    /** ToDo: change go back shortcut everywhere */
     shortcuts: {
         'SYSTEMKEY+S': 'onSave',
-        ESCAPE: 'onClickCancel'
+        'SYSTEMKEY+B': 'onClickCancel'
     },
 
     metaInfo() {
@@ -33,25 +34,39 @@ Component.register('eccb-tree-node-detail', {
             children: null,
             mediaFolderName: 'Candy Bags',
             currentLanguageId: Context.api.languageId,
+            treeNodeItemSet: null,
+            inlineEdit: false,
+            currentInlineEditId: null
         }
     },
 
-    created() {
-        this.createdComponent()
+    async created() {
+        await this.createdComponent()
     },
 
-    mounted() {
-        this.$refs.sidebar.openContent();
+    async mounted() {
+        //is loaded 2 times..
+        this.treeNode = await this.treeNodeRepository.get(this.$route.params.id, Context.api, this.treeNodeCriteria);
+        if (this.treeNode.item.type === 'card') {
+            this.$refs.sidebar.openContent();
+        }
     },
 
     computed: {
+
         parentRoute() {
+            if (this.treeNode.treeNodeItemSet && this.treeNode.treeNodeItemSet['treeNodeId']) {
+                const id = this.treeNode.treeNodeItemSet['treeNodeId']
+                return {name: 'eccb.plugin.tree-node.detail', params: {id: id}};
+            }
+
             if (this.treeNode.parentId) {
-                return {name: 'eccb.plugin.tree-node.detail', params: {id: this.treeNode.parentId}}
+                return {name: 'eccb.plugin.tree-node.detail', params: {id: this.treeNode.parentId}};
             } else {
-                return {name: 'eccb.plugin.detail', params: {id: this.treeNode.stepSetId}}
+                return {name: 'eccb.plugin.detail', params: {id: this.treeNode.stepSetId}};
             }
         },
+
         treeNodeRepository() {
             return this.repositoryFactory.create('eccb_tree_node');
         },
@@ -102,7 +117,7 @@ Component.register('eccb-tree-node-detail', {
             return [
                 {
                     property: 'stepDescription',
-                    label: 'Step Description',
+                    label: 'Next Step',
                     inlineEdit: 'string',
                     routerLink: 'eccb.plugin.tree-node.detail',
                     primary: true
@@ -186,6 +201,7 @@ Component.register('eccb-tree-node-detail', {
 
             try {
                 const type = this.treeNode.item.type;
+
                 if (type === 'card') {
                     this.treeNode.item.itemCardId = this.itemCard.id;
                     await this.itemCardRepository.save(this.itemCard, Context.api);
@@ -198,7 +214,7 @@ Component.register('eccb-tree-node-detail', {
                 this.isLoading = false;
                 this.createNotificationError({
                     title: this.$tc('eccb.tree-node.error'),
-                    message: this.createErrorMessage(error)
+                    message: error
                 });
             }
 
@@ -312,6 +328,34 @@ Component.register('eccb-tree-node-detail', {
                 });
                 this.createdComponent();
             })
+        },
+
+        setInlineEdit(payload, id) {
+            this.inlineEdit = true;
+            this.currentInlineEditId = id;
+        },
+
+        getInlineEdit(item) {
+            return this.inlineEdit && this.currentInlineEditId === item['id'];
+        },
+
+        cancelInlineEdit() {
+            this.inlineEdit = false;
+            this.currentInlineEditId = null;
+        },
+
+        async onInlineEdit(item) {
+            try {
+                this.isLoading = true;
+                await this.treeNodeRepository.save(item, Context.api);
+                this.cancelInlineEdit();
+                await this.createdComponent();
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$tc('eccb.step-set.error'),
+                    message: error
+                });
+            }
         },
 
     }

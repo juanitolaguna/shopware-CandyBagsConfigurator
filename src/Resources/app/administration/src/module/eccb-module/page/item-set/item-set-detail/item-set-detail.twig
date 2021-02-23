@@ -1,0 +1,71 @@
+{% block eccb_item_set_detail %}
+    <sw-page class="eccb-item-set-detail" ref="page">
+        <template #smart-bar-back>
+            <router-link v-if="itemSet && $refs.page"
+                         class="smart-bar__back-btn"
+                         :to="parentRoute"
+                         :style="{ 'color': $refs.page.pageColor }">
+                <sw-icon name="default-arrow-head-left" small></sw-icon>
+                <sw-icon :name="$refs.page.module.icon" v-if="$refs.page.module && $refs.page.module.icon"
+                         small></sw-icon>
+            </router-link>
+        </template>
+
+        <template #smart-bar-header>
+            <h2 style="display: inline;" v-html="itemSet ? itemSet.name : 'Step Set Detail'"></h2>
+        </template>
+
+        <template #language-switch>
+            <sw-language-switch v-if="itemSet"
+                                :disabled="itemSet._isNew"
+                                @on-change="changeLanguage">
+            </sw-language-switch>
+        </template>
+
+        {% block eccb_item_set_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_item_set_detail_smart_bar_actions_save %}
+                    <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
+                        {{ $tc('eccb.item-set.detail.save') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block eccb_item_set_detail_smart_bar_actions_cancel %}
+                    <sw-button :disabled="itemSet && itemSet.isLoading" @click="onClickListingButton">
+                        {{ $tc('eccb.item-set.list') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            <sw-card-view v-if="itemSet" :large="false">
+                <sw-card :large="false">
+                    <sw-text-field
+                            v-if="itemSet"
+                            :label="$tc('eccb.item-set.internalName')"
+                            v-model="itemSet.internalName">
+                    </sw-text-field>
+                </sw-card>
+
+                <sw-card :large="false" v-if="!itemSet._isNew">
+                    <template #title>
+                        <h2>
+                            ToDo Item List // {{ $tc('eccb.item-set.items') }}
+                        </h2>
+                    </template>
+                    <template #toolbar>
+                            <sw-button
+                                    variant="primary"
+                                    :routerLink="{name: 'eccb.plugin.item-set.item.create', query: { itemSetId: itemSet.id}}"
+                                    style="margin-right: 2em"
+                            >
+                                {{ $tc('eccb.tee-node.detail.addItemSet') }}
+                            </sw-button>
+                    </template>
+
+                </sw-card>
+            </sw-card-view>
+        </template>
+    </sw-page>
+{% endblock %}

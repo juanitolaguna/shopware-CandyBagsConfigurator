@@ -3,8 +3,10 @@
 namespace EventCandyCandyBags\Core\Content\TreeNode;
 
 use EventCandyCandyBags\Core\Content\Item\ItemEntity;
+use EventCandyCandyBags\Core\Content\ItemSet\ItemSetCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\StepSet\StepSetEntity;
+use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeTranslation\TreeNodeTranslationCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -14,20 +16,9 @@ class TreeNodeEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var bool
-     */
-    protected $setNode;
-
-
-    /**
      * @var ItemEntity|null
      */
     protected $item;
-
-    /**
-     * @var ItemSetEntity|null
-     */
-    protected $itemSet;
 
     /**
      * @var StepSetEntity|null
@@ -45,30 +36,29 @@ class TreeNodeEntity extends Entity
     protected $parent;
 
     /**
+     * @var string|null
+     */
+    protected $treeNodeItemSetId;
+
+    /**
+     * @var treeNodeItemSetEntity|null
+     */
+    protected $treeNodeItemSet;
+
+    /**
      * @var TreeNodeCollection|null
      */
     protected $children;
 
     /**
+     * @var ItemSetCollection|null
+     */
+    protected $itemSets;
+
+    /**
      * @var TreeNodeTranslationCollection|null
      */
     protected $translations;
-
-    /**
-     * @return bool
-     */
-    public function isSetNode(): bool
-    {
-        return $this->setNode;
-    }
-
-    /**
-     * @param bool $setNode
-     */
-    public function setSetNode(bool $setNode): void
-    {
-        $this->setNode = $setNode;
-    }
 
     /**
      * @return ItemEntity|null
@@ -84,22 +74,6 @@ class TreeNodeEntity extends Entity
     public function setItem(?ItemEntity $item): void
     {
         $this->item = $item;
-    }
-
-    /**
-     * @return ItemSetEntity|null
-     */
-    public function getItemSet(): ?ItemSetEntity
-    {
-        return $this->itemSet;
-    }
-
-    /**
-     * @param ItemSetEntity|null $itemSet
-     */
-    public function setItemSet(?ItemSetEntity $itemSet): void
-    {
-        $this->itemSet = $itemSet;
     }
 
     /**
@@ -151,6 +125,22 @@ class TreeNodeEntity extends Entity
     }
 
     /**
+     * @return TreeNodeItemSetEntity|null
+     */
+    public function getTreeNodeItemSet(): ?TreeNodeItemSetEntity
+    {
+        return $this->treeNodeItemSet;
+    }
+
+    /**
+     * @param TreeNodeItemSetEntity|null $treeNodeItemSet
+     */
+    public function setTreeNodeItemSet(?TreeNodeItemSetEntity $treeNodeItemSet): void
+    {
+        $this->treeNodeItemSet = $treeNodeItemSet;
+    }
+
+    /**
      * @return TreeNodeCollection|null
      */
     public function getChildren(): ?TreeNodeCollection
@@ -164,6 +154,22 @@ class TreeNodeEntity extends Entity
     public function setChildren(?TreeNodeCollection $children): void
     {
         $this->children = $children;
+    }
+
+    /**
+     * @return ItemSetCollection|null
+     */
+    public function getItemSets(): ?ItemSetCollection
+    {
+        return $this->itemSets;
+    }
+
+    /**
+     * @param ItemSetCollection|null $itemSets
+     */
+    public function setItemSets(?ItemSetCollection $itemSets): void
+    {
+        $this->itemSets = $itemSets;
     }
 
     /**
@@ -182,6 +188,21 @@ class TreeNodeEntity extends Entity
         $this->translations = $translations;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getTreeNodeItemSetId(): ?string
+    {
+        return $this->treeNodeItemSetId;
+    }
+
+    /**
+     * @param string|null $treeNodeItemSetId
+     */
+    public function setTreeNodeItemSetId(?string $treeNodeItemSetId): void
+    {
+        $this->treeNodeItemSetId = $treeNodeItemSetId;
+    }
 
 
 

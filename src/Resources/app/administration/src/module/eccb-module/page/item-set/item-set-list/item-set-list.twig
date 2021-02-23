@@ -1,0 +1,58 @@
+{% block eccb_item_set_list %}
+    <sw-page class="eccb-item_set-list" ref="page">
+        <template #smart-bar-back>
+            <router-link v-if="$route.query.treeNodeId && $refs.page"
+                         class="smart-bar__back-btn"
+                         :to="parentRoute"
+                         :style="{ 'color': $refs.page.pageColor }">
+                <sw-icon name="default-arrow-head-left" small></sw-icon>
+                <sw-icon :name="$refs.page.module.icon" v-if="$refs.page.module && $refs.page.module.icon"
+                         small></sw-icon>
+            </router-link>
+        </template>
+        <template #smart-bar-header>
+            <h2>
+                {% block eccb_item_set_list_smart_bar_header_title %}
+                    {{ $tc('eccb.item-set-list.title') }}
+                {% endblock %}
+            </h2>
+        </template>
+        <template #language-switch>
+            <sw-language-switch @on-change="changeLanguage"></sw-language-switch>
+        </template>
+
+
+        {% block eccb_item_set_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_item_set_list_smart_bar_actions_add %}
+                    <sw-button :routerLink="{ name: 'eccb.plugin.create' }" variant="primary">
+                        {{ $tc('eccb.item-set-list.buttonAddStep') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            {% block eccb_item_set_list_content %}
+                <sw-card-view v-if="itemSets" :large="false">
+                    <sw-card :large="false">
+                        <template #grid>
+                            <sw-entity-listing
+                                    :items="itemSets"
+                                    :repository="itemSetRepository"
+                                    :columns="columns"
+                                    :showSelection="false"
+                                    :fullPage="false"
+                                    detailRoute="eccb.plugin.item-set.detail"
+                            >
+                            </sw-entity-listing>
+                        </template>
+                    </sw-card>
+                </sw-card-view>
+            {% endblock %}
+        </template>
+
+
+    </sw-page>
+
+{% endblock %}

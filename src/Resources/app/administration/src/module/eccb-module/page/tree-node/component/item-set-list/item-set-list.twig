@@ -1,0 +1,143 @@
+{% block eccb_item_set_list %}
+    <sw-card :large="false" v-if="!treeNode._isNew">
+        <template #title>
+            <h2>
+                {{ $tc('eccb.tree-node.detail.itemSets') }}
+            </h2>
+        </template>
+
+        <template #toolbar>
+            <div class="group">
+                <sw-button
+                        v-if="!treeNode._isNew"
+                        variant="primary"
+                        :routerLink="{name: 'eccb.plugin.item-set.create', query: { treeNodeId: treeNode.id}}"
+                        style="margin-right: 2em"
+                >
+                    {{ $tc('eccb.tee-node.detail.addItemSet') }}
+                </sw-button>
+
+                <sw-multi-select
+                        v-if="itemSetOptions && itemSetSelectedValues"
+                        :label="'Item Sets'"
+
+                        :options="itemSetOptions"
+                        :value="itemSetSelectedValues"
+
+                        :isLoading="selectionLoading"
+                        valueProperty="id"
+                        labelProperty="internalName"
+                        @item-add="onItemSetAdd"
+                        @item-remove="onItemSetRemove"
+                >
+                </sw-multi-select>
+            </div>
+
+        </template>
+
+        <template #grid>
+            <eccb-data-grid
+                    v-if="joinedTreeNodeItemSetValues"
+                    ref="grid"
+                    :dataSource="joinedTreeNodeItemSetValues"
+                    :columns="columns"
+                    :allowInlineEdit="true"
+                    :showSelection="false"
+                    :naturalSorting="true"
+                    :isLoading="selectionLoading"
+                    @is-inline-edit="setInlineEdit"
+                    @inline-edit-save="onInlineEdit"
+                    @inline-edit-cancel="cancelInlineEdit"
+            >
+                <template #actions="{ item }">
+                    <sw-context-menu-item variant="danger" @click="onItemSetRemoveFromGrid(item)">
+                        Remove
+                    </sw-context-menu-item>
+                </template>
+
+                <template #column-itemSet.internalName="{item, column}">
+                    <template v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                        <sw-data-grid-inline-edit
+                                v-if="item.itemSet"
+                                :column="column"
+                                :compact="true"
+                                :value="item.itemSet.internalName"
+                                @input="item.itemSet.internalName = $event">
+                        </sw-data-grid-inline-edit>
+                    </template>
+                    <template v-else>
+                        <router-link
+                                :to="{ name: column.routerLink, params: { id: item.itemSetId }, query: {treeNodeId: treeNode.id}}">
+                            {{ item.itemSet.internalName }}
+                        </router-link>
+                    </template>
+                </template>
+
+                <template #column-childNode.stepDescription="{item, column}">
+                    <template v-if="!item.childNode">
+                        <router-link
+                                :to="{name:'eccb.plugin.tree-node.create', query: { treeNodeItemSetId: item.id, stepSetId: treeNode.stepSetId, parentId: treeNode.id }}">
+                            <sw-icon name="default-basic-plus-circle" color="#ED1C24" size="12px"></sw-icon>
+                            <span style="margin-left: 0.5em">Add Next Step</span>
+                        </router-link>
+                    </template>
+                    <template v-else>
+                        <template v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                            <sw-data-grid-inline-edit
+                                    v-if="item.childNode"
+                                    :column="column"
+                                    :compact="true"
+                                    :value="item.childNode.stepDescription"
+                                    @input="item.childNode.stepDescription = $event">
+                            </sw-data-grid-inline-edit>
+                        </template>
+                        <router-link
+                                v-else
+                                :to="{name:'eccb.plugin.tree-node.detail', params: { id: item.childNode.id}, query: {treeNodeItemSetId: item.id}}">
+                            {{ item.childNode.stepDescription }}
+                        </router-link>
+                    </template>
+                </template>
+
+                <template #column-childNode.item.position="{item, column}">
+                    <template v-if="!item.childNode">
+                        --
+                    </template>
+                    <template v-else-if="item.childNode.item">
+                        <sw-data-grid-inline-edit
+                                v-if="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')"
+                                :column="column"
+                                :compact="true"
+                                :value="item.childNode.item['position']"
+                                @input="item.childNode.item['position'] = $event">
+                        </sw-data-grid-inline-edit>
+                    </template>
+                    <template v-else>
+                        {{ item.childNode.item['position'] }}
+                    </template>
+                </template>
+
+                <template #column-childNode.item.active="{item, column}">
+                    <template v-if="!item.childNode">
+                        --
+                    </template>
+                    <template v-else-if="item.childNode.item">
+                        <sw-data-grid-column-boolean
+                                v-if="item.childNode.item"
+                                :column="column"
+                                :compact="true"
+                                :value="item.childNode.item['active']"
+                                @input="item.childNode.item['active'] = $event"
+                                :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
+                        </sw-data-grid-column-boolean>
+                    </template>
+                    <template v-else>
+                        {{ item.childNode.item['active'] }}
+                    </template>
+                </template>
+
+            </eccb-data-grid>
+        </template>
+
+    </sw-card>
+{% endblock %}

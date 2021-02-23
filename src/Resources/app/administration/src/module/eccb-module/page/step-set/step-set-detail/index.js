@@ -65,19 +65,7 @@ Component.register('eccb-step-set-detail', {
                     property: 'item.active',
                     label: 'Active',
                     inlineEdit: 'boolean',
-                },
-
-                {
-                    property: 'item.purchasable',
-                    label: 'Purchasable',
-                    inlineEdit: 'boolean',
-                },
-
-                {
-                    property: 'item.terminal',
-                    label: 'Terminal',
-                    inlineEdit: 'boolean',
-                },
+                }
             ]
         },
 
@@ -128,6 +116,8 @@ Component.register('eccb-step-set-detail', {
                 const criteria = new Criteria();
                 criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
                 criteria.addFilter(Criteria.equals('parentId', null));
+                criteria.addFilter(Criteria.equals('treeNodeItemSetId', null));
+
                 criteria.addAssociation('item');
                 criteria.addSorting(Criteria.sort('item.position', 'desc'));
                 return this.treeNodeRepository.search(criteria, Context.api).then((result) => {
