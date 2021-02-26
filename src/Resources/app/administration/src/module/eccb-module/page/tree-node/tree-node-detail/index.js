@@ -13,7 +13,6 @@ Component.register('eccb-tree-node-detail', {
 
     inject: ['repositoryFactory'],
 
-    /** ToDo: change go back shortcut everywhere */
     shortcuts: {
         'SYSTEMKEY+S': 'onSave',
         'SYSTEMKEY+B': 'onClickCancel',
@@ -49,7 +48,7 @@ Component.register('eccb-tree-node-detail', {
     },
 
     async mounted() {
-        if (this.$route.path !== '/eccb/plugin/tree-node/detail') return;
+        if (this.$route.name !== 'eccb.plugin.tree-node.detail') return;
         //is loaded 2 times..
         this.treeNode = await this.treeNodeRepository.get(this.$route.params.id, Context.api, this.treeNodeCriteria);
         if (this.treeNode.item.type === 'card') {

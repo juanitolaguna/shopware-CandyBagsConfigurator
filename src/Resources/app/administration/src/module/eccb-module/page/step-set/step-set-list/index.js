@@ -8,6 +8,11 @@ Component.register('eccb-step-set-list', {
 
     inject: ['repositoryFactory'],
 
+    shortcuts: {
+        'SYSTEMKEY+N': 'addSequence'
+    },
+
+
     data() {
         return {
             stepSets: null,
@@ -81,6 +86,10 @@ Component.register('eccb-step-set-list', {
                     this.stepSets = result;
                     this.isLoading = false;
                 })
+        },
+
+        addSequence() {
+            this.$router.push({name: 'eccb.plugin.create'});
         }
     }
 
