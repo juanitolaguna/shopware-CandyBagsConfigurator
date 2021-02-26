@@ -19,6 +19,9 @@ Component.extend('eccb-item-set-create', 'eccb-item-set-detail', {
         getItemSet() {
             this.itemSet = this.itemSetRepository.create(Context.api);
             this.isLoading = false;
+            setTimeout(() => {
+                document.getElementById('sw-field--itemSet-internalName').focus();
+            }, 100)
         },
 
         async onSave() {

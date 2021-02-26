@@ -42,6 +42,7 @@
             <sw-card-view v-if="itemSet" :large="false">
                 <sw-card :large="false">
                     <sw-text-field
+                            ref="internalName"
                             v-if="itemSet"
                             :label="$tc('eccb.item-set.internalName')"
                             v-model="itemSet.internalName">
@@ -51,7 +52,7 @@
                 <sw-card :large="false" v-if="!itemSet._isNew">
                     <template #title>
                         <h2>
-                            ToDo Item List // {{ $tc('eccb.item-set.items') }}
+                            {{ $tc('eccb.item-set.items') }}
                         </h2>
                     </template>
                     <template #toolbar>
@@ -60,8 +61,44 @@
                                     :routerLink="{name: 'eccb.plugin.item-set.item.create', query: { itemSetId: itemSet.id}}"
                                     style="margin-right: 2em"
                             >
-                                {{ $tc('eccb.tee-node.detail.addItemSet') }}
+                                {{ $tc('eccb.tee-node.detail.addItem') }}
                             </sw-button>
+                    </template>
+
+                    <template #grid>
+                        <eccb-data-grid
+                                v-if="items && items.length > 0"
+                                ref="grid"
+                                :dataSource="items"
+                                :columns="columns"
+                                :allowInlineEdit="true"
+                                :showSelection="false"
+                                :naturalSorting="true"
+                                @inline-edit-save="onInlineEdit"
+                                :skeletonItemAmount="limit"
+{#                                @is-inline-edit="setInlineEdit"#}
+                                :isLoading="isLoading"
+                        >
+
+                            <template #actions="{ item }">
+                                <sw-context-menu-item variant="danger" @click="removeItem(item)">
+                                    Remove
+                                </sw-context-menu-item>
+                            </template>
+
+                            <template #pagination>
+                                <sw-pagination
+                                        :total="total"
+                                        :limit="limit"
+                                        :page="page"
+                                        :steps="[5, 10, 25, 50]"
+                                        :autoHide="false"
+                                        @page-change="onPageChange">
+                                </sw-pagination>
+                            </template>
+                        </eccb-data-grid>
+
+
                     </template>
 
                 </sw-card>

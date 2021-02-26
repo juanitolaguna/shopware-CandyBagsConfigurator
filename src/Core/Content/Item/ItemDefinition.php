@@ -54,7 +54,7 @@ class   ItemDefinition extends EntityDefinition
             new BoolField('purchasable', 'purchasable'),
 
             (new StringField('type', 'type'))->addFlags(new Required()),
-
+            (new StringField('internal_name', 'internalName')),
 
             new FkField('tree_node_id', 'treeNodeId', TreeNodeDefinition::class),
             (new OneToOneAssociationField('treeNode', 'tree_node_id', 'id', TreeNodeDefinition::class, false)),

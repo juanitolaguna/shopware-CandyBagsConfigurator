@@ -90,6 +90,10 @@ Component.extend('eccb-tree-node-create', 'eccb-tree-node-detail', {
             if (this.treeNodeItemSetId) {
                 this.treeNodeItemSet = await this.treeNodeItemSetRepository.get(this.treeNodeItemSetId, Context.api, new Criteria())
             }
+
+            setTimeout(() => {
+                document.getElementById('sw-field--treeNode-stepDescription').focus();
+            }, 100)
         },
 
         async onSave() {

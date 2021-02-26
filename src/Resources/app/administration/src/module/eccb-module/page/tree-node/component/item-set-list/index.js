@@ -1,5 +1,6 @@
 import {Component, Mixin, Context} from 'src/core/shopware';
 import Criteria from 'src/core/data-new/criteria.data';
+const { debounce, get } = Shopware.Utils;
 
 import template from './item-set-list.twig'
 import './item-set-list.scss';
@@ -107,6 +108,9 @@ Component.register('eccb-item-set-list-component', {
             try {
                 this.itemSetOptions = await this.getItemSetsOptions();
                 this.joinedTreeNodeItemSetValues = await this.getJoinedTreeNodeItemSetValues();
+                if (this.joinedTreeNodeItemSetValues.length > 0) {
+                    await this.search();
+                }
             } catch (error) {
                 this.createNotificationError({
                     title: this.$tc('eccb.error'),
@@ -117,7 +121,8 @@ Component.register('eccb-item-set-list-component', {
 
         //Item Set Selection
         getItemSetsOptions() {
-            return this.itemSetRepository.search(new Criteria(), Shopware.Context.api);
+            const criteria = new Criteria();
+            return this.itemSetRepository.search(criteria, Shopware.Context.api);
         },
 
         getJoinedTreeNodeItemSetValues() {
@@ -203,6 +208,36 @@ Component.register('eccb-item-set-list-component', {
         cancelInlineEdit () {
             this.inlineEdit = false;
             this.currentInlineEditId = null;
-        }
+        },
+
+        async search(searchTerm = '') {
+            const criteria = new Criteria();
+
+            if (searchTerm !== "") {
+                criteria.addFilter(Criteria.contains('internalName', searchTerm));
+            }
+
+            /** exclude id's that are allready selected */
+            const excludedIds = [];
+            this.joinedTreeNodeItemSetValues.forEach((e) => {
+                excludedIds.push(e.itemSet.id)
+            })
+            criteria.addFilter(Criteria.not(
+                'AND',
+                [Criteria.equalsAny('id', excludedIds)]
+            ))
+
+            /** load and flip order, to have selected items on top */
+            const options = await this.itemSetRepository.search(criteria, Shopware.Context.api);
+
+            this.itemSetOptions = []
+            this.joinedTreeNodeItemSetValues.forEach((e) => {
+                this.itemSetOptions.push(e.itemSet);
+            });
+            options.forEach((e) => {
+                this.itemSetOptions.push(e);
+            })
+        },
+
     }
 });

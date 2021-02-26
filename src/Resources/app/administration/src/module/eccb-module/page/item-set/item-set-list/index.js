@@ -12,6 +12,11 @@ Component.register('eccb-item-set-list', {
 
     inject: ['repositoryFactory'],
 
+    shortcuts: {
+        'SYSTEMKEY+B': 'onClickCancel',
+        'SYSTEMKEY+N': 'createItemSet'
+    },
+
     data() {
         return {
             itemSets: null,
@@ -78,5 +83,14 @@ Component.register('eccb-item-set-list', {
             })
             return error;
         },
+
+        onClickCancel() {
+            this.$router.push(this.parentRoute);
+        },
+
+        createItemSet() {
+            this.$router.push({name: 'eccb.plugin.item-set.create'});
+        }
+
     }
 });

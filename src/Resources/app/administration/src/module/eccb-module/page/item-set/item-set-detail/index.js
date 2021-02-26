@@ -14,14 +14,21 @@ Component.register('eccb-item-set-detail', {
 
     shortcuts: {
         'SYSTEMKEY+S': 'onSave',
-        ESCAPE: 'onClickCancel'
+        'SYSTEMKEY+B': 'onClickCancel',
+        'SYSTEMKEY+N': 'createItem',
     },
+
 
     data() {
         return {
             itemSet: null,
+            items: null,
             isLoading: true,
             currentLanguageId: Context.api.languageId,
+
+            page: 1,
+            limit: 10,
+            total: 0
         }
     },
 
@@ -34,6 +41,19 @@ Component.register('eccb-item-set-detail', {
             return this.repositoryFactory.create('eccb_item_set');
         },
 
+        itemRepository() {
+            return this.repositoryFactory.create('eccb_item')
+        },
+
+        itemCriteria() {
+            const criteria = new Criteria();
+            criteria.limit = this.limit;
+            criteria.setPage(this.page);
+            criteria.addFilter(Criteria.equals('itemSetId', this.$route.params.id));
+            criteria.addSorting(Criteria.sort('position', 'desc'));
+            return criteria;
+        },
+
         parentRoute() {
             const treeNodeId = this.$route.query.treeNodeId
             if (treeNodeId) {
@@ -44,12 +64,55 @@ Component.register('eccb-item-set-detail', {
                 return {name: 'eccb.plugin.item-set.list'}
             }
         },
+
+        columns() {
+            return [
+                {
+                    property: 'internalName',
+                    dataIndex: 'internalName',
+                    label: 'Name',
+                    inlineEdit: 'string',
+                    routerLink: 'eccb.plugin.item-set.item.detail',
+                    primary: true
+                },
+
+                {
+                    property: 'position',
+                    label: 'Position',
+                    inlineEdit: 'number',
+                },
+
+                {
+                    property: 'active',
+                    label: 'Active',
+                    inlineEdit: 'boolean',
+                },
+
+                {
+                    property: 'purchasable',
+                    label: 'Purchasable',
+                    inlineEdit: 'boolean',
+                },
+
+                {
+                    property: 'terminal',
+                    label: 'Terminal',
+                    inlineEdit: 'boolean',
+                }
+            ]
+        }
     },
 
     methods: {
         async createdComponent() {
             try {
                 this.itemSet = await this.itemSetRepository.get(this.$route.params.id, Context.api, new Criteria());
+                this.items = await this.itemRepository.search(this.itemCriteria, Context.api)
+                this.total = this.items.total;
+
+                setTimeout(() => {
+                    document.getElementById('sw-field--itemSet-internalName').focus();
+                }, 100)
             } catch (error) {
                 this.isLoading = false;
                 this.createNotificationError({
@@ -102,6 +165,50 @@ Component.register('eccb-item-set-detail', {
 
         onClickListingButton() {
             this.$router.push({name: 'eccb.plugin.item-set.list', query: {treeNodeId: this.$route.query.treeNodeId}})
+        },
+
+        async onInlineEdit(item) {
+            try {
+                this.isLoading = true;
+                await this.itemRepository.save(item, Context.api);
+                await this.createdComponent();
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$tc('eccb.error'),
+                    message: error
+                });
+            }
+        },
+
+        onPageChange({page = 1, limit = 25}) {
+            this.page = page;
+            this.limit = limit;
+            this.isLoading = true;
+            this.createdComponent();
+        },
+
+        onClickCancel() {
+            this.$router.push(this.parentRoute)
+        },
+
+        removeItem(item) {
+            this.items.remove(item.id);
+            this.itemRepository.delete(item.id, Context.api).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$tc('eccb.save-success.title'),
+                    message: this.$tc('eccb.save-success.text')
+                });
+            }).catch((error) => {
+                this.createNotificationError({
+                    title: this.$tc('eccb.error'),
+                    message: error
+                });
+                this.createdComponent();
+            })
+        },
+
+        createItem() {
+            this.$router.push({name: 'eccb.plugin.item-set.item.create', query: {itemSetId: this.itemSet.id}});
         }
     }
 });

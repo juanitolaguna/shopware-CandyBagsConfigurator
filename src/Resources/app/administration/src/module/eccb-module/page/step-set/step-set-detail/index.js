@@ -13,7 +13,8 @@ Component.register('eccb-step-set-detail', {
 
     shortcuts: {
         'SYSTEMKEY+S': 'onSave',
-        ESCAPE: 'onClickCancel'
+        'SYSTEMKEY+B': 'onClickCancel',
+        'SYSTEMKEY+N': 'createTreeNode'
     },
 
     inject: ['repositoryFactory'],
@@ -198,6 +199,10 @@ Component.register('eccb-step-set-detail', {
 
         getInlineEdit(item) {
             return this.inlineEdit && this.currentInlineEditId === item['id'];
+        },
+
+        createTreeNode() {
+            this.$router.push({name: 'eccb.plugin.tree-node.create', query: { stepSetId: this.stepSet.id }});
         }
 
     },

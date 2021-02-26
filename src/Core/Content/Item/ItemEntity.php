@@ -44,6 +44,11 @@ class ItemEntity extends Entity
      */
     protected $type;
 
+    /**
+     * @var string|null
+     */
+    protected $internalName;
+
 
     /**
      * @var string|null
@@ -165,6 +170,22 @@ class ItemEntity extends Entity
     /**
      * @return string|null
      */
+    public function getInternalName(): ?string
+    {
+        return $this->internalName;
+    }
+
+    /**
+     * @param string|null $internalName
+     */
+    public function setInternalName(?string $internalName): void
+    {
+        $this->internalName = $internalName;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getItemSetId(): ?string
     {
         return $this->itemSetId;
@@ -257,5 +278,4 @@ class ItemEntity extends Entity
     {
         $this->itemCard = $itemCard;
     }
-
 }

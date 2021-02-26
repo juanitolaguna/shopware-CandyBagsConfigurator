@@ -31,6 +31,11 @@ import './page/item-set/item-set-create';
 import './page/item-set/item-set-detail';
 import './page/item-set/item-set-list';
 
+/**
+ * Item Set Item
+ */
+import './page/item-set-item/item-set-item-create';
+import './page/item-set-item/item-set-item-detail';
 
 /**
  * Components
@@ -126,9 +131,9 @@ Module.register('eccb-plugin', {
 
         'item-set.item.detail': {
             component: 'eccb-item-set-item-detail',
-            path:'item-set/item/detail',
+            path:'item-set/item/detail/:id',
             meta: {
-                parentPath: 'eccb.plugin.item-set.detail'
+                parentPath: 'eccb.plugin.item-set.list'
             }
         },
 
@@ -141,6 +146,14 @@ Module.register('eccb-plugin', {
             path: 'eccb.plugin.index',
             icon: 'default-object-lab-flask',
             color: '#ed1c24',
+        },
+        {
+            id: 'eccb-item-set-list',
+            label: 'eccb.general.mainMenuItemSet',
+            path: 'eccb.plugin.item-set.list',
+            icon: 'default-text-editor-list',
+            color: '#a9a9a9',
+            parent: 'eccb-step-set'
         }
     ]
 });

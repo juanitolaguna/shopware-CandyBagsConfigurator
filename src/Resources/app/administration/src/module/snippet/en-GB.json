@@ -2,11 +2,8 @@
   "eccb": {
     "general": {
         "mainMenuItemGeneral": "Event Candy Bags",
+        "mainMenuItemSet": "Item Set List",
         "descriptionTextModule": "Manage Candy Bags"
-    },
-    "candybag-list": {
-      "bagsTitle": "Candy Bags Entrys",
-      "buttonAddCandyBag": "Add Candy Bag"
     }
   }
 }

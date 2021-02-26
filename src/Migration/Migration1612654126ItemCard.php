@@ -52,6 +52,19 @@ class Migration1612654126ItemCard extends MigrationStep
             ADD CONSTRAINT `fk.language.item_card_id` FOREIGN KEY (`item_card_id`)
             REFERENCES `eccb_item_card` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
         ");
+
+        $connection->executeUpdate("
+            CREATE TRIGGER `eccb_before_item_set_delete`
+            	BEFORE DELETE ON `eccb_item_set` FOR EACH ROW
+            BEGIN
+            	DELETE FROM `eccb_item_card`
+            	WHERE id IN (
+            		SELECT
+            			`eccb_item`.`item_card_id` FROM `eccb_item`
+            		WHERE
+            			`item_set_id` = `old`.`id`);
+            END;
+        ");
     }
 
     public function updateDestructive(Connection $connection): void

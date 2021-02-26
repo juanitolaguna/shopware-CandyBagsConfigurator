@@ -1,0 +1,106 @@
+{% block eccb_item_set_item_detail %}
+    <sw-page class="eccb-item-set-item-detail" ref="page">
+        <template #smart-bar-back>
+            <router-link v-if="item && $refs.page"
+                         class="smart-bar__back-btn"
+                         :to="parentRoute"
+                         :style="{ 'color': $refs.page.pageColor }">
+                <sw-icon name="default-arrow-head-left" small></sw-icon>
+            </router-link>
+        </template>
+
+        <template #smart-bar-header>
+            {# <img v-if="item && !item.active" class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1-inactive.svg' | asset"> #}
+            {# <img v-else class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1.svg' | asset"> #}
+            <h2 style="display: inline;" v-html="item ? item.internalName : 'Item Details'"></h2>
+        </template>
+
+        <template #language-switch>
+            <sw-language-switch v-if="item"
+                                :disabled="item._isNew"
+                                @on-change="changeLanguage">
+            </sw-language-switch>
+        </template>
+
+        {% block eccb_item_set_item_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                {% block eccb_item_set_item_detail_smart_bar_actions_save %}
+                    <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
+                        {{ $tc('eccb.item-set-item.detail.save') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        <template #content>
+            <sw-card-view v-if="item" :large="false">
+                <sw-card :large="false">
+
+                    {# bei card type auf disabled #}
+                    <sw-text-field
+                            :disabled="item.type === 'card'"
+                            :label="$tc('eccb.name')"
+                            v-model="item.internalName">
+                    </sw-text-field>
+
+                    {# typ disabled, weil momentan nur 1 typ #}
+                    <sw-select-field
+                            :disabled="true"
+                            v-model="item.type"
+                            :label="$tc('eccb.item.type')">
+                        <option value="card">Card</option>
+                    </sw-select-field>
+
+
+                    <sw-checkbox-field :label="$tc('eccb.active')"
+                                       v-model="item.active"></sw-checkbox-field>
+
+                    <sw-checkbox-field :label="$tc('eccb.purchasable')"
+                                       v-model="item.purchasable"></sw-checkbox-field>
+
+                    <sw-checkbox-field :label="$tc('eccb.terminal')"
+                                       v-model="item.terminal"></sw-checkbox-field>
+
+                </sw-card>
+
+
+                <sw-card v-if="itemCard && item && item.type == 'card'">
+                    <sw-text-field
+                            @input="onCardNameInput"
+                            :label="$tc('eccb.itemCardName')"
+                            v-model="itemCard.name">
+                    </sw-text-field>
+
+                    <sw-text-field
+                            :label="$tc('eccb.description')"
+                            v-model="itemCard.description">
+                    </sw-text-field>
+
+                    <eccb-media-field
+                            v-if="itemCard"
+                            :label="$tc('eccb.image')"
+                            v-model="itemCard.mediaId"
+                            :showUploadField="false"
+                            :showControls="false"
+                            @eccb-media-id-change="onChangeMedia"
+                            :mediaFolderName="'Candy Bags'"
+                    >
+                    </eccb-media-field>
+                </sw-card>
+
+            </sw-card-view>
+        </template>
+
+        <template #sidebar>
+            <sw-sidebar>
+                <sw-sidebar-item ref="sidebar" title="Image" icon="default-object-image">
+                    <div class="image-container">
+                        <img v-if="itemCard && itemCard.media && itemCard.media.url"
+                             class="image"
+                             :src="itemCard.media.url"/>
+                    </div>
+                </sw-sidebar-item>
+            </sw-sidebar>
+        </template>
+    </sw-page>
+{% endblock %}

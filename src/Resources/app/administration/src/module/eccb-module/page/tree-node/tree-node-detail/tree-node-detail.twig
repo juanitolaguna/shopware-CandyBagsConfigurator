@@ -183,7 +183,7 @@
                         <sw-button
                                 v-if="!treeNode._isNew"
                                 variant="primary"
-                                :routerLink="{name: 'eccb.plugin.tree-node.create', query: { stepSetId: treeNode.stepSetId, parentId: treeNode.id}}"
+                                :routerLink="createChildRoute"
                         >
                             {{ $tc('eccb.tee-node.detail.addChild') }}
                         </sw-button>
@@ -191,7 +191,7 @@
 
                     <template #grid>
                         <eccb-data-grid
-                                v-if="children"
+                                v-if="children && children.length > 0"
                                 ref="treeNodeGrid"
                                 :dataSource="children"
                                 :columns="childColumns"
@@ -199,6 +199,7 @@
                                 :showSelection="false"
                                 :naturalSorting="true"
                                 :isLoading="isLoading"
+                                :skeletonItemAmount="limit"
                                 @is-inline-edit="setInlineEdit"
                                 @inline-edit-save="onInlineEdit"
                         >
@@ -258,6 +259,17 @@
                                             :isInlineEdit="getInlineEdit(item) && column.hasOwnProperty('inlineEdit')">
                                     </sw-data-grid-column-boolean>
                                 </template>
+                            </template>
+
+                            <template #pagination>
+                                <sw-pagination
+                                        :total="total"
+                                        :limit="limit"
+                                        :page="page"
+                                        :steps="[5, 10, 25, 50]"
+                                        :autoHide="false"
+                                        @page-change="onPageChange">
+                                </sw-pagination>
                             </template>
 
                         </eccb-data-grid>

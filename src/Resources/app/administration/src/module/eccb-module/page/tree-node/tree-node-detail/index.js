@@ -16,7 +16,8 @@ Component.register('eccb-tree-node-detail', {
     /** ToDo: change go back shortcut everywhere */
     shortcuts: {
         'SYSTEMKEY+S': 'onSave',
-        'SYSTEMKEY+B': 'onClickCancel'
+        'SYSTEMKEY+B': 'onClickCancel',
+        'SYSTEMKEY+N': 'addChildNode'
     },
 
     metaInfo() {
@@ -36,7 +37,10 @@ Component.register('eccb-tree-node-detail', {
             currentLanguageId: Context.api.languageId,
             treeNodeItemSet: null,
             inlineEdit: false,
-            currentInlineEditId: null
+            currentInlineEditId: null,
+            page: 1,
+            limit: 10,
+            total: 0
         }
     },
 
@@ -45,6 +49,7 @@ Component.register('eccb-tree-node-detail', {
     },
 
     async mounted() {
+        if (this.$route.path !== '/eccb/plugin/tree-node/detail') return;
         //is loaded 2 times..
         this.treeNode = await this.treeNodeRepository.get(this.$route.params.id, Context.api, this.treeNodeCriteria);
         if (this.treeNode.item.type === 'card') {
@@ -53,6 +58,13 @@ Component.register('eccb-tree-node-detail', {
     },
 
     computed: {
+
+        createChildRoute() {
+            return {
+                name: 'eccb.plugin.tree-node.create',
+                query: {stepSetId: this.treeNode.stepSetId, parentId: this.treeNode.id}
+            }
+        },
 
         parentRoute() {
             if (this.treeNode.treeNodeItemSet && this.treeNode.treeNodeItemSet['treeNodeId']) {
@@ -79,6 +91,8 @@ Component.register('eccb-tree-node-detail', {
 
         treeNodeChildrenCriteria() {
             const criteria = new Criteria();
+            criteria.limit = this.limit;
+            criteria.setPage(this.page);
             criteria.addAssociation('item');
             criteria.addFilter(Criteria.equals('parentId', this.$route.params.id));
             criteria.addSorting(Criteria.sort('item.position', 'desc'));
@@ -167,6 +181,7 @@ Component.register('eccb-tree-node-detail', {
             /** load children in parallel */
             this.treeNodeRepository.search(this.treeNodeChildrenCriteria, Context.api).then((result) => {
                 this.children = result;
+                this.total = result.total;
             });
 
             this.treeNode = await this.treeNodeRepository.get(this.$route.params.id, Context.api, this.treeNodeCriteria);
@@ -356,6 +371,17 @@ Component.register('eccb-tree-node-detail', {
                     message: error
                 });
             }
+        },
+
+        addChildNode() {
+            this.$router.push(this.createChildRoute);
+        },
+
+        onPageChange({page = 1, limit = 10}) {
+            this.page = page;
+            this.limit = limit;
+            this.isLoading = true;
+            this.createdComponent();
         },
 
     }

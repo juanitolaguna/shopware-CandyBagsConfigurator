@@ -43,6 +43,7 @@ class EventCandyCandyBags extends Plugin
             SET FOREIGN_KEY_CHECKS = 1;
         ");
 
+        $this->container->get(Connection::class)->exec('DROP TRIGGER eccb_before_item_set_delete');
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node_item_set');
 
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_translation');
@@ -59,6 +60,8 @@ class EventCandyCandyBags extends Plugin
 
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set_translation');
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set');
+
+
     }
 
     /**
