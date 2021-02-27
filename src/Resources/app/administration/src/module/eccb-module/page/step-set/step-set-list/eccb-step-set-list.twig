@@ -13,7 +13,7 @@
 
 
         {% block eccb_step_set_list_smart_bar_actions %}
-            <template #smart-bar-actions>f
+            <template #smart-bar-actions>
                 {% block eccb_step_set_list_smart_bar_actions_add %}
                     <sw-button :routerLink="{ name: 'eccb.plugin.create' }" variant="primary">
                         {{ $tc('eccb.sequence.addSequence') }}
@@ -35,10 +35,6 @@
 
             {% endblock %}
         </template>
-
-
-
-
     </sw-page>
 
 {% endblock %}

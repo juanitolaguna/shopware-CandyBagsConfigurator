@@ -156,7 +156,7 @@ Component.register('eccb-item-set-detail', {
 
             if (!this.itemSet.internalName) {
                 this.createNotificationError({
-                    message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.internalName')
+                    message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.internalName')
                 });
                 validated = false;
             }

@@ -199,7 +199,7 @@ Component.register('eccb-item-set-list-component', {
                 this.cancelInlineEdit();
             } catch (error) {
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             }

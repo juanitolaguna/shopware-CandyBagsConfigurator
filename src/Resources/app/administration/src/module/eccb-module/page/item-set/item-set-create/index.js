@@ -31,8 +31,8 @@ Component.extend('eccb-item-set-create', 'eccb-item-set-detail', {
                 await this.itemSetRepository.save(this.itemSet, Context.api)
 
                 this.createNotificationSuccess({
-                    title: this.$tc('eccb.entity.save-success.title'),
-                    message: this.$tc('eccb.entity.save-success.text')
+                    title: this.$tc('eccb.save-success.title'),
+                    message: this.$tc('eccb.save-success.text')
                 });
 
                 this.$router.push({

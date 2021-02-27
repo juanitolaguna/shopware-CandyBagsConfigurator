@@ -27,20 +27,21 @@ Component.extend('eccb-step-set-create','eccb-step-set-detail', {
         },
 
         onSave() {
+            if (!this.validate()) return;
             this.stepSetRepository
                 .save(this.stepSet, Context.api)
                 .then(() => {
                     this.isLoading = false
                     this.createNotificationSuccess({
-                        title: this.$tc('eccb.step-set.save-success.title'),
-                        message: this.$tc('eccb.step-set.save-success.text')
+                        title: this.$tc('eccb.save-success.title'),
+                        message: this.$tc('eccb.save-success.text')
                     });
                     this.$router.push({ name: 'eccb.plugin.detail', params: {id: this.stepSet.id} });
-                }).catch((exception) => {
+                }).catch((error) => {
                 this.isLoading = false;
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.error'),
-                    message: exception
+                    title: this.$tc('eccb.error'),
+                    message: error
                 });
             })
         }

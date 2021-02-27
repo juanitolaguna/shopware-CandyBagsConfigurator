@@ -26,7 +26,8 @@
       "purchasable": "Purchasable",
       "terminal": "Terminal",
       "stepDescription": "Headline",
-      "type": "Item Type"
+      "type": "Item Type",
+      "internalName": "Internal Name"
     },
     "node": {
       "items": "Items",
@@ -61,6 +62,11 @@
       "items": "Items",
       "addItem": "Add Item",
       "goToList": "All Item Sets  "
+    },
+    "error": "Something went wrong...",
+    "save-success" : {
+      "title": "",
+      "text": "Entity saved successfully!"
     }
   }
 }

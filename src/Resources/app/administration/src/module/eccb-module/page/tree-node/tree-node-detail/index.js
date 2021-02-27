@@ -227,7 +227,7 @@ Component.register('eccb-tree-node-detail', {
             } catch (error) {
                 this.isLoading = false;
                 this.createNotificationError({
-                    title: this.$tc('eccb.tree-node.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             }
@@ -239,7 +239,7 @@ Component.register('eccb-tree-node-detail', {
 
             if (!this.treeNode.stepDescription) {
                 this.createNotificationError({
-                    message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.stepDescription')
+                    message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.stepDescription')
                 });
                 validated = false;
             }
@@ -247,14 +247,14 @@ Component.register('eccb-tree-node-detail', {
             if (type === 'card') {
                 if (!this.itemCard.name) {
                     this.createNotificationError({
-                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.itemCard.name')
+                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.name')
                     });
                     validated = false;
                 }
 
                 if (!this.itemCard.internalName) {
                     this.createNotificationError({
-                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.itemCard.internalName')
+                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.internalName')
                     });
                     validated = false;
                 }
@@ -321,7 +321,7 @@ Component.register('eccb-tree-node-detail', {
                 this.createdComponent();
             }).catch((error) => {
                 this.createNotificationError({
-                    title: this.$tc('eccb.tree-node.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             })
@@ -332,12 +332,12 @@ Component.register('eccb-tree-node-detail', {
             this.children.remove(item.id);
             this.treeNodeRepository.delete(item.id, Context.api).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('eccb.step-set.save-success.title'),
-                    message: this.$tc('eccb.step-set.save-success.text')
+                    title: this.$tc('eccb.save-success.title'),
+                    message: this.$tc('eccb.save-success.text')
                 });
             }).catch((exception) => {
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.error'),
+                    title: this.$tc('eccb.error'),
                     message: exception
                 });
                 this.createdComponent();
@@ -366,7 +366,7 @@ Component.register('eccb-tree-node-detail', {
                 await this.createdComponent();
             } catch (error) {
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             }

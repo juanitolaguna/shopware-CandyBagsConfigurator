@@ -132,14 +132,26 @@ Component.register('eccb-step-set-detail', {
             this.onSave();
         },
 
+        validate() {
+            let validated = true;
+                if (!this.stepSet.name) {
+                    this.createNotificationError({
+                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.name')
+                    });
+                    validated = false;
+                }
+            return validated;
+        },
+
         async onSave() {
+            if (!this.validate()) return;
             this.isLoading = true;
             try {
                 await this.stepSetRepository.save(this.stepSet, Context.api);
                 await this.createdComponent();
             } catch (error) {
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.detail.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             }
@@ -161,12 +173,12 @@ Component.register('eccb-step-set-detail', {
                 this.inlineEdit = false;
                 this.getSteps();
                 this.createNotificationSuccess({
-                    title: this.$tc('eccb.step-set.save-success.title'),
-                    message: this.$tc('eccb.step-set.save-success.text')
+                    title: this.$tc('eccb.save-success.title'),
+                    message: this.$tc('eccb.save-success.text')
                 });
             }).catch((error) => {
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             })
@@ -176,13 +188,13 @@ Component.register('eccb-step-set-detail', {
             this.steps.remove(item.id);
             this.treeNodeRepository.delete(item.id, Context.api).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('eccb.step-set.save-success.title'),
-                    message: this.$tc('eccb.step-set.save-success.text')
+                    title: this.$tc('eccb.save-success.title'),
+                    message: this.$tc('eccb.save-success.text')
                 });
-            }).catch((exception) => {
+            }).catch((error) => {
                 this.createNotificationError({
-                    title: this.$tc('eccb.step-set.error'),
-                    message: exception
+                    title: this.$tc('eccb.error'),
+                    message: error
                 });
                 this.createdComponent();
             })

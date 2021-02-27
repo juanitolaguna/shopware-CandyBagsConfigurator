@@ -25,7 +25,7 @@ Component.extend('eccb-tree-node-create', 'eccb-tree-node-detail', {
             }
 
             if (this.$route.query.stepSetId) {
-                return {name: 'eccb.plugin.tree-node.detail', params: {id: this.$route.query.stepSetId}};
+                return {name: 'eccb.plugin.detail', params: {id: this.$route.query.stepSetId}};
             } else {
                 return {name: 'eccb.plugin.detail', params: {id: this.$route.query.stepSetId}};
             }
@@ -119,13 +119,13 @@ Component.extend('eccb-tree-node-create', 'eccb-tree-node-detail', {
                 this.$router.push({name: 'eccb.plugin.tree-node.detail', params: {id: this.treeNode.id}});
 
                 this.createNotificationSuccess({
-                    title: this.$tc('eccb.tree-node.save-success.title'),
-                    message: this.$tc('eccb.tree-node.save-success.text')
+                    title: this.$tc('eccbb.save-success.title'),
+                    message: this.$tc('ecc.save-success.text')
                 });
 
             } catch (error) {
                 this.createNotificationError({
-                    title: this.$tc('eccb.tree-node.error'),
+                    title: this.$tc('eccb.error'),
                     message: error
                 });
             }
