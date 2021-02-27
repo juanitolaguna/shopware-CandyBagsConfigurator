@@ -50,7 +50,7 @@ Component.register('eccb-step-set-detail', {
             return [
                 {
                     property: 'stepDescription',
-                    label: 'Step Description',
+                    label: 'eccb.column.sequence.stepDescription',
                     inlineEdit: 'string',
                     routerLink: 'eccb.plugin.tree-node.detail',
                     primary: true
@@ -58,13 +58,13 @@ Component.register('eccb-step-set-detail', {
 
                 {
                     property: 'item.position',
-                    label: 'Position',
+                    label: 'eccb.column.position',
                     inlineEdit: 'number',
                 },
 
                 {
                     property: 'item.active',
-                    label: 'Active',
+                    label: 'eccb.column.active',
                     inlineEdit: 'boolean',
                 }
             ]

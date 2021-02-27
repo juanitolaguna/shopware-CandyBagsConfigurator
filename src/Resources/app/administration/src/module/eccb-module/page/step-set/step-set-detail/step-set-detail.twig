@@ -4,7 +4,7 @@
         <template #smart-bar-header>
             <img v-if="stepSet && !stepSet.active" class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1-inactive.svg' | asset">
             <img v-else class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1.svg' | asset">
-            <h2 style="display: inline;" v-html="stepSet ? stepSet.name : 'Step Set Detail'"></h2>
+            <h2 style="display: inline;" v-html="stepSet && stepSet.name ? stepSet.name : $tc('eccb.sequence.detail-title')"></h2>
         </template>
 
         <template #language-switch>
@@ -18,7 +18,7 @@
             <template #smart-bar-actions>
                 {% block eccb_step_set_detail_smart_bar_actions_save %}
                     <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
-                        {{ $tc('eccb.step-set.detail.save') }}
+                        {{ $tc('eccb.button.save') }}
                     </sw-button>
                 {% endblock %}
 
@@ -35,19 +35,19 @@
             <sw-card-view v-if="stepSet" :large="false">
                 <sw-card :large="false">
                     <sw-text-field
-                            :label="$tc('eccb.name')"
+                            :label="$tc('eccb.field.name')"
                             v-model="stepSet.name">
                     </sw-text-field>
 
                     <sw-text-field
-                            :label="$tc('eccb.description')"
+                            :label="$tc('eccb.field.description')"
                             v-model="stepSet.description"
                     >
                     </sw-text-field>
 
 
                     <eccb-media-field
-                            :label="$tc('eccb.image')"
+                            :label="$tc('eccb.field.image')"
                             v-model="stepSet.mediaId"
                             :showUploadField="false"
                             :showControls="false"
@@ -56,7 +56,7 @@
                     >
                     </eccb-media-field>
 
-                    <sw-checkbox-field :label="$tc('eccb.active')"
+                    <sw-checkbox-field :label="$tc('eccb.field.active')"
                                        v-model="stepSet.active"></sw-checkbox-field>
 
                 </sw-card>
@@ -66,7 +66,7 @@
 
                     <template #title>
                         <h2>
-                            {{ $tc('eccb.step-set.detail.steps') }}
+                            {{ $tc('eccb.sequence.steps') }}
                         </h2>
                     </template>
 
@@ -76,7 +76,7 @@
                                 variant="primary"
                                 :routerLink="{name: 'eccb.plugin.tree-node.create', query: { stepSetId: stepSet.id }}"
                         >
-                            {{ $tc('eccb.step-set.detail.addStep') }}
+                            {{ $tc('eccb.sequence.addStep') }}
                         </sw-button>
                     </template>
 
@@ -95,11 +95,11 @@
                         >
                             <template #actions="{ item }">
                                 <sw-context-menu-item @click="editTreeNode(item)">
-                                    Edit
+                                    {{ $tc('eccb.button.edit') }}
                                 </sw-context-menu-item>
 
                                 <sw-context-menu-item variant="danger" @click="deleteTreeNode(item)">
-                                    Remove
+                                    {{ $tc('eccb.button.remove') }}
                                 </sw-context-menu-item>
                             </template>
 
@@ -131,7 +131,7 @@
 
         <template #sidebar>
             <sw-sidebar>
-                <sw-sidebar-item ref="sidebar" title="Image" icon="default-object-image">
+                <sw-sidebar-item ref="sidebar" :title="$tc('eccb.field.image')" icon="default-object-image">
                     <div class="image-container">
                         <img v-if="stepSet && stepSet.media && stepSet.media.url"
                              class="image"

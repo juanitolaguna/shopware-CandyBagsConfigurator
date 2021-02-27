@@ -70,7 +70,7 @@ Component.register('eccb-item-set-detail', {
                 {
                     property: 'internalName',
                     dataIndex: 'internalName',
-                    label: 'Name',
+                    label: 'eccb.itemSet.internalName',
                     inlineEdit: 'string',
                     routerLink: 'eccb.plugin.item-set.item.detail',
                     primary: true
@@ -78,25 +78,25 @@ Component.register('eccb-item-set-detail', {
 
                 {
                     property: 'position',
-                    label: 'Position',
+                    label: 'eccb.column.position',
                     inlineEdit: 'number',
                 },
 
                 {
                     property: 'active',
-                    label: 'Active',
+                    label: 'eccb.column.active',
                     inlineEdit: 'boolean',
                 },
 
                 {
                     property: 'purchasable',
-                    label: 'Purchasable',
+                    label: 'eccb.column.purchasable',
                     inlineEdit: 'boolean',
                 },
 
                 {
                     property: 'terminal',
-                    label: 'Terminal',
+                    label: 'eccb.column.terminal',
                     inlineEdit: 'boolean',
                 }
             ]

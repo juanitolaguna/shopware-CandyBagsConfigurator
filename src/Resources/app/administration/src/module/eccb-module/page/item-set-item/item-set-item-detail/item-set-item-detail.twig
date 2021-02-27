@@ -26,7 +26,7 @@
             <template #smart-bar-actions>
                 {% block eccb_item_set_item_detail_smart_bar_actions_save %}
                     <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
-                        {{ $tc('eccb.item-set-item.detail.save') }}
+                        {{ $tc('eccb.button.save') }}
                     </sw-button>
                 {% endblock %}
             </template>
@@ -39,7 +39,7 @@
                     {# bei card type auf disabled #}
                     <sw-text-field
                             :disabled="item.type === 'card'"
-                            :label="$tc('eccb.name')"
+                            :label="$tc('eccb.itemSet.internalName')"
                             v-model="item.internalName">
                     </sw-text-field>
 
@@ -47,18 +47,18 @@
                     <sw-select-field
                             :disabled="true"
                             v-model="item.type"
-                            :label="$tc('eccb.item.type')">
+                            :label="$tc('eccb.field.type')">
                         <option value="card">Card</option>
                     </sw-select-field>
 
 
-                    <sw-checkbox-field :label="$tc('eccb.active')"
+                    <sw-checkbox-field :label="$tc('eccb.field.active')"
                                        v-model="item.active"></sw-checkbox-field>
 
-                    <sw-checkbox-field :label="$tc('eccb.purchasable')"
+                    <sw-checkbox-field :label="$tc('eccb.field.purchasable')"
                                        v-model="item.purchasable"></sw-checkbox-field>
 
-                    <sw-checkbox-field :label="$tc('eccb.terminal')"
+                    <sw-checkbox-field :label="$tc('eccb.field.terminal')"
                                        v-model="item.terminal"></sw-checkbox-field>
 
                 </sw-card>
@@ -67,18 +67,18 @@
                 <sw-card v-if="itemCard && item && item.type == 'card'">
                     <sw-text-field
                             @input="onCardNameInput"
-                            :label="$tc('eccb.itemCardName')"
+                            :label="$tc('eccb.field.name')"
                             v-model="itemCard.name">
                     </sw-text-field>
 
                     <sw-text-field
-                            :label="$tc('eccb.description')"
+                            :label="$tc('eccb.field.description')"
                             v-model="itemCard.description">
                     </sw-text-field>
 
                     <eccb-media-field
                             v-if="itemCard"
-                            :label="$tc('eccb.image')"
+                            :label="$tc('eccb.field.image')"
                             v-model="itemCard.mediaId"
                             :showUploadField="false"
                             :showControls="false"
@@ -93,7 +93,7 @@
 
         <template #sidebar>
             <sw-sidebar>
-                <sw-sidebar-item ref="sidebar" title="Image" icon="default-object-image">
+                <sw-sidebar-item ref="sidebar" :title="$tc('eccb.field.image')" icon="default-object-image">
                     <div class="image-container">
                         <img v-if="itemCard && itemCard.media && itemCard.media.url"
                              class="image"

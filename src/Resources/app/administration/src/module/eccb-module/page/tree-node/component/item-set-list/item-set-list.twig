@@ -2,7 +2,7 @@
     <sw-card :large="false" v-if="!treeNode._isNew">
         <template #title>
             <h2>
-                {{ $tc('eccb.tree-node.detail.itemSets') }}
+                {{ $tc('eccb.node.itemSets') }}
             </h2>
         </template>
 
@@ -14,12 +14,12 @@
                         :routerLink="{name: 'eccb.plugin.item-set.create', query: { treeNodeId: treeNode.id}}"
                         style="margin-right: 2em"
                 >
-                    {{ $tc('eccb.tee-node.detail.addItemSet') }}
+                    {{ $tc('eccb.node.addItemSet') }}
                 </sw-button>
 
                 <sw-multi-select
                         v-if="itemSetOptions && itemSetSelectedValues"
-                        :label="'Item Sets'"
+                        :label="$tc('eccb.node.selectItemSets')"
 
                         :options="itemSetOptions"
                         :value="itemSetSelectedValues"
@@ -53,7 +53,7 @@
             >
                 <template #actions="{ item }">
                     <sw-context-menu-item variant="danger" @click="onItemSetRemoveFromGrid(item)">
-                        Remove
+                        {{ $tc('eccb.button.remove') }}
                     </sw-context-menu-item>
                 </template>
 
@@ -80,7 +80,9 @@
                         <router-link
                                 :to="{name:'eccb.plugin.tree-node.create', query: { treeNodeItemSetId: item.id, stepSetId: treeNode.stepSetId, parentId: treeNode.id }}">
                             <sw-icon name="default-basic-plus-circle" color="#ED1C24" size="12px"></sw-icon>
-                            <span style="margin-left: 0.5em">Add Next Step</span>
+                            <span style="margin-left: 0.5em">
+                                 {{ $tc('eccb.button.addNextStep') }}
+                            </span>
                         </router-link>
                     </template>
                     <template v-else>

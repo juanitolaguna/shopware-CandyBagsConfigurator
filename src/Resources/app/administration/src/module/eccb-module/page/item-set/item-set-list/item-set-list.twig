@@ -13,12 +13,12 @@
         <template #smart-bar-header>
             <h2>
                 {% block eccb_item_set_list_smart_bar_header_title %}
-                    {{ $tc('eccb.item-set-list.title') }}
+                    {{ $tc('eccb.itemSet.list-title') }}
                 {% endblock %}
             </h2>
         </template>
         <template #language-switch>
-            <sw-language-switch @on-change="changeLanguage"></sw-language-switch>
+            <sw-language-switch :disabled="true" @on-change="changeLanguage"></sw-language-switch>
         </template>
 
 
@@ -26,7 +26,7 @@
             <template #smart-bar-actions>
                 {% block eccb_item_set_list_smart_bar_actions_add %}
                     <sw-button :routerLink="{ name: 'eccb.plugin.item-set.create' }" variant="primary">
-                        {{ $tc('eccb.item-set-list.addItemSet') }}
+                        {{ $tc('eccb.itemSet.addItemSet') }}
                     </sw-button>
                 {% endblock %}
             </template>

@@ -75,13 +75,13 @@ Component.register('eccb-item-set-list-component', {
             return [
                 {
                     property: 'childNode.stepDescription',
-                    label: 'Next Step',
+                    label: 'eccb.column.stepDescription',
                     inlineEdit: 'string',
                 },
 
                 {
                     property: 'itemSet.internalName',
-                    label: 'ItemSet Name',
+                    label: 'eccb.column.itemSet',
                     inlineEdit: 'string',
                     primary: true,
                     routerLink: 'eccb.plugin.item-set.detail'
@@ -89,13 +89,13 @@ Component.register('eccb-item-set-list-component', {
 
                 {
                     property: 'childNode.item.position',
-                    label: 'Position',
+                    label: 'eccb.column.position',
                     inlineEdit: 'number',
                 },
 
                 {
                     property: 'childNode.item.active',
-                    label: 'Active',
+                    label: 'eccb.column.active',
                     inlineEdit: 'boolean',
                 }
             ]
@@ -210,7 +210,7 @@ Component.register('eccb-item-set-list-component', {
             this.currentInlineEditId = null;
         },
 
-        async search(searchTerm = '') {
+        async search(searchTerm = "") {
             const criteria = new Criteria();
 
             if (searchTerm !== "") {

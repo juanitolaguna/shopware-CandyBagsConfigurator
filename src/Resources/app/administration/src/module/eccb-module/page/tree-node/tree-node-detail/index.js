@@ -130,7 +130,7 @@ Component.register('eccb-tree-node-detail', {
             return [
                 {
                     property: 'stepDescription',
-                    label: 'Next Step',
+                    label: 'eccb.column.stepDescription',
                     inlineEdit: 'string',
                     routerLink: 'eccb.plugin.tree-node.detail',
                     primary: true
@@ -138,25 +138,25 @@ Component.register('eccb-tree-node-detail', {
 
                 {
                     property: 'item.position',
-                    label: 'Position',
+                    label: 'eccb.column.position',
                     inlineEdit: 'number',
                 },
 
                 {
                     property: 'item.active',
-                    label: 'Active',
+                    label: 'eccb.column.active',
                     inlineEdit: 'boolean',
                 },
 
                 {
                     property: 'item.purchasable',
-                    label: 'Purchasable',
+                    label: 'eccb.column.purchasable',
                     inlineEdit: 'boolean',
                 },
 
                 {
                     property: 'item.terminal',
-                    label: 'Terminal',
+                    label: 'eccb.column.terminal',
                     inlineEdit: 'boolean',
                 },
             ]

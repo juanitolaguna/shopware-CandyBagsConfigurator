@@ -40,7 +40,7 @@ Component.register('eccb-step-set-list', {
                 {
                     property: 'name',
                     dataIndex: 'name',
-                    label: 'Name',
+                    label: 'eccb.column.name',
                     inlineEdit: 'string',
                     routerLink: 'eccb.plugin.detail',
                     primary: true
@@ -48,19 +48,19 @@ Component.register('eccb-step-set-list', {
 
                 {
                     property: 'description',
-                    label: 'Description',
+                    label: 'eccb.column.description',
                     inlineEdit: 'string',
                 },
 
                 {
                     property: 'position',
-                    label: 'Position',
+                    label: 'eccb.column.position',
                     inlineEdit: 'number',
                 },
 
                 {
                     property: 'active',
-                    label: 'Active',
+                    label: 'eccb.column.active',
                     inlineEdit: 'boolean',
                 },
             ]

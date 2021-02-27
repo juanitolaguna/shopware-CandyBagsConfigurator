@@ -18,7 +18,7 @@
                      :src="'eventcandycandybags/static/img/inactive.svg' | asset">
                 <img v-else class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-2.svg' | asset">
             </span>
-            <h2 style="display: inline;" v-html="treeNode ? treeNode.stepDescription : 'New Step Title'"></h2>
+            <h2 style="display: inline;" v-html="treeNode ? treeNode.stepDescription : ''"></h2>
         </template>
 
         <template #language-switch>
@@ -32,7 +32,7 @@
             <template #smart-bar-actions>
                 {% block eccb_tree_node_detail_smart_bar_actions_save %}
                     <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
-                        {{ $tc('eccb.tree-node.detail.save') }}
+                        {{ $tc('eccb.button.save') }}
                     </sw-button>
                 {% endblock %}
 
@@ -50,7 +50,7 @@
                 <sw-card :large="false">
 
                     <sw-text-field
-                            :label="$tc('eccb.stepDescription')"
+                            :label="$tc('eccb.field.stepDescription')"
                             v-model="treeNode.stepDescription">
                     </sw-text-field>
 
@@ -58,7 +58,7 @@
                     <sw-select-field
                             :disabled="!treeNode.parentId"
                             v-model="treeNode.item.type"
-                            :label="$tc('eccb.item.type')">
+                            :label="$tc('eccb.field.type')">
                         <option value="card">Card</option>
                         <option v-if="!treeNode.parentId" value="step">Step</option>
                     </sw-select-field>
@@ -66,19 +66,19 @@
 
                     <sw-checkbox-field
                             style="display: inline-block; margin-right: 2em"
-                            :label="$tc('eccb.item.active')"
+                            :label="$tc('eccb.field.active')"
                             v-model="treeNode.item.active"></sw-checkbox-field>
 
                     <sw-checkbox-field
                             v-if="treeNode.item.type !== 'step'"
                             style="display: inline-block; margin-right: 2em"
-                            :label="$tc('eccb.item.purchasable')"
+                            :label="$tc('eccb.field.purchasable')"
                             v-model="treeNode.item.purchasable"></sw-checkbox-field>
 
                     <sw-checkbox-field
                             v-if="treeNode.item.type !== 'step'"
                             style="display: inline-block; margin-right: 2em"
-                            :label="$tc('eccb.item.terminal')"
+                            :label="$tc('eccb.field.terminal')"
                             v-model="treeNode.item.terminal"></sw-checkbox-field>
                 </sw-card>
 
@@ -90,7 +90,7 @@
                                 style="margin-right: 1em;"
                                 variant="primary"
                                 @click="createNewItemCard">
-                            New Card
+                            {{ $tc('eccb.itemCard.newCard') }}
                         </sw-button>
 
                         <sw-single-select
@@ -101,7 +101,7 @@
                                 labelValue="label"
                                 valueProperty="value"
                                 :placeholder="'Select a card...'"
-                                :label="'Card'"
+                                :label="$tc('eccb.itemCard.selectCard')"
                                 :value="treeNode.item.itemCardId"
                                 @change="changeCard"
                                 @search="searchCard"
@@ -148,19 +148,19 @@
 
                     <sw-text-field
                             v-if="itemCard"
-                            :label="$tc('eccb.itemCard.name')"
+                            :label="$tc('eccb.field.name')"
                             v-model="itemCard.name">
                     </sw-text-field>
 
                     <sw-text-field
                             v-if="itemCard"
-                            :label="$tc('eccb.itemCard.description')"
+                            :label="$tc('eccb.field.description')"
                             v-model="itemCard.description">
                     </sw-text-field>
 
                     <eccb-media-field
                             v-if="itemCard"
-                            :label="$tc('eccb.image')"
+                            :label="$tc('eccb.field.image')"
                             v-model="itemCard.mediaId"
                             :showUploadField="false"
                             :showControls="false"
@@ -175,7 +175,7 @@
                 <sw-card :large="false" v-if="!treeNode._isNew">
                     <template #title>
                         <h2>
-                            {{ $tc('eccb.tree-node.detail.items') }}
+                            {{ $tc('eccb.node.items') }}
                         </h2>
                     </template>
 
@@ -185,13 +185,13 @@
                                 variant="primary"
                                 :routerLink="createChildRoute"
                         >
-                            {{ $tc('eccb.tee-node.detail.addChild') }}
+                            {{ $tc('eccb.node.addChild') }}
                         </sw-button>
                     </template>
 
                     <template #grid>
                         <eccb-data-grid
-                                v-if="children && children.length > 0"
+                                v-if="children"
                                 ref="treeNodeGrid"
                                 :dataSource="children"
                                 :columns="childColumns"
@@ -205,7 +205,7 @@
                         >
                             <template #actions="{ item }">
                                 <sw-context-menu-item variant="danger" @click="deleteTreeNode(item)">
-                                    Remove
+                                    {{ $tc('eccb.button.remove') }}
                                 </sw-context-menu-item>
                             </template>
 
@@ -263,6 +263,7 @@
 
                             <template #pagination>
                                 <sw-pagination
+                                        v-if="children.length > 0"
                                         :total="total"
                                         :limit="limit"
                                         :page="page"
@@ -289,7 +290,7 @@
 
         <template #sidebar>
             <sw-sidebar>
-                <sw-sidebar-item  ref="sidebar" title="Image" icon="default-object-image">
+                <sw-sidebar-item  ref="sidebar" :title="$tc('eccb.field.image')" icon="default-object-image">
                     <div class="image-container">
                         <img v-if="itemCard && itemCard.media && itemCard.media.url && treeNode.item.type === 'card'"
                              class="image"

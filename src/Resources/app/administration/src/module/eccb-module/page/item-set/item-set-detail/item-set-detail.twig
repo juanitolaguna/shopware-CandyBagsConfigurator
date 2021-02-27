@@ -12,12 +12,13 @@
         </template>
 
         <template #smart-bar-header>
-            <h2 style="display: inline;" v-html="itemSet ? itemSet.name : 'Step Set Detail'"></h2>
+            <h2 style="display: inline;" v-html="itemSet && itemSet.internalName ? itemSet.internalName : $tc('eccb.itemSet.detail-title')"></h2>
         </template>
 
         <template #language-switch>
             <sw-language-switch v-if="itemSet"
-                                :disabled="itemSet._isNew"
+                    {# :disabled="itemSet._isNew" #}
+                                :disabled="true"
                                 @on-change="changeLanguage">
             </sw-language-switch>
         </template>
@@ -26,13 +27,13 @@
             <template #smart-bar-actions>
                 {% block eccb_item_set_detail_smart_bar_actions_save %}
                     <sw-button variant="primary" @click="onSave" :isLoading="isLoading">
-                        {{ $tc('eccb.item-set.detail.save') }}
+                        {{ $tc('eccb.button.save') }}
                     </sw-button>
                 {% endblock %}
 
                 {% block eccb_item_set_detail_smart_bar_actions_cancel %}
                     <sw-button :disabled="itemSet && itemSet.isLoading" @click="onClickListingButton">
-                        {{ $tc('eccb.item-set.list') }}
+                        {{ $tc('eccb.itemSet.goToList') }}
                     </sw-button>
                 {% endblock %}
             </template>
@@ -44,7 +45,7 @@
                     <sw-text-field
                             ref="internalName"
                             v-if="itemSet"
-                            :label="$tc('eccb.item-set.internalName')"
+                            :label="$tc('eccb.itemSet.internalName')"
                             v-model="itemSet.internalName">
                     </sw-text-field>
                 </sw-card>
@@ -52,17 +53,17 @@
                 <sw-card :large="false" v-if="!itemSet._isNew">
                     <template #title>
                         <h2>
-                            {{ $tc('eccb.item-set.items') }}
+                            {{ $tc('eccb.itemSet.items') }}
                         </h2>
                     </template>
                     <template #toolbar>
-                            <sw-button
-                                    variant="primary"
-                                    :routerLink="{name: 'eccb.plugin.item-set.item.create', query: { itemSetId: itemSet.id}}"
-                                    style="margin-right: 2em"
-                            >
-                                {{ $tc('eccb.tee-node.detail.addItem') }}
-                            </sw-button>
+                        <sw-button
+                                variant="primary"
+                                :routerLink="{name: 'eccb.plugin.item-set.item.create', query: { itemSetId: itemSet.id}}"
+                                style="margin-right: 2em"
+                        >
+                            {{ $tc('eccb.itemSet.addItem') }}
+                        </sw-button>
                     </template>
 
                     <template #grid>
@@ -76,7 +77,7 @@
                                 :naturalSorting="true"
                                 @inline-edit-save="onInlineEdit"
                                 :skeletonItemAmount="limit"
-{#                                @is-inline-edit="setInlineEdit"#}
+                                {# @is-inline-edit="setInlineEdit" #}
                                 :isLoading="isLoading"
                         >
 
