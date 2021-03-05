@@ -194,7 +194,7 @@ Component.register('eccb-step-set-detail', {
             }).catch((error) => {
                 this.createNotificationError({
                     title: this.$tc('eccb.error'),
-                    message: error
+                    message: this.createErrorMessage(error)
                 });
                 this.createdComponent();
             })
@@ -215,7 +215,15 @@ Component.register('eccb-step-set-detail', {
 
         createTreeNode() {
             this.$router.push({name: 'eccb.plugin.tree-node.create', query: { stepSetId: this.stepSet.id }});
-        }
+        },
+
+        createErrorMessage(exception) {
+            let error = '';
+            exception.response.data.errors.forEach(e => {
+                error += `Error.. o_0: <br> ${e.detail}<br>`
+            })
+            return error;
+        },
 
     },
 

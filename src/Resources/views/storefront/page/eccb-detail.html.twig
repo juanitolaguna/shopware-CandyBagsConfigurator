@@ -1,0 +1,43 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+
+{% block base_content %}
+    <div class="container-main">
+        <div class="cms-page eccb-outer-container" style="min-height: 100vh;">
+
+            {# {{ dump() }} #}
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-12">
+                    <div class="card">
+                        {% if entry.media %}
+                            {% sw_thumbnails 'candy-bag-set' with {
+                                media: entry.media,
+                                sizes: {
+                                    'default': '800px'
+                                },
+                                attributes: {
+                                    'class': 'img-fluid candy-bag-set',
+                                    'alt': entry.name,
+                                    'title': entry.name
+                                }
+                            } %}
+                        {% else %}
+                            {% sw_icon 'placeholder' style {
+                                'size': 'fluid'
+                            } %}
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title" style="text-align: left">{{ entry.name }}</h5>
+                            <p class="card-text">{{ entry.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-12">
+                    <div id="eccb_storefront_app">
+                        <App/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

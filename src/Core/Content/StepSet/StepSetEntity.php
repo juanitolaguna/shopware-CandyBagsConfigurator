@@ -72,9 +72,9 @@ class StepSetEntity extends Entity
     }
 
     /**
-     * @return MediaEntity
+     * @return MediaEntity|null
      */
-    public function getMedia(): MediaEntity
+    public function getMedia(): ?MediaEntity
     {
         return $this->media;
     }

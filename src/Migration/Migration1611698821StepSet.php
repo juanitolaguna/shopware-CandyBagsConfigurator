@@ -3,7 +3,9 @@
 namespace EventCandyCandyBags\Migration;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class Migration1611698821StepSet extends MigrationStep
 {
@@ -41,10 +43,23 @@ class Migration1611698821StepSet extends MigrationStep
                 PRIMARY KEY (`eccb_step_set_id`,`language_id`),
                 KEY `fk.eccb_step_set_translation.eccb_step_set_id` (`eccb_step_set_id`),
                 KEY `fk.eccb_step_set_translation.language_id` (`language_id`),
+                CONSTRAINT `uc.eccb_step_set_translation.name` UNIQUE (`language_id`, `name`),
                 CONSTRAINT `fk.eccb_step_set_translation.eccb_step_set_id` FOREIGN KEY (`eccb_step_set_id`) REFERENCES `eccb_step_set` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT `fk.eccb_step_set_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;        
         ");
+
+
+        $connection->executeUpdate('
+            INSERT INTO `seo_url_template` (`id`, `sales_channel_id`, `route_name`, `entity_name`, `template`, `is_valid`, `custom_fields`, `created_at`, `updated_at`)
+            VALUES (:id, NULL, :routeName, :entityName, :template, 1, NULL, :createdAt, NULL);
+        ', [
+            'id' => Uuid::randomBytes(),
+            'routeName' => 'eccb.candybags',
+            'entityName' => 'eccb_step_set',
+            'template' => 'candy-bags/{{ entry.name|lower }}',
+            'createdAt' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+        ]);
     }
 
     public function updateDestructive(Connection $connection): void

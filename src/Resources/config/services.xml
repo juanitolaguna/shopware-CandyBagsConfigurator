@@ -5,6 +5,22 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!-- Controller -->
+        <service id="EventCandyCandyBags\Controller\StepSetController" public="true">
+            <argument id="Shopware\Storefront\Page\GenericPageLoader" type="service"/>
+        </service>
+
+        <!-- SeoUrl -->
+        <service id="EventCandyCandyBags\Core\Content\StepSet\StepSetSeoUrlRoute">
+            <argument type="service" id="EventCandyCandyBags\Core\Content\StepSet\StepSetDefinition"/>
+            <tag name="shopware.seo_url.route"/>
+        </service>
+
+        <service id="EventCandyCandyBags\Core\Content\StepSet\StepSetSeoUrlListener">
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlUpdater"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <!-- Core/Content -->
         <service id="EventCandyCandyBags\Core\Content\StepSet\StepSetDefinition">
             <tag name="shopware.entity.definition" entity="eccb_step_set"/>

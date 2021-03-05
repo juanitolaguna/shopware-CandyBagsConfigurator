@@ -41,7 +41,7 @@ Component.extend('eccb-step-set-create','eccb-step-set-detail', {
                 this.isLoading = false;
                 this.createNotificationError({
                     title: this.$tc('eccb.error'),
-                    message: error
+                    message: this.createErrorMessage(error)
                 });
             })
         }

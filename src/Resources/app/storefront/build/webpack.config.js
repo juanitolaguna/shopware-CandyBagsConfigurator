@@ -1,0 +1,36 @@
+const {resolve, join} = require('path');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
+module.exports = ({config}) => {
+    console.log(config);
+    return {
+        mode: 'production',
+        module: {
+            rules: [
+                {
+                    test: /\.vue$/,
+                    use: [
+                        {
+                            loader: 'vue-loader'
+                        }
+                    ]
+                }
+            ]
+        },
+        plugins: [
+            new VueLoaderPlugin()
+        ],
+        resolveLoader: {
+            modules: [
+                resolve(join(__dirname, '../', 'node_modules')),
+                resolve(join(__dirname, '../../../../../../../../', 'vendor/shopware/storefront/Resources/app/storefront/node_modules')),
+            ]
+        },
+        resolve: {
+            alias: {
+                'vue': resolve(join(__dirname, '..', 'node_modules', 'vue')),
+                'v-lazy-image': resolve(join(__dirname, '..', 'node_modules', 'v-lazy-image'))
+            }
+        }
+    };
+}
