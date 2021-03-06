@@ -11,8 +11,7 @@
     }
   ],
   "require": {
-    "shopware/core": ">=6.3.4.1",
-    "event-candy/sets-plugin": ">=v1.0.0"
+    "shopware/core": ">=6.3.4.1"
   },
   "autoload": {
     "psr-4": {
