@@ -1,19 +1,17 @@
 const {resolve, join} = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
+console.log('Custom CandyBags config');
+
 module.exports = ({config}) => {
-    console.log(config);
+    console.log(config.module.rules);
     return {
         mode: 'production',
         module: {
             rules: [
                 {
                     test: /\.vue$/,
-                    use: [
-                        {
-                            loader: 'vue-loader'
-                        }
-                    ]
+                    loader: 'vue-loader'
                 }
             ]
         },
@@ -21,10 +19,9 @@ module.exports = ({config}) => {
             new VueLoaderPlugin()
         ],
         resolveLoader: {
-            modules: [
-                resolve(join(__dirname, '../', 'node_modules')),
-                resolve(join(__dirname, '../../../../../../../../', 'vendor/shopware/storefront/Resources/app/storefront/node_modules')),
-            ]
+            alias: {
+                'vue-loader': resolve(join(__dirname, '..', 'node_modules', 'vue-loader'))
+            }
         },
         resolve: {
             alias: {
