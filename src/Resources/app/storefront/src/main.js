@@ -8,7 +8,7 @@ export const bus = new Vue()
 new Vue({
     el: '#eccb_storefront_app',
     template: '<EccbApp />',
-    components: {EccbApp},
+    components: {EccbApp}
 });
 
 

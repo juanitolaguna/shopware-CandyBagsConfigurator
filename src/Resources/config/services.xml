@@ -21,6 +21,26 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <!-- Store Api Routes -->
+        <service id="EventCandyCandyBags\Core\Content\StepSet\SalesChannel\StepSetRoute" public="true">
+            <argument type="service" id="eccb_step_set.repository"/>
+        </service>
+
+        <service id="EventCandyCandyBags\Core\Content\StepSet\SalesChannel\Detail\StepSetDetailRoute" public="true">
+            <argument type="service" id="eccb_step_set.repository"/>
+        </service>
+
+        <service id="EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Listing\TreeNodeListingRoute" public="true">
+            <argument type="service" id="eccb_tree_node.repository"/>
+        </service>
+
+        <service id="EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail\TreeNodeDetailRoute" public="true">
+            <argument type="service" id="eccb_tree_node.repository"/>
+            <argument type="service" id="eccb_tree_node_item_set.repository"/>
+        </service>
+
+
+
         <!-- Core/Content -->
         <service id="EventCandyCandyBags\Core\Content\StepSet\StepSetDefinition">
             <tag name="shopware.entity.definition" entity="eccb_step_set"/>

@@ -41,3 +41,15 @@
         </div>
     </div>
 {% endblock %}
+
+{% block base_script_router %}
+    <script>
+        window.stepSetEntityId = '{{ entry.id }}';
+        window.entityName = '{{ entry.name }}';
+        window.img = {};
+        window['img']['next'] = '{{ asset('storefront/img/next.svg', '@EventCandyCandyBags') }}';
+        window['img']['last'] = '{{ asset('storefront/img/last.svg', '@EventCandyCandyBags') }}';
+    </script>
+    {{ parent() }}
+{% endblock %}
+

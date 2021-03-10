@@ -19,9 +19,13 @@ module.exports = ({config}) => {
             new VueLoaderPlugin()
         ],
         resolveLoader: {
-            alias: {
-                'vue-loader': resolve(join(__dirname, '..', 'node_modules', 'vue-loader'))
-            }
+            // alias: {
+            //     'vue-loader': resolve(join(__dirname, '..', 'node_modules', 'vue-loader'))
+            // },
+            modules: [
+                resolve(join(__dirname, '../', 'node_modules')),
+                resolve(join(__dirname, '../../../../../../../../', 'vendor/shopware/storefront/Resources/app/storefront/node_modules')),
+            ]
         },
         resolve: {
             alias: {
