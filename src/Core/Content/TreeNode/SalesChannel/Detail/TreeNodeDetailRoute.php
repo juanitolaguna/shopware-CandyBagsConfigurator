@@ -68,7 +68,9 @@ class TreeNodeDetailRoute
         //ToDo: set item Sets
         $treeNodeItemSetCriteria = new Criteria();
         $treeNodeItemSetCriteria->addFilter(new EqualsFilter('treeNodeId', $entry->getId()))
-            ->addAssociation('itemSet.items.itemCard.media');
+            ->addAssociation('itemSet.items.itemCard.media')
+            ->addAssociation('childNode.children')
+            ->addAssociation('childNode.itemSets');
 
         /** @var EntitySearchResult $itemSetsSearchResult */
         $itemSetsSearchResult = $this->treeNodeItemSetRepository->search($treeNodeItemSetCriteria, $context->getContext());
@@ -78,7 +80,13 @@ class TreeNodeDetailRoute
 
         /** @var TreeNodeItemSetEntity $entity */
         foreach ($itemSetsSearchResult->getEntities() as $entity) {
-            $itemSets[] = $entity->getItemSet();
+            $itemSet = $entity->getItemSet();
+
+            if ($entity->getChildNode() !== null) {
+                $itemSet->setChildNode($entity->getChildNode());
+            }
+
+            $itemSets[] = $itemSet;
         }
 
         $entry->setItemSets(new ItemSetCollection($itemSets));

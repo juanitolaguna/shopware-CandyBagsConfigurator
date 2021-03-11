@@ -22,9 +22,10 @@ class TreeNodeItemSetEntity extends Entity
     protected $itemSet;
 
     /**
-     * @var TreeNodeEntity
+     * @var TreeNodeEntity|null
      */
     protected $childNode;
+
 
     /**
      * @return TreeNodeEntity
@@ -59,9 +60,9 @@ class TreeNodeItemSetEntity extends Entity
     }
 
     /**
-     * @return TreeNodeEntity
+     * @return TreeNodeEntity|null
      */
-    public function getChildNode(): TreeNodeEntity
+    public function getChildNode(): ?TreeNodeEntity
     {
         return $this->childNode;
     }
@@ -73,4 +74,5 @@ class TreeNodeItemSetEntity extends Entity
     {
         $this->childNode = $childNode;
     }
+
 }

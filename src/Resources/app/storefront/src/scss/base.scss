@@ -9,6 +9,9 @@
 
     }
   }
+  .selected {
+    border: 2px solid #ea8e10 !important;
+  }
 
   .ec-cards {
     display: none;
@@ -63,7 +66,7 @@
   .ec-card {
     border-radius: 6px;
     border: none;
-    max-width: 300px;
+    max-width: 14rem;
     margin: 0.5em;
 
     -webkit-box-shadow: 1px 1px 8px 0px rgba(161, 161, 161, 1);
@@ -73,8 +76,8 @@
 
     .card-image-top-wrapper {
       width: inherit;
-      min-height: 300px;
-      max-height: 300px;
+      min-height: 14rem;
+      max-height: 14rem;
       display: flex;
       align-items: flex-end;
       justify-content: center;

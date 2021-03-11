@@ -5,6 +5,7 @@ namespace EventCandyCandyBags\Core\Content\ItemSet;
 use EventCandyCandyBags\Core\Content\Item\ItemCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\Aggregate\ItemSetTranslation\ItemSetTranslationCollection;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
+use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -21,6 +22,12 @@ class ItemSetEntity extends Entity {
      * @var ItemCollection|null
      */
     protected $items;
+
+    /**
+     * Only for storefront use
+     * @var TreeNodeEntity|null
+     */
+    protected $childNode;
 
 
     /**
@@ -75,5 +82,23 @@ class ItemSetEntity extends Entity {
     {
         $this->treeNodes = $treeNodes;
     }
+
+    /**
+     * @return TreeNodeEntity|null
+     */
+    public function getChildNode(): ?TreeNodeEntity
+    {
+        return $this->childNode;
+    }
+
+    /**
+     * @param TreeNodeEntity|null $childNode
+     */
+    public function setChildNode(?TreeNodeEntity $childNode): void
+    {
+        $this->childNode = $childNode;
+    }
+
+
 
 }

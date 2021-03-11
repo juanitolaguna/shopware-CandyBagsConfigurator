@@ -60,6 +60,7 @@ class TreeNodeEntity extends Entity
      */
     protected $translations;
 
+
     /**
      * @return ItemEntity|null
      */
@@ -203,8 +204,5 @@ class TreeNodeEntity extends Entity
     {
         $this->treeNodeItemSetId = $treeNodeItemSetId;
     }
-
-
-
 
 }

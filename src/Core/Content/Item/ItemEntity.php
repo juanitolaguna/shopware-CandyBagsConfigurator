@@ -88,6 +88,12 @@ class ItemEntity extends Entity
     protected $itemCard;
 
     /**
+     * Storefront
+     * @var bool|null
+     */
+    protected $selected = false;
+
+    /**
      * @return int
      */
     public function getPosition(): int
@@ -278,4 +284,22 @@ class ItemEntity extends Entity
     {
         $this->itemCard = $itemCard;
     }
+
+    /**
+     * @return bool|null
+     */
+    public function getSelected(): ?bool
+    {
+        return $this->selected;
+    }
+
+    /**
+     * @param bool|null $selected
+     */
+    public function setSelected(?bool $selected): void
+    {
+        $this->selected = $selected;
+    }
+
+
 }
