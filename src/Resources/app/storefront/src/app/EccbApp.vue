@@ -119,23 +119,25 @@ export default {
 
     // async await alternative
     async _getRootNodes() {
-      let data = {
-        includes: {eccb_tree_node: ["id"]}
-      }
+      const data = {
+        includes: { eccb_tree_node: ["id"] }
+      };
 
       await new Promise((resolve, reject) => {
         const callback = (response) => {
-          this.rootNodes = JSON.parse(response).elements.map((el, index) => {
-            return {
-              index: index,
-              ...el
-            }
-          });
+          // Parsing JSON can fail.
+          try {
+            const parsed = JSON.parse(response);
+            const { elements = [] } = parsed ?? {};
+            this.rootNodes = elements.map((element, index) => ({ ...element, index }));
+            resolve(this.rootNodes[0].id);
+          } catch (error) {
+            reject(error);
+          }
         }
-        resolve(this.rootNodes[0].id);
+      
+        this.httpClient.post(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, JSON.stringify(data), callback)
       });
-
-      this.httpClient.post(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, JSON.stringify(data), callback)
     },
 
 
