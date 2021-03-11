@@ -139,35 +139,43 @@ export default {
     },
 
 
+    /**
+     * @property {object} payload                   - optional, not used on mounted call
+     * @property {number} payload.parentIndex       - itemSetType, treeNodeType
+     * @property {number} payload.childIndex        - itemSetType
+     * @property {number} payload.itemSetIndex      - treeNodeType
+     * @property {number} payload.itemSetItemIndex  - treeNodeType
+     */
+    getTreeNode(treeNodeId, parentId = null, payload = null, selectedType = '') {
 
+      this.markSelectedItems(payload, selectedType);
+      this.chopOffFollowingSteps(payload);
 
-
-    getTreeNode(childId, parentId = null, payload = null, selectedType = '') {
-      // mark as selected
-      if (payload !== null) {
-        this.markSelectedItems(payload, selectedType);
-      }
-
-      // remove steps after selected card
-      if (payload !== null) {
-        this.treeNodes = this.treeNodes.slice(0, payload.parentIndex + 1);
-      }
-
-      let data = JSON.stringify({});
-      this.httpClient.post(`/store-api/v{version}/tree-node/${childId}`, data, (response) => {
+      this.httpClient.post(`/store-api/v{version}/tree-node/${treeNodeId}`, '{}', (response) => {
         const res = JSON.parse(response);
         res['active'] = true;
+
+        if (parentId === null) {
+          res['rootNode'] = treeNodeId
+        }
+
         this.toggleAccordeon(parentId)
         this.treeNodes.push(res);
 
-        // scroll to new header on update
+        // scroll to new header on update (update hook)
         this.lastView = res.id;
 
       });
     },
 
+    chopOffFollowingSteps(payload) {
+      if ((payload !== null) && payload.hasOwnProperty('parentIndex')) {
+        this.treeNodes = this.treeNodes.slice(0, payload.parentIndex + 1);
+      }
+    },
 
     markSelectedItems(payload, selectedType) {
+      if (payload === null) return;
       if (selectedType === 'treeNode') {
         this.deselectTreeNodes(payload.parentIndex)
         this.deselectItemSets(payload.parentIndex);
@@ -180,8 +188,6 @@ export default {
         this.deselectItemSets(payload.parentIndex);
 
         this.treeNodes[payload.parentIndex]['itemSets'][payload.itemSetIndex]['items'][payload.itemSetItemIndex]['selected'] = true;
-
-
       }
     },
 
