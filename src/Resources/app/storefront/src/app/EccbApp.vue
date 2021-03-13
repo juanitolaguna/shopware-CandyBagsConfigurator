@@ -59,7 +59,6 @@
 </template>
 
 <script>
-import StoreApiClient from 'src/service/store-api-client.service';
 import Debouncer from 'src/helper/debouncer.helper'
 import TreeNodeCard from "./component/TreeNodeCard.vue";
 import ItemCard from "./component/ItemCard.vue";
@@ -99,10 +98,6 @@ export default {
 
 
   computed: {
-    httpClient() {
-      return new StoreApiClient();
-    },
-
     headers() {
       const headers = new Headers();
       headers.append("sw-access-key", window.accessKey);
@@ -141,23 +136,32 @@ export default {
 
 
     async getRootNodes() {
-      const data = {
+      const raw = JSON.stringify({
         includes: {
           eccb_tree_node: ["id", "children", "itemSets"]
         }
+      });
+
+      const requestOptions = {
+        method: 'POST',
+        headers: this.headers,
+        body: raw,
+        redirect: 'follow'
       };
 
       return await new Promise((resolve, reject) => {
-        this.httpClient.post(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, JSON.stringify(data), (response) => {
-          try {
-            const parsed = JSON.parse(response);
-            const {elements = []} = parsed ? parsed : {};
-            this.rootNodes = elements.map((element, index) => ({...element, index}));
-            resolve(this.rootNodes[0].id);
-          } catch (error) {
-            reject(error);
-          }
-        });
+        return fetch(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, requestOptions)
+            .then(result => result.text())
+            .then(response => {
+              try {
+                const parsed = JSON.parse(response);
+                const {elements = []} = parsed ? parsed : {};
+                this.rootNodes = elements.map((element, index) => ({...element, index}));
+                resolve(this.rootNodes[0].id);
+              } catch (error) {
+                reject(error);
+              }
+            });
       });
     },
 
@@ -175,9 +179,9 @@ export default {
 
       this.isLoading = true
 
-      var raw = JSON.stringify({});
+      const raw = JSON.stringify({});
 
-      var requestOptions = {
+      const requestOptions = {
         method: 'POST',
         headers: this.headers,
         body: raw,
@@ -198,19 +202,6 @@ export default {
             this.isLoading = false;
           })
           .catch(error => console.log('error', error));
-
-
-      // this.httpClient.post(`/store-api/v{version}/tree-node/${treeNodeId}`, '{}', (response) => {
-      //   const res = JSON.parse(response);
-      //   res['active'] = true;
-      //   res['rootNodeIndex'] = this.setRootNodeIndex(parent, treeNodeId);
-      //   this.toggleAccordeon(parent);
-      //   this.treeNodes.push(res);
-      //
-      //   // scroll to new header on update hook
-      //   this.lastView = res.id;
-      //   this.isLoading = false;
-      // });
     },
 
     chopOffFollowingSteps(payload) {
