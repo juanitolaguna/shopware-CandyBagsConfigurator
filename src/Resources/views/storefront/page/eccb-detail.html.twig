@@ -5,9 +5,10 @@
     <div class="container-main">
         <div class="cms-page eccb-outer-container" style="min-height: 100vh;">
 
-            {# {{ dump() }} #}
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-12">
+             {{ dump() }}
+
+            <div class="row mb-3">
+                <div class="col-lg-4 col-md-5 col-12">
                     <div class="card">
                         {% if entry.media %}
                             {% sw_thumbnails 'candy-bag-set' with {
@@ -26,17 +27,17 @@
                                 'size': 'fluid'
                             } %}
                         {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title" style="text-align: left">{{ entry.name }}</h5>
-                            <p class="card-text">{{ entry.description }}</p>
-                        </div>
                     </div>
                 </div>
-                <div class="col-lg-9 col-md-8 col-12">
-                    <div id="eccb_storefront_app">
-                        <App/>
+                <div class="col-lg-8 col-md-7 col-12">
+                    <div class="card-body">
+                        <h1>{{ entry.name }}</h1>
+                        <p class="card-text ec-entity-description">{{ entry.description }}</p>
                     </div>
                 </div>
+            </div>
+            <div id="eccb_storefront_app">
+                <App/>
             </div>
         </div>
     </div>
@@ -45,10 +46,13 @@
 {% block base_script_router %}
     <script>
         window.stepSetEntityId = '{{ entry.id }}';
-        window.entityName = '{{ entry.name }}';
         window.img = {};
         window['img']['next'] = '{{ asset('storefront/img/next.svg', '@EventCandyCandyBags') }}';
         window['img']['last'] = '{{ asset('storefront/img/last.svg', '@EventCandyCandyBags') }}';
+        window['img']['placeholder'] = '{{ asset('storefront/img/placeholder.svg', '@EventCandyCandyBags') }}';
+        window['accessKey'] = '{{ context.salesChannel.accessKey }}';
+        window['contextToken'] = '{{ context.token }}';
+        window['languageId'] = '{{ context.salesChannel.languageId }}'
     </script>
     {{ parent() }}
 {% endblock %}

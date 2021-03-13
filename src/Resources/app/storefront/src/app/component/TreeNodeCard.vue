@@ -1,38 +1,83 @@
 <template>
-  <div @click="onSelect" :class="['card ec-card ', {selected: selected}]">
+  <div @click="onSelect" :class="['card ec-card ', {selected: child.item.selected}]">
     <div class="card-image-top-wrapper" style="width: inherit">
-      <img class="card-img-top" :src="child.item.itemCard.media.url" :alt="child.item.itemCard.name">
+      <img class="card-img-top" :src="image" :alt="child.item.itemCard.name">
     </div>
     <div class="card-body">
       <h5 class="card-title"
           :style="{paddingBottom: '0px'}">
-        {{ child.item.itemCard.name }}
-        <span v-if="child.selected"> {{child.selected}}</span>
+        {{ translate(child.item.itemCard, 'name') }}
       </h5>
-      <img class="ec-icon" v-if="child.children.length" :src="assets.next" alt="next">
-      <img class="ec-icon" v-else :src="assets.last" alt="last">
+      <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
+      <img class="ec-icon" v-else :src="assets.last" alt="last" title="last">
     </div>
   </div>
 </template>
 
 <script>
+import {translate} from "../utils/utils.js"
 
 export default {
-  props: ["child", "assets"],
+  props: ["child", "assets", "parentNode"],
 
   computed: {
-    selected() {
-      if (this.child.item.selected) {
-        return this.child.item.selected;
+    displayNext() {
+      return !this.terminal() && (this.nextStep() || this.hasNextRootNodeChildren())
+    },
+
+    testHasRootNodeChildren() {
+      return this.hasNextRootNodeChildren();
+    },
+
+    image() {
+      const itemCard = this.child.item.itemCard;
+      if (itemCard.media && itemCard.media.thumbnails) {
+        const image =  itemCard.media.thumbnails.filter((tb) => tb.width === 800);
+        if (image.length) {
+          return image[0].url;
+        } else {
+          return window.img.placeholder;
+        }
       } else {
-        return false;
+        return window.img.placeholder;
       }
     }
+  },
 
-},
   methods: {
+    translate,
+
+    terminal() {
+      return this.child.item.terminal;
+    },
+
+    nextStep() {
+      const childNodeHasChildren = !!this.child.children.length;
+      const childNodeHasItemSets = !!this.child.itemSets.length;
+
+      return childNodeHasChildren || childNodeHasItemSets;
+    },
+
+    hasNextRootNodeChildren() {
+      const rootNodes = this.$parent.rootNodes;
+      const next = typeof rootNodes[this.parentNode.rootNodeIndex + 1] !== "undefined";
+      return next &&
+          (rootNodes[this.parentNode.rootNodeIndex + 1].children.length
+              || rootNodes[this.parentNode.rootNodeIndex + 1].itemSets.length)
+    },
+
     onSelect() {
-      this.$emit('on-select');
+      if (!this.displayNext) {
+        return this.$emit('terminal-node');
+      }
+
+      if (this.nextStep()) {
+        return this.$emit('next-node');
+      }
+
+      if (this.hasNextRootNodeChildren()) {
+        return this.$emit('next-root-node');
+      }
     }
   }
 }

@@ -12,8 +12,10 @@ class TreeNodeDetailRouteResponse extends StoreApiResponse
      */
     protected $object;
 
+
     public function __construct(Entity $object)
     {
         parent::__construct($object);
     }
+
 }

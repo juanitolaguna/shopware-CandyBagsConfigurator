@@ -61,7 +61,9 @@ class TreeNodeDetailRoute
         $childrenCriteria
             ->addFilter(new EqualsFilter('parentId', $entry->getId()))
             ->addAssociation('item.itemCard.media')
-            ->addAssociation('children');
+            ->addAssociation('item.itemCard')
+            ->addAssociation('children')
+            ->addAssociation('itemSets');
         $children = $this->treeNodeRepository->search($childrenCriteria, $context->getContext());
 
 
@@ -93,6 +95,7 @@ class TreeNodeDetailRoute
         $entry->setChildren(new TreeNodeCollection($children->getEntities()));
 
         return new TreeNodeDetailRouteResponse($entry);
+
     }
 
 }

@@ -61,6 +61,7 @@ class TreeNodeEntity extends Entity
     protected $translations;
 
 
+
     /**
      * @return ItemEntity|null
      */

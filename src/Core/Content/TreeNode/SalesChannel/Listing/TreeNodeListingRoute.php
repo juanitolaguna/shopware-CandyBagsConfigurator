@@ -41,6 +41,8 @@ class TreeNodeListingRoute
         $criteria->addFilter(new EqualsFilter('stepSetId', $stepSetId))
             ->addFilter(new EqualsFilter('parentId', null))
             ->addFilter(new EqualsFilter('treeNodeItemSetId', null))
+            ->addAssociation('children')
+            ->addAssociation('itemSets')
             ->addSorting(new FieldSorting('item.position', FieldSorting::DESCENDING));
 
         return new TreeNodeListingRouteResponse($this->treeNodeRepositoy->search($criteria, $context->getContext()));

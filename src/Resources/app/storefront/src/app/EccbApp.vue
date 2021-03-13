@@ -1,45 +1,58 @@
 <template>
   <div class="ec-configurator">
-    <h1>{{ entityName }}</h1>
+    <div class="row">
+      <div class="col-lg-9 col-md-8 col-12">
+        <div id="accordion">
+          <div v-for="(parent, parentIndex) in treeNodes" class="card">
+            <div :ref="parent.id" class="card-header" @click="toggleAccordeon(parent)">
+              <h3 class="mb-0">
+                <button class="btn btn-link">
+                  {{ translate(parent, 'stepDescription') }}
+                </button>
+              </h3>
+            </div>
 
-    <div id="accordion">
-      <div v-for="(parent, parentIndex) in treeNodes" class="card">
-        <div :ref="parent.id" class="card-header" @click="toggleAccordeon(parent)">
-          <h3 class="mb-0">
-            <button class="btn btn-link">
-              {{ parent.stepDescription }}
-            </button>
-          </h3>
-        </div>
-
-        <div :class="['ec-cards', {active: parent.active}]">
-          <div class="ec-card-deck">
-            <TreeNodeCard
-                v-for="(child, childIndex) in parent.children"
-                :key="child.id"
-                :assets="assets"
-                :child="child"
-                @on-select="getTreeNode(child.id, parent.id, {parentIndex, childIndex}, 'treeNode')"
-            />
-
-            <template v-for="(itemSet, itemSetIndex) in parent.itemSets">
-              <template v-for="(itemSetItem, itemSetItemIndex) in itemSet.items">
-
-                <ItemCard
-                    v-if="itemSetItem"
-                    :key="itemSetItem.id"
+            <div :class="['ec-cards', {active: parent.active}]">
+              <div class="ec-card-deck">
+                <TreeNodeCard
+                    v-for="(child, childIndex) in parent.children"
+                    :key="child.id"
                     :assets="assets"
-                    :child="itemSetItem"
-                    :childNode="itemSet.childNode"
-                    @on-select="getTreeNode(itemSet.childNode.id, parent.id, {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
+                    :child="child"
+                    :parentNode="parent"
+                    @next-root-node="getTreeNode(nextRootNode(parent).id, nextRootNode(parent), {parentIndex, childIndex}, 'treeNode')"
+                    @next-node="getTreeNode(child.id, parent, {parentIndex, childIndex}, 'treeNode')"
+                    @terminal-node="selectTerminal({parentIndex, childIndex}, 'treeNode')"
                 />
 
-              </template>
-            </template>
-            <div class="spacer"></div>
+                <template v-for="(itemSet, itemSetIndex) in parent.itemSets">
+                  <template v-for="(itemSetItem, itemSetItemIndex) in itemSet.items">
+
+                    <ItemCard
+                        v-if="itemSetItem"
+                        :key="itemSetItem.id"
+                        :assets="assets"
+                        :child="itemSetItem"
+                        :childNode="itemSet.childNode"
+                        :parentNode="parent"
+                        @next-root-node="getTreeNode(nextRootNode(parent).id, nextRootNode(parent), {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
+                        @next-node="getTreeNode(itemSet.childNode.id, parent, {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
+                        @terminal-node="selectTerminal({parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
+                    />
+
+                  </template>
+                </template>
+                <div class="spacer"></div>
+              </div>
+            </div>
+
           </div>
         </div>
+        <Spinner v-if="isLoading"/>
+      </div>
 
+      <div class="col-lg-3 col-md-4 col-12">
+        <Selected :treeNodes="treeNodes"/>
       </div>
     </div>
   </div>
@@ -47,11 +60,17 @@
 
 <script>
 import StoreApiClient from 'src/service/store-api-client.service';
+import Debouncer from 'src/helper/debouncer.helper'
 import TreeNodeCard from "./component/TreeNodeCard.vue";
 import ItemCard from "./component/ItemCard.vue";
+import Spinner from "./component/Spinner.vue";
+import Selected from "./component/Selected.vue";
+import {translate} from "./utils/utils.js"
 
 export default {
   components: {
+    Selected,
+    Spinner,
     TreeNodeCard,
     ItemCard
   },
@@ -60,21 +79,10 @@ export default {
     return {
       rootNodes: null,
       treeNodes: [],
-      lastView: null
-    }
-  },
-
-  computed: {
-    httpClient() {
-      return new StoreApiClient();
-    },
-
-    entityName() {
-      return window.entityName;
-    },
-
-    assets() {
-      return window.img;
+      lastView: null,
+      isLoading: false,
+      context: null,
+      product: null
     }
   },
 
@@ -89,55 +97,69 @@ export default {
     }
   },
 
+
+  computed: {
+    httpClient() {
+      return new StoreApiClient();
+    },
+
+    headers() {
+      const headers = new Headers();
+      headers.append("sw-access-key", window.accessKey);
+      headers.append("sw-context-token", window.contextToken);
+      headers.append("Content-Type", "application/json");
+      return headers;
+    },
+
+    assets() {
+      return window.img;
+    }
+  },
+
+
   methods: {
+    translate,
+
     async mountedComponent() {
+      this.isLoading = true;
       this.shortcuts();
-      this.getRootNodes()
+      await this.setLanguage();
+      const result = await this.getRootNodes();
+      this.getTreeNode(result);
+    },
 
-      // async await...
-      //const result =  await this._getRootNodes();
-      //this.getTreeNode(result);
-
+    setLanguage() {
+      const raw = JSON.stringify({"languageId": window.languageId});
+      const requestOptions = {
+        method: 'PATCH',
+        headers: this.headers,
+        body: raw,
+        redirect: 'follow'
+      };
+      return fetch("http://localhost/store-api/v3/context", requestOptions)
     },
 
 
-    getRootNodes() {
-      let data = {
-        includes: {eccb_tree_node: ["id"]}
-      }
-
-      this.httpClient.post(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, JSON.stringify(data), (response) => {
-        this.rootNodes = JSON.parse(response).elements.map((el, index) => {
-          return {
-            index: index,
-            ...el
-          }
-        })
-        this.getTreeNode(this.rootNodes[0].id);
-      });
-    },
-
-    // async await alternative
-    async _getRootNodes() {
-      let data = {
-        includes: {eccb_tree_node: ["id"]}
-      }
-
-      await new Promise((resolve, reject) => {
-        const callback = (response) => {
-          this.rootNodes = JSON.parse(response).elements.map((el, index) => {
-            return {
-              index: index,
-              ...el
-            }
-          });
+    async getRootNodes() {
+      const data = {
+        includes: {
+          eccb_tree_node: ["id", "children", "itemSets"]
         }
-        resolve(this.rootNodes[0].id);
+      };
+
+      return await new Promise((resolve, reject) => {
+        this.httpClient.post(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, JSON.stringify(data), (response) => {
+          try {
+            const parsed = JSON.parse(response);
+            const {elements = []} = parsed ? parsed : {};
+            this.rootNodes = elements.map((element, index) => ({...element, index}));
+            resolve(this.rootNodes[0].id);
+          } catch (error) {
+            reject(error);
+          }
+        });
       });
-
-      this.httpClient.post(`/store-api/v{version}/tree-node-listing/${window.stepSetEntityId}`, JSON.stringify(data), callback)
     },
-
 
     /**
      * @property {object} payload                   - optional, not used on mounted call
@@ -146,26 +168,49 @@ export default {
      * @property {number} payload.itemSetIndex      - treeNodeType
      * @property {number} payload.itemSetItemIndex  - treeNodeType
      */
-    getTreeNode(treeNodeId, parentId = null, payload = null, selectedType = '') {
+    getTreeNode(treeNodeId, parent = null, payload = null, selectedType = '') {
 
       this.markSelectedItems(payload, selectedType);
       this.chopOffFollowingSteps(payload);
 
-      this.httpClient.post(`/store-api/v{version}/tree-node/${treeNodeId}`, '{}', (response) => {
-        const res = JSON.parse(response);
-        res['active'] = true;
+      this.isLoading = true
 
-        if (parentId === null) {
-          res['rootNode'] = treeNodeId
-        }
+      var raw = JSON.stringify({});
 
-        this.toggleAccordeon(parentId)
-        this.treeNodes.push(res);
+      var requestOptions = {
+        method: 'POST',
+        headers: this.headers,
+        body: raw,
+        redirect: 'follow'
+      };
 
-        // scroll to new header on update (update hook)
-        this.lastView = res.id;
+      fetch(`/store-api/v{version}/tree-node/${treeNodeId}`, requestOptions)
+          .then(result => result.text())
+          .then(response => {
+            const res = JSON.parse(response);
+            res['active'] = true;
+            res['rootNodeIndex'] = this.setRootNodeIndex(parent, treeNodeId);
+            this.toggleAccordeon(parent);
+            this.treeNodes.push(res);
 
-      });
+            // scroll to new header on update hook
+            this.lastView = res.id;
+            this.isLoading = false;
+          })
+          .catch(error => console.log('error', error));
+
+
+      // this.httpClient.post(`/store-api/v{version}/tree-node/${treeNodeId}`, '{}', (response) => {
+      //   const res = JSON.parse(response);
+      //   res['active'] = true;
+      //   res['rootNodeIndex'] = this.setRootNodeIndex(parent, treeNodeId);
+      //   this.toggleAccordeon(parent);
+      //   this.treeNodes.push(res);
+      //
+      //   // scroll to new header on update hook
+      //   this.lastView = res.id;
+      //   this.isLoading = false;
+      // });
     },
 
     chopOffFollowingSteps(payload) {
@@ -208,6 +253,11 @@ export default {
       });
     },
 
+    selectTerminal(payload, selectedType) {
+      this.markSelectedItems(payload, selectedType);
+      this.chopOffFollowingSteps(payload);
+    },
+
     toggleAccordeon(item) {
       if (item == null) return;
       this.treeNodes = this.treeNodes.map(node => {
@@ -220,15 +270,28 @@ export default {
       })
     },
 
+    setRootNodeIndex(parent, treeNodeId) {
+      if (parent && parent.hasOwnProperty('rootNodeIndex')) {
+        return parent.rootNodeIndex;
+      } else {
+        return this.rootNodes.filter((node) => node.id === treeNodeId)[0].index;
+      }
+    },
+
+    nextRootNode(parent) {
+      return this.rootNodes[parent.rootNodeIndex + 1];
+    },
+
     shortcuts() {
-      document.addEventListener('keydown', (event) => {
+      document.addEventListener('keydown', Debouncer.debounce(async (event) => {
         if (event.ctrlKey && event.key === 'r') {
           this.rootNodes = null;
           this.treeNodes = [];
-          this.getTreeNodeListing();
+          const result = await this.getRootNodes();
+          this.getTreeNode(result);
         }
-      });
-    }
+      }, 250))
+    },
 
   }
 }

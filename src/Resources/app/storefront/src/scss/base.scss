@@ -1,4 +1,17 @@
+@import "_spinner.scss";
+
+@media (min-width: 576px) {
+  .ec-entity-description {
+    max-width: 70%;
+  }
+}
+
+.ec-entity-description {
+  font-size: 1rem;
+}
+
 .ec-configurator {
+
   .card {
     margin-bottom: 2em;
     box-sizing: content-box;
@@ -9,8 +22,9 @@
 
     }
   }
+
   .selected {
-    border: 2px solid #ea8e10 !important;
+    border: 2px solid $primary !important;
   }
 
   .ec-cards {
@@ -56,6 +70,10 @@
     -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5) inset;
     -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5) inset;
 
+    @media (max-width: 575.98px) {
+      max-height: 70vh;
+    }
+
     .spacer {
       height: 1em;
       width: 100%;
@@ -65,19 +83,31 @@
 
   .ec-card {
     border-radius: 6px;
-    border: none;
+    border: 2px solid white;
     max-width: 14rem;
     margin: 0.5em;
+
+    @media (max-width: 575.98px) {
+      max-width: 90%;
+      margin: 0.5em auto;
+    }
 
     -webkit-box-shadow: 1px 1px 8px 0px rgba(161, 161, 161, 1);
     -moz-box-shadow: 1px 1px 8px 0px rgba(161, 161, 161, 1);
     box-shadow: 1px 1px 8px 0px rgba(161, 161, 161, 1);
     transition: box-shadow 0.2s, -moz-box-shadow 0.2s, -webkit-box-shadow 0.2s;
 
+    &:hover {
+      -webkit-box-shadow: 1px 1px 20px 0px rgba(145, 143, 145, 1);
+      -moz-box-shadow: 1px 1px 20px 0px rgba(145, 143, 145, 1);
+      box-shadow: 1px 1px 20px 0px rgba(145, 143, 145, 1);
+
+      //border: 2px solid $secondary !important;
+    }
+
     .card-image-top-wrapper {
       width: inherit;
       min-height: 14rem;
-      max-height: 14rem;
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -103,9 +133,13 @@
       width: 50px;
       height: 50px;
       position: absolute;
-      bottom: -9px;
-      right: 1em;
+      bottom: 20%;
+      right: 2%;
     }
+  }
+
+  .ec-selection_card {
+    border-bottom: 1px solid #c4c4c4;
   }
 }
 
