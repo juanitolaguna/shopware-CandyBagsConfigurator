@@ -10,21 +10,83 @@
   font-size: 1rem;
 }
 
+.ec-price-selected {
+  margin-right: 1em;
+  margin-left: 1em;
+}
+
+.ec-icon {
+  width: 36px;
+  height: 36px;
+  position: absolute;
+  bottom: 20%;
+  right: 2%;
+  transition: all 0.2s;
+}
+
+.ec-icon-header {
+  width: 24px;
+  height: 24px;
+  bottom: 20%;
+  right: 2%;
+  transition: all 0.5s;
+}
+
+.ec-icon-selected {
+  width: 24px;
+  height: 24px;
+  bottom: 20%;
+  right: 2%;
+  transition: all 0.2s;
+
+  &:hover {
+    border: 1px solid #7E97AD;
+    border-radius: 25%;
+  }
+}
+.expanded {
+  transform: rotate(90deg);
+}
+
 .ec-configurator {
 
   .card {
     margin-bottom: 2em;
     box-sizing: content-box;
-
     .card-header {
-      border: 1px solid grey;
+      border: 1px solid $primary;
       border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      transition: box-shadow 0.2s, -moz-box-shadow 0.2s, -webkit-box-shadow 0.2s;
 
+      &:hover {
+        h4 {
+          text-decoration: underline;
+        }
+
+        -webkit-box-shadow: 1px 1px 20px 0px rgba(145, 143, 145, 1);
+        -moz-box-shadow: 1px 1px 20px 0px rgba(145, 143, 145, 1);
+        box-shadow: 1px 1px 20px 0px rgba(145, 143, 145, 1);
+
+      }
     }
+  }
+
+  .ec-price {
+    float: right;
+    margin-right: 1em;
+    margin-left: 1em;
   }
 
   .selected {
     border: 2px solid $primary !important;
+  }
+
+  .selected-list-item-header {
+    display: flex;
+    justify-content: space-between;
   }
 
   .ec-cards {
@@ -127,14 +189,6 @@
       border-bottom: none;
       padding-top: 1rem;
       text-align: center;
-    }
-
-    .ec-icon {
-      width: 50px;
-      height: 50px;
-      position: absolute;
-      bottom: 20%;
-      right: 2%;
     }
   }
 

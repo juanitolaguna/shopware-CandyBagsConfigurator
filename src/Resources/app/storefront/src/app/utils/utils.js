@@ -5,4 +5,11 @@ function translate(item, property) {
     return item[property];
 }
 
-export {translate};
+function price(card) {
+    if (card.showPrice && card.product && card.product.purchasePrice) {
+        return card.product.purchasePrice;
+    }
+    return false;
+}
+
+export {translate, price};

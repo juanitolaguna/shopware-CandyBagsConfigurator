@@ -2,7 +2,10 @@
 
 namespace EventCandyCandyBags\Core\Content\Item;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Util\AfterSort;
 
 /**
  * @method void                add(ItemEntity $entity)
@@ -23,5 +26,34 @@ class ItemCollection extends EntityCollection
     protected function getExpectedClass(): string
     {
         return ItemEntity::class;
+    }
+
+    public function sortByPosition(): self
+    {
+        $elements = $this->elements;
+        // pre-sort elements to pull elements without an after id parent to the front
+        uasort($elements, function (ItemEntity $a, ItemEntity $b){
+            if ($a->getPosition() < $b->getPosition()) {
+                return 1;
+            }
+
+            if ($a->getPosition() > $b->getPosition()) {
+                return -1;
+            }
+
+            return 0;
+        });
+        $this->elements = $elements;
+        return $this;
+    }
+
+    public function filterByActive(): self
+    {
+        $filtered = $this->filter(function (ItemEntity $item) {
+            return $item->isActive() === true;
+        });
+
+        $this->elements = $filtered->getElements();
+        return $this;
     }
 }

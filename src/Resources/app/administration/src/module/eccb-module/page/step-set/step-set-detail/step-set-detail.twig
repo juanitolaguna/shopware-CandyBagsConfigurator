@@ -39,11 +39,12 @@
                             v-model="stepSet.name">
                     </sw-text-field>
 
-                    <sw-text-field
+
+                    <sw-text-editor
+                            type="textarea"
                             :label="$tc('eccb.field.description')"
-                            v-model="stepSet.description"
-                    >
-                    </sw-text-field>
+                            v-model="stepSet.description">
+                    </sw-text-editor>
 
 
                     <eccb-media-field

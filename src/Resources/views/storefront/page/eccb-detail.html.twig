@@ -1,12 +1,10 @@
 {% sw_extends '@Storefront/storefront/base.html.twig' %}
+{#{% sw_extends '@Storefront/storefront/page/content/index.html.twig' %}#}
 
 
 {% block base_content %}
-    <div class="container-main">
+   <div class="container-main">
         <div class="cms-page eccb-outer-container" style="min-height: 100vh;">
-
-             {{ dump() }}
-
             <div class="row mb-3">
                 <div class="col-lg-4 col-md-5 col-12">
                     <div class="card">
@@ -31,14 +29,22 @@
                 </div>
                 <div class="col-lg-8 col-md-7 col-12">
                     <div class="card-body">
-                        <h1>{{ entry.name }}</h1>
-                        <p class="card-text ec-entity-description">{{ entry.description }}</p>
+                        <h1>{{ entry.translated.name }}</h1>
+                        <p class="card-text ec-entity-description">{{ entry.translated.description|raw }}</p>
                     </div>
                 </div>
             </div>
-            <div id="eccb_storefront_app">
-                <App/>
-            </div>
+            {% if entry.active %}
+                <div id="eccb_storefront_app">
+                    <App/>
+                </div>
+            {% else %}
+                <row>
+                    <div class="col-12">
+                        <h3>{{ 'candy-bags.inactive'|trans|raw }}</h3>
+                    </div>
+                </row>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
@@ -49,10 +55,18 @@
         window.img = {};
         window['img']['next'] = '{{ asset('storefront/img/next.svg', '@EventCandyCandyBags') }}';
         window['img']['last'] = '{{ asset('storefront/img/last.svg', '@EventCandyCandyBags') }}';
+        window['img']['close'] = '{{ asset('storefront/img/close.svg', '@EventCandyCandyBags') }}';
+        window['img']['arrowRight'] = '{{ asset('storefront/img/arrow-right.svg', '@EventCandyCandyBags') }}';
         window['img']['placeholder'] = '{{ asset('storefront/img/placeholder.svg', '@EventCandyCandyBags') }}';
         window['accessKey'] = '{{ context.salesChannel.accessKey }}';
         window['contextToken'] = '{{ context.token }}';
-        window['languageId'] = '{{ context.salesChannel.languageId }}'
+        window['languageId'] = '{{ context.salesChannel.languageId }}';
+        window['currencySymbol'] = '{{ context.currency.symbol }}';
+
+        window.snippets = {};
+        window['snippets']['addToCart'] = '{{ 'candy-bags.addToCart'|trans|raw }}';
+        window['snippets']['selected'] = '{{ 'candy-bags.selected'|trans|raw }}';
+
     </script>
     {{ parent() }}
 {% endblock %}

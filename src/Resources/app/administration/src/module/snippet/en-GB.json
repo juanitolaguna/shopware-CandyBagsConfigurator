@@ -52,7 +52,10 @@
     "itemCard": {
       "newCard": "Create New Card",
       "selectCard": "Select Existing Card",
-      "internalName": "Internal Name"
+      "internalName": "Internal Name",
+      "product": "Product",
+      "addProduct": "Add a Product",
+      "showPrice": "Show Price"
     },
     "itemSet": {
       "list-title": "Item Set List",

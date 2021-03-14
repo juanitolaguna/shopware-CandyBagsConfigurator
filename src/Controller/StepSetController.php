@@ -1,12 +1,16 @@
 <?php declare(strict_types=1);
+
 namespace EventCandyCandyBags\Controller;
 
 use EventCandyCandyBags\Core\Content\StepSet\StepSetEntity;
 use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
+use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoaderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Page\GenericPageLoader;
 use Shopware\Storefront\Page\Navigation\NavigationPage;
@@ -25,16 +29,20 @@ class StepSetController extends StorefrontController
      */
     private $genericPageLoader;
 
-
+    /**
+     * StepSetController constructor.
+     * @param GenericPageLoader $genericPageLoader
+     */
     public function __construct(GenericPageLoader $genericPageLoader)
     {
         $this->genericPageLoader = $genericPageLoader;
     }
 
+
     /**
      * @Route("/candy-bags/{stepSetId}", name="eccb.candybags", options={"seo"="true"}, methods={"GET"})
      */
-    public function getCandyBags(string $stepSetId,  Request $request, SalesChannelContext $context): Response
+    public function getCandyBags(string $stepSetId, Request $request, SalesChannelContext $context): Response
     {
         $page = $this->genericPageLoader->load($request, $context);
         $page = NavigationPage::createFrom($page);
@@ -43,6 +51,7 @@ class StepSetController extends StorefrontController
         $stepSetRepository = $this->container->get('eccb_step_set.repository');
         $criteria = new Criteria([$stepSetId]);
         $criteria->addAssociations(['media']);
+
 
         $results = $stepSetRepository->search($criteria, $context->getContext())->getEntities();
 
@@ -54,10 +63,8 @@ class StepSetController extends StorefrontController
         }
 
         $metaInformation = $page->getMetaInformation();
-
         $metaInformation->setMetaTitle($entry->getTranslated()['name']);
         $metaInformation->setMetaDescription($entry->getTranslated()['description']);
-
         $page->setMetaInformation($metaInformation);
 
         return $this->renderStorefront('@EventCandyCandyBags/storefront/page/eccb-detail.html.twig', [

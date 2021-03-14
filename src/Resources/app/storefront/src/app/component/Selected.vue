@@ -1,10 +1,10 @@
 <template>
   <div>
 
-    <h3 class="mb-2">Deine Auswahl</h3>
+    <h3 class="mb-2">{{ snippet.selected }}</h3>
     <p v-if="!selected.length" style="font-size: 2rem">...</p>
 
-    <div v-for="item in selected" class="card">
+    <div v-for="(item, index) in selected" class="card">
 
       <template v-if="treeNode(item)">
         <div class="row no-gutters ec-selection_card pb-1">
@@ -13,8 +13,14 @@
           </div>
           <div class="col">
             <div class="card-block px-2 mt-2">
-              <h4>{{ translate(item.item.itemCard, 'name') }}</h4>
-              <p class="card-text">Description</p>
+              <div class="selected-list-item-header">
+                <h4>{{ translate(item.item.itemCard, 'name') }}</h4>
+                <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;" :src="assets.close">
+              </div>
+
+              <div class="ec-price-selected" style="display: inline;" v-if="price(item.item.itemCard)">
+                {{ price(item.item.itemCard) }} {{ currency }}
+              </div>
             </div>
           </div>
         </div>
@@ -27,8 +33,15 @@
           </div>
           <div class="col">
             <div class="card-block px-2 mt-2">
-              <h4>{{ translate(item.itemCard, 'name') }}</h4>
-              <p class="card-text">Description</p>
+
+              <div class="selected-list-item-header">
+                <h4>{{ translate(item.itemCard, 'name') }}</h4>
+                <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;" :src="assets.close">
+              </div>
+
+              <div class="ec-price-selected" style="display: inline;" v-if="price(item.itemCard)">
+                {{ price(item.itemCard) }} {{ currency }}
+              </div>
             </div>
           </div>
         </div>
@@ -37,19 +50,27 @@
     </div>
 
     <button @click.prevent="addToCart" type="button" class="btn btn-primary" :disabled="!buttonEnabled">
-      In den Warenkorb
+      {{ snippet.addToCart }}
     </button>
+
+    <div class="ec-price-selected" style="display: inline;" v-if="calculatedPrice !== 0"><strong>{{ calculatedPrice }}
+      {{ currency }}</strong></div>
+
 
   </div>
 </template>
 
 <script>
-import {translate} from "../utils/utils.js"
+import {translate, price} from "../utils/utils.js"
 
 export default {
   props: ["treeNodes"],
 
   computed: {
+    assets() {
+      return window.img;
+    },
+
     buttonEnabled() {
       if (!this.selected.length) {
         return false;
@@ -61,6 +82,22 @@ export default {
       } else {
         return this.selected[this.selected.length - 1]['purchasable'];
       }
+    },
+
+    calculatedPrice() {
+      let price = 0;
+      this.selected.forEach((item) => {
+        if (item.itemCard) {
+          price += this.price(item.itemCard);
+        } else {
+          price += this.price(item.item.itemCard);
+        }
+      });
+      return price;
+    },
+
+    currency() {
+      return window.currencySymbol;
     },
 
     selected() {
@@ -81,16 +118,25 @@ export default {
 
       });
       return selected;
+    },
+
+    snippet() {
+      return window.snippets;
     }
   },
 
   methods: {
+    price,
     translate,
+
+    removeItem(item) {
+      this.$emit('remove-item', item);
+    },
 
     image(item) {
       let itemCard = null;
 
-      if(this.treeNode(item)) {
+      if (this.treeNode(item)) {
         itemCard = item.item.itemCard;
       } else {
         itemCard = item.itemCard;

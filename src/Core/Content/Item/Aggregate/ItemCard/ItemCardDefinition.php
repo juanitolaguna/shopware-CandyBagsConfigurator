@@ -5,6 +5,7 @@ namespace EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard;
 use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardTranslation\ItemCardTranslationDefinition;
 use EventCandyCandyBags\Core\Content\Item\ItemDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
@@ -48,6 +49,8 @@ class ItemCardDefinition extends EntityDefinition
             (new IdField('id', 'id'))
                 ->addFlags(new Required(), new PrimaryKey()),
 
+            new BoolField('show_price', 'showPrice'),
+
             new StringField('internal_name', 'internalName'),
 
             new FkField('media_id', 'mediaId', MediaDefinition::class),
@@ -55,6 +58,13 @@ class ItemCardDefinition extends EntityDefinition
                 'media',
                 'media_id',
                 MediaDefinition::class
+            ),
+
+            (new FkField('product_id', 'productId', ProductDefinition::class)),
+            new ManyToOneAssociationField(
+                'product',
+                'product_id',
+                ProductDefinition::class
             ),
 
             //Welchen Items bin ich zugewiesen

@@ -31,6 +31,7 @@ Component.register('eccb-tree-node-detail', {
             isLoading: true,
             itemCard: null,
             itemCardList: null,
+            products: [],
             children: null,
             mediaFolderName: 'Candy Bags',
             currentLanguageId: Context.api.languageId,
@@ -105,6 +106,7 @@ Component.register('eccb-tree-node-detail', {
         itemCardCriteria() {
             const criteria = new Criteria();
             criteria.addAssociation('media');
+            criteria.addAssociation('product');
             return criteria;
         },
 
@@ -125,6 +127,24 @@ Component.register('eccb-tree-node-detail', {
                 }
             });
         },
+
+        productRepository() {
+            return this.repositoryFactory.create('product');
+        },
+
+        productOptions() {
+            return this.products.map((product) => {
+                return {
+                    value: product.id,
+                    label: product.name
+                }
+            });
+        },
+
+        productCriteria() {
+            return new Criteria
+        },
+
 
         childColumns() {
             return [
@@ -190,6 +210,8 @@ Component.register('eccb-tree-node-detail', {
             } else {
                 this.itemCard = this.itemCardRepository.create(Context.api);
             }
+
+            await this.getProductList();
 
             this.isLoading = false;
         },
@@ -295,25 +317,6 @@ Component.register('eccb-tree-node-detail', {
                 })
         },
 
-        searchProduct(payload) {
-            const criteria = new Criteria();
-            if (payload !== '') {
-                criteria.addFilter(Criteria.contains('name', payload));
-            }
-            this.productRepository
-                .search(criteria, Shopware.Context.api)
-                .then((result) => {
-                    this.products = result;
-                    if (!result.length) {
-                        const noProducts = {
-                            id: '000000',
-                            name: 'No results found'
-                        }
-                        this.products.push(noProducts);
-                    }
-                });
-        },
-
         deleteItemCard(payload) {
             console.log(payload.value);
             const id = payload.value;
@@ -383,6 +386,45 @@ Component.register('eccb-tree-node-detail', {
             this.createdComponent();
         },
 
+        // Product
+        async getProductList() {
+            const result = await this.productRepository.search(this.productCriteria, Context.api)
+            this.products = []
+            result.forEach((product) => {
+                this.products.push(product);
+            })
+
+            if (this.itemCard && (this.itemCard.productId !== null)) {
+                const productInResult = this.products.filter((product) => product.id === this.itemCard.productId);
+                if (!productInResult.length) {
+                    this.products.push(this.itemCard.product);
+                }
+            }
+
+            return Promise.resolve();
+        },
+
+        searchProduct(payload) {
+            const criteria = new Criteria()
+            if (payload !== '') {
+                criteria.addFilter(Criteria.contains('name', payload));
+            }
+            this.productRepository.search(this.productCriteria, Context.api)
+                .then((result) => {
+                    this.products = result;
+                    if (!result.length) {
+                        const noProducts = {
+                            id: '000000',
+                            name: 'No results found'
+                        }
+                        this.products.push(noProducts);
+                    }
+                });
+        },
+
+        changeProduct(payload) {
+            this.itemCard.productId = payload;
+        }
     }
 
 });

@@ -34,7 +34,7 @@ class Migration1611698821StepSet extends MigrationStep
         $connection->executeUpdate("
             CREATE TABLE `eccb_step_set_translation` (
                 `name` VARCHAR(255) NOT NULL,
-                `description` VARCHAR(255) NULL,
+                `description` MEDIUMTEXT COLLATE utf8mb4_unicode_ci NULL,
                 `additional_data` VARCHAR(255) NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,

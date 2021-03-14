@@ -5,6 +5,7 @@ namespace EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard;
 use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardTranslation\ItemCardTranslationCollection;
 use EventCandyCandyBags\Core\Content\Item\ItemCollection;
 use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -17,9 +18,19 @@ class ItemCardEntity extends Entity {
     protected $internalName;
 
     /**
+     * @var bool
+     */
+    protected $showPrice;
+
+    /**
      * @var MediaEntity
      */
     protected $media;
+
+    /**
+     * @var ProductEntity|null
+     */
+    protected $product;
 
 
     /**
@@ -96,6 +107,39 @@ class ItemCardEntity extends Entity {
     {
         $this->translations = $translations;
     }
+
+    /**
+     * @return ProductEntity|null
+     */
+    public function getProduct(): ?ProductEntity
+    {
+        return $this->product;
+    }
+
+    /**
+     * @param ProductEntity|null $product
+     */
+    public function setProduct(?ProductEntity $product): void
+    {
+        $this->product = $product;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShowPrice(): bool
+    {
+        return $this->showPrice;
+    }
+
+    /**
+     * @param bool $showPrice
+     */
+    public function setShowPrice(bool $showPrice): void
+    {
+        $this->showPrice = $showPrice;
+    }
+
 
 
 

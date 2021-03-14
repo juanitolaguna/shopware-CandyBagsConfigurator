@@ -19,12 +19,16 @@ class Migration1612654126ItemCard extends MigrationStep
                 `id` BINARY(16) NOT NULL,
                 `internal_name` VARCHAR(255) NULL,
                 `media_id` BINARY(16) NULL,
+                `product_id` BINARY(16) NULL,
+                `show_price` TINYINT(1) NULL DEFAULT 0,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
                 CONSTRAINT `json.eccb_item_card.translated` CHECK (JSON_VALID(`translated`)),
                 KEY `fk.eccb_item_card.media_id` (`media_id`),
-                CONSTRAINT `fk.eccb_item_card.media_id` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+                KEY `fk.eccb_item_card.product_id` (`product_id`),
+                CONSTRAINT `fk.eccb_item_card.media_id` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+                CONSTRAINT `fk.eccb_item_card.product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
 

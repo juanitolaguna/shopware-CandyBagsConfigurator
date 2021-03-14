@@ -23,6 +23,7 @@ Component.register('eccb-item-set-item-detail', {
             item: null,
             itemCard: null,
             isLoading: true,
+            products: []
         }
     },
 
@@ -45,13 +46,13 @@ Component.register('eccb-item-set-item-detail', {
         },
 
         itemCriteria() {
-            const criteria =  new Criteria();
-            return criteria;
+            return new Criteria();
         },
 
         itemCardCriteria() {
             const criteria =  new Criteria();
             criteria.addAssociation('media');
+            criteria.addAssociation('product');
             return criteria;
         },
 
@@ -61,6 +62,23 @@ Component.register('eccb-item-set-item-detail', {
             } else {
                 return {name: 'eccb.plugin.tree-node.detail'}
             }
+        },
+
+        productRepository() {
+            return this.repositoryFactory.create('product');
+        },
+
+        productOptions() {
+            return this.products.map((product) => {
+                return {
+                    value: product.id,
+                    label: product.name
+                }
+            });
+        },
+
+        productCriteria() {
+            return new Criteria
         }
     },
 
@@ -68,6 +86,7 @@ Component.register('eccb-item-set-item-detail', {
         async createdComponent() {
             this.item = await this.itemRepository.get(this.$route.params.id, Context.api, this.itemCriteria);
             this.itemCard = await this.itemCardRepository.get(this.item.itemCardId, Context.api, this.itemCardCriteria);
+            await this.getProductList();
             this.isLoading = false;
         },
 
@@ -126,6 +145,46 @@ Component.register('eccb-item-set-item-detail', {
 
         onClickCancel() {
             this.$router.push(this.parentRoute);
+        },
+
+        // Product
+        async getProductList() {
+            const result = await this.productRepository.search(this.productCriteria, Context.api)
+            this.products = []
+            result.forEach((product) => {
+                this.products.push(product);
+            })
+
+            if (this.itemCard && (this.itemCard.productId !== null)) {
+                const productInResult = this.products.filter((product) => product.id === this.itemCard.productId);
+                if (!productInResult.length) {
+                    this.products.push(this.itemCard.product);
+                }
+            }
+
+            return Promise.resolve();
+        },
+
+        searchProduct(payload) {
+            const criteria = new Criteria()
+            if (payload !== '') {
+                criteria.addFilter(Criteria.contains('name', payload));
+            }
+            this.productRepository.search(this.productCriteria, Context.api)
+                .then((result) => {
+                    this.products = result;
+                    if (!result.length) {
+                        const noProducts = {
+                            id: '000000',
+                            name: 'No results found'
+                        }
+                        this.products.push(noProducts);
+                    }
+                });
+        },
+
+        changeProduct(payload) {
+            this.itemCard.productId = payload;
         }
     },
 

@@ -8,14 +8,14 @@
           :style="{paddingBottom: '0px'}">
         {{ translate(child.item.itemCard, 'name') }}
       </h5>
+      <div class="ec-price" v-if="_price"><strong>{{_price}} {{currency}}</strong></div>
       <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
-      <img class="ec-icon" v-else :src="assets.last" alt="last" title="last">
     </div>
   </div>
 </template>
 
 <script>
-import {translate} from "../utils/utils.js"
+import {translate, price} from "../utils/utils.js"
 
 export default {
   props: ["child", "assets", "parentNode"],
@@ -25,6 +25,14 @@ export default {
       return !this.terminal() && (this.nextStep() || this.hasNextRootNodeChildren())
     },
 
+    _price() {
+      return this.price(this.child.item.itemCard);
+    },
+
+    currency() {
+      return window.currencySymbol;
+    },
+
     testHasRootNodeChildren() {
       return this.hasNextRootNodeChildren();
     },
@@ -32,7 +40,7 @@ export default {
     image() {
       const itemCard = this.child.item.itemCard;
       if (itemCard.media && itemCard.media.thumbnails) {
-        const image =  itemCard.media.thumbnails.filter((tb) => tb.width === 800);
+        const image = itemCard.media.thumbnails.filter((tb) => tb.width === 800);
         if (image.length) {
           return image[0].url;
         } else {
@@ -45,6 +53,7 @@ export default {
   },
 
   methods: {
+    price,
     translate,
 
     terminal() {

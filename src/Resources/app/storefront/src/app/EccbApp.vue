@@ -5,11 +5,11 @@
         <div id="accordion">
           <div v-for="(parent, parentIndex) in treeNodes" class="card">
             <div :ref="parent.id" class="card-header" @click="toggleAccordeon(parent)">
-              <h3 class="mb-0">
-                <button class="btn btn-link">
-                  {{ translate(parent, 'stepDescription') }}
-                </button>
-              </h3>
+              <h4 style="margin-bottom: 0">
+                {{ translate(parent, 'stepDescription') }}
+              </h4>
+              <img :class="['ec-icon-header', {expanded: parent.active}]" style="width: 24px; height: 24px;"
+                   :src="assets.arrowRight">
             </div>
 
             <div :class="['ec-cards', {active: parent.active}]">
@@ -52,7 +52,10 @@
       </div>
 
       <div class="col-lg-3 col-md-4 col-12">
-        <Selected :treeNodes="treeNodes"/>
+        <Selected
+            @remove-item="removeItem($event)"
+            :treeNodes="treeNodes"
+        />
       </div>
     </div>
   </div>
@@ -284,6 +287,13 @@ export default {
       }, 250))
     },
 
+    removeItem(index) {
+      console.log(index);
+      this.treeNodes = this.treeNodes.slice(0, index + 1);
+      this.deselectTreeNodes(index)
+      this.deselectItemSets(index);
+      this.treeNodes[index]['active'] = true;
+    }
   }
 }
 </script>
