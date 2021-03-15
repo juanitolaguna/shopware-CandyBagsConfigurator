@@ -78,7 +78,7 @@ Component.register('eccb-item-set-item-detail', {
         },
 
         productCriteria() {
-            return new Criteria
+            return new Criteria();
         }
     },
 
@@ -166,11 +166,11 @@ Component.register('eccb-item-set-item-detail', {
         },
 
         searchProduct(payload) {
-            const criteria = new Criteria()
+            const criteria = new Criteria();
             if (payload !== '') {
                 criteria.addFilter(Criteria.contains('name', payload));
             }
-            this.productRepository.search(this.productCriteria, Context.api)
+            this.productRepository.search(criteria, Context.api)
                 .then((result) => {
                     this.products = result;
                     if (!result.length) {

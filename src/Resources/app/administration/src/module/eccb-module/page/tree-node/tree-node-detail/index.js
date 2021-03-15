@@ -142,7 +142,7 @@ Component.register('eccb-tree-node-detail', {
         },
 
         productCriteria() {
-            return new Criteria
+            return new Criteria();
         },
 
 
@@ -389,7 +389,7 @@ Component.register('eccb-tree-node-detail', {
         // Product
         async getProductList() {
             const result = await this.productRepository.search(this.productCriteria, Context.api)
-            this.products = []
+            this.products = [];
             result.forEach((product) => {
                 this.products.push(product);
             })
@@ -405,11 +405,11 @@ Component.register('eccb-tree-node-detail', {
         },
 
         searchProduct(payload) {
-            const criteria = new Criteria()
+            const criteria = new Criteria();
             if (payload !== '') {
                 criteria.addFilter(Criteria.contains('name', payload));
             }
-            this.productRepository.search(this.productCriteria, Context.api)
+            this.productRepository.search(criteria, Context.api)
                 .then((result) => {
                     this.products = result;
                     if (!result.length) {

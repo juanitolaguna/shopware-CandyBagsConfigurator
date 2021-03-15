@@ -93,6 +93,14 @@
                             :label="$tc('eccb.itemCard.showPrice')"
                             v-model="itemCard.showPrice"></sw-checkbox-field>
 
+                    <router-link v-if="itemCard.product"
+                                 class="eccb-product-link"
+                                 :to="{ name: 'sw.product.detail', params: { id: itemCard.product.id } }"
+                                 :style="{ 'color': '#00A1FF' }">
+                        <sw-icon name="default-web-link" small></sw-icon>&nbsp;
+                        {{ itemCard.product.name }}
+                    </router-link>
+
                     <sw-single-select
                             v-if="products.length"
                             :options="productOptions"
