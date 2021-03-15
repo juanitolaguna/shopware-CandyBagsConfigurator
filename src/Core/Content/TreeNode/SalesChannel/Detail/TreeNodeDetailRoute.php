@@ -64,7 +64,7 @@ class TreeNodeDetailRoute
             ->addFilter(new EqualsFilter('parentId', $entry->getId()))
             ->addFilter(new EqualsFilter('item.active', true))
             ->addAssociation('item.itemCard.media')
-            ->addAssociation('item.itemCard.product')
+            ->addAssociation('item.itemCard.product.prices')
             ->addAssociation('children')
             ->addAssociation('itemSets')
             ->addSorting(new FieldSorting('item.position', FieldSorting::DESCENDING));
@@ -77,7 +77,7 @@ class TreeNodeDetailRoute
         $treeNodeItemSetCriteria = new Criteria();
         $treeNodeItemSetCriteria->addFilter(new EqualsFilter('treeNodeId', $entry->getId()))
             ->addAssociation('itemSet.items.itemCard.media')
-            ->addAssociation('itemSet.items.itemCard.product')
+            ->addAssociation('itemSet.items.itemCard.product.prices')
             ->addAssociation('childNode.children')
             ->addAssociation('childNode.itemSets')
             ->addFilter(new EqualsFilter('childNode.item.active', true))

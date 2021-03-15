@@ -134,7 +134,7 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-      return fetch("http://localhost/store-api/v3/context", requestOptions)
+      return fetch("/store-api/v3/context", requestOptions)
     },
 
 
