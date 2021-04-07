@@ -23,12 +23,12 @@ class EventCandyCandyBags extends Plugin
     {
         $connection = $this->container->get(Connection::class);
 
-//        $sql = "select count(*) from eccb_step_set";
-//        $result = $connection->fetchArray($sql);
-//        // data should exist, quit migration
-//        if ($result[0] != 0) {
-//            return;
-//        }
+        $sql = "select count(*) from eccb_step_set";
+        $result = $connection->fetchArray($sql);
+        // data should exist, quit demo data generation
+        if ($result[0] != 0) {
+            return;
+        }
 
         $this->demoDataService->generate($context->getContext());
     }
