@@ -85,7 +85,9 @@ export default {
       isLoading: false,
       context: null,
       product: null,
-      firstLoad: true
+      firstLoad: true,
+      timer: null,
+      WAIT_INTERVAL: 500
     }
   },
 
@@ -184,32 +186,39 @@ export default {
 
       this.markSelectedItems(payload, selectedType);
       this.chopOffFollowingSteps(payload);
-
       this.isLoading = true
 
-      const raw = JSON.stringify({});
+      // fix behaviour on multiple taps on card
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
 
-      const requestOptions = {
-        method: 'POST',
-        headers: this.headers,
-        body: raw,
-        redirect: 'follow'
-      };
+        this.chopOffFollowingSteps(payload);
 
-      fetch(`/store-api/v{version}/tree-node/${treeNodeId}`, requestOptions)
-          .then(result => result.text())
-          .then(response => {
-            const res = JSON.parse(response);
-            res['active'] = true;
-            res['rootNodeIndex'] = this.setRootNodeIndex(parent, treeNodeId);
-            this.toggleAccordeon(parent);
-            this.treeNodes.push(res);
+        const raw = JSON.stringify({});
 
-            // scroll to new header on update hook
-            this.lastView = res.id;
-            this.isLoading = false;
-          })
-          .catch(error => console.log('error', error));
+        const requestOptions = {
+          method: 'POST',
+          headers: this.headers,
+          body: raw,
+          redirect: 'follow'
+        };
+
+        fetch(`/store-api/v{version}/tree-node/${treeNodeId}`, requestOptions)
+            .then(result => result.text())
+            .then(response => {
+              const res = JSON.parse(response);
+              res['active'] = true;
+              res['rootNodeIndex'] = this.setRootNodeIndex(parent, treeNodeId);
+              this.toggleAccordeon(parent);
+              this.treeNodes.push(res);
+
+              // scroll to new header on update hook
+              this.lastView = res.id;
+              this.isLoading = false;
+            })
+            .catch(error => console.log('error', error));
+
+      }, this.WAIT_INTERVAL);
     },
 
     chopOffFollowingSteps(payload) {
