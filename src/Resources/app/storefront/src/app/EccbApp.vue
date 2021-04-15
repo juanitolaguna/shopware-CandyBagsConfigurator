@@ -84,7 +84,8 @@ export default {
       lastView: null,
       isLoading: false,
       context: null,
-      product: null
+      product: null,
+      firstLoad: true
     }
   },
 
@@ -94,8 +95,12 @@ export default {
 
   updated() {
     if (this.lastView !== null) {
-      this.$refs[this.lastView][0].scrollIntoView({behavior: 'smooth', block: 'start'});
-      this.lastView = null;
+      if (!this.firstLoad) {
+        this.$refs[this.lastView][0].scrollIntoView({behavior: 'smooth', block: 'start'});
+        this.lastView = null;
+      } else {
+        this.firstLoad = false;
+      }
     }
   },
 
