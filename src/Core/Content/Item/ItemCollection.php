@@ -28,6 +28,19 @@ class ItemCollection extends EntityCollection
         return ItemEntity::class;
     }
 
+    public function getPrices(string $currencyId): self
+    {
+        /** @var ItemEntity[] $elements */
+        $elements = $this->elements;
+
+        foreach ($elements as $item) {
+            $price = $item->getItemCard()->getProduct()->getCurrencyPrice($currencyId);
+            $item->setCurrencyPrice($price);
+        }
+
+        return $this;
+    }
+
     public function sortByPosition(): self
     {
         $elements = $this->elements;

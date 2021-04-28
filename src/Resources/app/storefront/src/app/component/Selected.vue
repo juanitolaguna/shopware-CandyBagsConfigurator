@@ -18,8 +18,8 @@
                 <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;" :src="assets.close">
               </div>
 
-              <div class="ec-price-selected" style="display: inline;" v-if="price(item.item.itemCard)">
-                {{ price(item.item.itemCard) }} {{ currency }}
+              <div class="ec-price-selected" style="display: inline;" v-if="price(item.item)">
+                {{ price(item.item) }} {{ currency }}
               </div>
             </div>
           </div>
@@ -39,8 +39,8 @@
                 <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;" :src="assets.close">
               </div>
 
-              <div class="ec-price-selected" style="display: inline;" v-if="price(item.itemCard)">
-                {{ price(item.itemCard) }} {{ currency }}
+              <div class="ec-price-selected" style="display: inline;" v-if="price(item)">
+                {{ price(item) }} {{ currency }}
               </div>
             </div>
           </div>
@@ -88,9 +88,9 @@ export default {
       let price = 0;
       this.selected.forEach((item) => {
         if (item.itemCard) {
-          price += this.price(item.itemCard);
+          price += this.price(item);
         } else {
-          price += this.price(item.item.itemCard);
+          price += this.price(item.item);
         }
       });
       return price;

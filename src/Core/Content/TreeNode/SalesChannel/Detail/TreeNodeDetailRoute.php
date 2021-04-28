@@ -72,6 +72,14 @@ class TreeNodeDetailRoute
         $children = $this->treeNodeRepository->search($childrenCriteria, $context->getContext());
 
 
+        /** @var TreeNodeEntity $entity */
+        foreach ($children->getEntities() as $entity) {
+            $item = $entity->getItem();
+            $price = $item->getItemCard()->getProduct()->getCurrencyPrice($context->getContext()->getCurrencyId());
+            $item->setCurrencyPrice($price);
+        }
+
+
         // Get the ItemSets
         // ToDo: Sorting... muss mit loop gemacht werden.
         $treeNodeItemSetCriteria = new Criteria();
@@ -87,6 +95,7 @@ class TreeNodeDetailRoute
         $itemSetsSearchResult = $this->treeNodeItemSetRepository->search($treeNodeItemSetCriteria, $context->getContext());
 
 
+
         /** @var TreeNodeItemSetEntity[] $itemSets */
         $itemSets = [];
 
@@ -98,6 +107,9 @@ class TreeNodeDetailRoute
             $itemSet->getItems()->filterByActive();
 
             $itemSet->getItems()->sortByPosition();
+
+            // enrich with currency Price
+            $itemSet->getItems()->getPrices($context->getContext()->getCurrencyId());
 
             if ($entity->getChildNode() !== null) {
                 $itemSet->setChildNode($entity->getChildNode());

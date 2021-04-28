@@ -6,7 +6,7 @@
     <div class="card-body">
       <h5 class="card-title"
           :style="{paddingBottom: '0px'}">
-        {{ translate(child.item.itemCard, 'name') }}
+        {{ translate(child.item.itemCard, 'name') }} [tnc]
       </h5>
       <div class="ec-price" v-if="_price"><strong>{{_price}} {{currency}}</strong></div>
       <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
@@ -26,7 +26,7 @@ export default {
     },
 
     _price() {
-      return this.price(this.child.item.itemCard);
+      return this.price(this.child.item);
     },
 
     currency() {

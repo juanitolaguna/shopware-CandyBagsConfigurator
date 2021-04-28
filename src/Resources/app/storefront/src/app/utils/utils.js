@@ -5,9 +5,9 @@ function translate(item, property) {
     return item[property];
 }
 
-function price(card) {
-    if (card.showPrice && card.product && card.product.purchasePrice) {
-        return card.product.purchasePrice;
+function price(item) {
+    if (item.itemCard.showPrice && item.itemCard.product && item.currencyPrice) {
+        return item.currencyPrice.gross;
     }
     return false;
 }

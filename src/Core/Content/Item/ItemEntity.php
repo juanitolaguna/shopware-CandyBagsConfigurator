@@ -7,6 +7,7 @@ use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 
 class ItemEntity extends Entity
 {
@@ -92,6 +93,12 @@ class ItemEntity extends Entity
      * @var bool|null
      */
     protected $selected = false;
+
+    /**
+     * Storefront;
+     * @var Price|null;
+     */
+    protected $currencyPrice;
 
     /**
      * @return int
@@ -300,6 +307,24 @@ class ItemEntity extends Entity
     {
         $this->selected = $selected;
     }
+
+    /**
+     * @return Price|null
+     */
+    public function getCurrencyPrice(): ?Price
+    {
+        return $this->currencyPrice;
+    }
+
+    /**
+     * @param Price|null $currencyPrice
+     */
+    public function setCurrencyPrice(?Price $currencyPrice): void
+    {
+        $this->currencyPrice = $currencyPrice;
+    }
+
+
 
 
 }
