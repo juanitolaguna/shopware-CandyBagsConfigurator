@@ -75,7 +75,8 @@ class TreeNodeDetailRoute
         /** @var TreeNodeEntity $entity */
         foreach ($children->getEntities() as $entity) {
             $item = $entity->getItem();
-            $price = $item->getItemCard()->getProduct()->getCurrencyPrice($context->getContext()->getCurrencyId());
+            $product = $item->getItemCard()->getProduct();
+            $price = $product ? $product->getCurrencyPrice($context->getContext()->getCurrencyId()): null;
             $item->setCurrencyPrice($price);
         }
 

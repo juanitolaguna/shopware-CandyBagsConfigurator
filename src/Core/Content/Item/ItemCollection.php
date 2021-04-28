@@ -34,7 +34,8 @@ class ItemCollection extends EntityCollection
         $elements = $this->elements;
 
         foreach ($elements as $item) {
-            $price = $item->getItemCard()->getProduct()->getCurrencyPrice($currencyId);
+            $product = $item->getItemCard()->getProduct();
+            $price = $product ? $product->getCurrencyPrice($currencyId): null;
             $item->setCurrencyPrice($price);
         }
 
