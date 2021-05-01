@@ -53,8 +53,10 @@
 
       <div class="col-lg-3 col-md-4 col-12">
         <Selected
+            v-if="stepSet"
             @remove-item="removeItem($event)"
             :treeNodes="treeNodes"
+            :stepSet="stepSet"
         />
       </div>
     </div>
@@ -79,6 +81,7 @@ export default {
 
   data() {
     return {
+      stepSet: null,
       rootNodes: null,
       treeNodes: [],
       lastView: null,
@@ -131,6 +134,7 @@ export default {
       await this.setLanguage();
       const result = await this.getRootNodes();
       this.getTreeNode(result);
+      await this.getStepSet();
     },
 
     setLanguage() {
@@ -142,6 +146,35 @@ export default {
         redirect: 'follow'
       };
       return fetch("/store-api/v3/context", requestOptions)
+    },
+
+    async getStepSet() {
+      const raw = JSON.stringify({
+        includes: {
+          eccb_step_set: ["id", "price", "media", "name", "translated"]
+        }
+      });
+
+      const requestOptions = {
+        method: 'POST',
+        headers: this.headers,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      return await new Promise((resolve, reject) => {
+        return fetch(`/store-api/v{version}/step-set/${window.stepSetEntityId}`, requestOptions)
+            .then(result => result.text())
+            .then(response => {
+              try {
+                const parsed = JSON.parse(response);
+                this.stepSet = parsed.elements[0];
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+      });
     },
 
 
@@ -297,6 +330,7 @@ export default {
           this.treeNodes = [];
           const result = await this.getRootNodes();
           this.getTreeNode(result);
+          await this.getStepSet()
         }
       }, 250))
     },

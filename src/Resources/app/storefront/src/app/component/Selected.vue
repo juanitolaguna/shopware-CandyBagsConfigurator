@@ -2,10 +2,29 @@
   <div>
 
     <h3 class="mb-2">{{ snippet.selected }}</h3>
+
+    <template v-if="basePrice && basePrice > 0">
+      <div class="row no-gutters ec-selection_card pb-1">
+        <div class="w-25">
+          <img :src="stepSetThumbnail" class="img-fluid" alt="">
+        </div>
+        <div class="col">
+          <div class="card-block px-2 mt-2">
+            <div class="selected-list-item-header">
+              <h4>{{ translate(stepSet, 'name') }}</h4>
+            </div>
+
+            <div class="ec-price-selected" style="display: inline;" v-if="basePrice">
+              {{ snippet.basePrice }}: {{ basePrice }} {{ currency }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <p v-if="!selected.length" style="font-size: 2rem">...</p>
 
     <div v-for="(item, index) in selected" class="card">
-
       <template v-if="treeNode(item)">
         <div class="row no-gutters ec-selection_card pb-1">
           <div class="w-25">
@@ -64,9 +83,19 @@
 import {translate, price} from "../utils/utils.js"
 
 export default {
-  props: ["treeNodes"],
+  props: ["treeNodes", "stepSet"],
 
   computed: {
+
+    stepSetThumbnail() {
+      const thumbnail =  this.stepSet.media.thumbnails.filter((el) => el.width === 800);
+      return thumbnail.length ? thumbnail[0].url : window.img.placeholder;
+    },
+
+    basePrice() {
+      return this.stepSet.price && this.stepSet.price[0].gross;
+    },
+
     assets() {
       return window.img;
     },
@@ -86,6 +115,7 @@ export default {
 
     calculatedPrice() {
       let price = 0;
+      if(this.basePrice) price = this.basePrice;
       this.selected.forEach((item) => {
         if (item.itemCard) {
           price += this.price(item);
