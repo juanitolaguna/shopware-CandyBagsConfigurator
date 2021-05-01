@@ -7,6 +7,8 @@ use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
+use Shopware\Core\System\Tax\TaxEntity;
 
 class StepSetEntity extends Entity
 {
@@ -23,6 +25,21 @@ class StepSetEntity extends Entity
      * @var bool
      */
     protected $active;
+
+    /**
+     * @var PriceCollection|null
+     */
+    protected $price;
+
+    /**
+     * @var string|null
+     */
+    protected $taxId;
+
+    /**
+     * @var TaxEntity|null
+     */
+    protected $tax;
 
     /**
      * @var MediaEntity
@@ -119,7 +136,52 @@ class StepSetEntity extends Entity
         $this->translations = $translations;
     }
 
+    /**
+     * @return PriceCollection|null
+     */
+    public function getPrice(): ?PriceCollection
+    {
+        return $this->price;
+    }
 
+    /**
+     * @param PriceCollection|null $price
+     */
+    public function setPrice(?PriceCollection $price): void
+    {
+        $this->price = $price;
+    }
 
+    /**
+     * @return string|null
+     */
+    public function getTaxId(): ?string
+    {
+        return $this->taxId;
+    }
+
+    /**
+     * @param string|null $taxId
+     */
+    public function setTaxId(?string $taxId): void
+    {
+        $this->taxId = $taxId;
+    }
+
+    /**
+     * @return TaxEntity|null
+     */
+    public function getTax(): ?TaxEntity
+    {
+        return $this->tax;
+    }
+
+    /**
+     * @param TaxEntity|null $tax
+     */
+    public function setTax(?TaxEntity $tax): void
+    {
+        $this->tax = $tax;
+    }
 
 }

@@ -28,12 +28,14 @@ Component.register('eccb-step-set-detail', {
     data() {
         return {
             stepSet: null,
+            taxes: null,
             steps: null,
             isLoading: true,
             mediaFolderName: 'Candy Bags',
             currentLanguageId: Context.api.languageId,
             inlineEdit: false,
-            currentInlineEditId: null
+            currentInlineEditId: null,
+            currencies: null
         }
     },
 
@@ -82,12 +84,29 @@ Component.register('eccb-step-set-detail', {
             return this.repositoryFactory.create('eccb_item');
         },
 
+        currencyRepository() {
+            return this.repositoryFactory.create('currency');
+        },
+
+        taxRepository() {
+            return this.repositoryFactory.create('tax');
+        },
+
         /** ToDo: not used? */
         treeNodeCriteria() {
             const criteria = new Criteria();
             criteria.addAssociation('item');
             criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
             return criteria;
+        },
+
+        defaultCurrency() {
+            if (!this.currencies) {
+                return {};
+            }
+
+            const defaultCurrency = this.currencies.find((currency) => currency.isSystemDefault);
+            return defaultCurrency || {};
         }
     },
 
@@ -103,28 +122,47 @@ Component.register('eccb-step-set-detail', {
             this.isLoading = false;
         },
 
+        async loadCurrencies() {
+            return this.currencyRepository.search(new Criteria(1, 500), Context.api).then((res) => {
+                this.currencies = res;
+            })
+        },
+
+        async loadTaxes() {
+            return this.taxRepository.search(new Criteria(1, 500), Context.api).then((res) => {
+               this.taxes = res;
+            });
+        },
+
 
         async getStepSet() {
             const criteria = new Criteria();
             criteria.addAssociation('media');
-            this.stepSet = await this.stepSetRepository.get(this.$route.params.id, Context.api, criteria)
-
-
-
+            this.stepSet = await this.stepSetRepository.get(this.$route.params.id, Context.api, criteria);
+            await this.loadTaxes();
+            await this.loadCurrencies()
+            if (this.stepSet.price == null) {
+                this.stepSet.price = [{
+                    currencyId: this.defaultCurrency.id,
+                    net: null,
+                    linked: true,
+                    gross: null
+                }];
+            }
         },
 
         async getSteps() {
-                const criteria = new Criteria();
-                criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
-                criteria.addFilter(Criteria.equals('parentId', null));
-                criteria.addFilter(Criteria.equals('treeNodeItemSetId', null));
+            const criteria = new Criteria();
+            criteria.addFilter(Criteria.equals('stepSetId', this.$route.params.id));
+            criteria.addFilter(Criteria.equals('parentId', null));
+            criteria.addFilter(Criteria.equals('treeNodeItemSetId', null));
 
-                criteria.addAssociation('item');
-                criteria.addSorting(Criteria.sort('item.position', 'desc'));
-                return this.treeNodeRepository.search(criteria, Context.api).then((result) => {
-                    this.steps = result;
-                    return Promise.resolve();
-                })
+            criteria.addAssociation('item');
+            criteria.addSorting(Criteria.sort('item.position', 'desc'));
+            return this.treeNodeRepository.search(criteria, Context.api).then((result) => {
+                this.steps = result;
+                return Promise.resolve();
+            })
         },
 
 
@@ -134,12 +172,12 @@ Component.register('eccb-step-set-detail', {
 
         validate() {
             let validated = true;
-                if (!this.stepSet.name) {
-                    this.createNotificationError({
-                        message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.name')
-                    });
-                    validated = false;
-                }
+            if (!this.stepSet.name) {
+                this.createNotificationError({
+                    message: "o_0.. Missing required Fields:<br>" + this.$tc('eccb.field.name')
+                });
+                validated = false;
+            }
             return validated;
         },
 
@@ -214,7 +252,7 @@ Component.register('eccb-step-set-detail', {
         },
 
         createTreeNode() {
-            this.$router.push({name: 'eccb.plugin.tree-node.create', query: { stepSetId: this.stepSet.id }});
+            this.$router.push({name: 'eccb.plugin.tree-node.create', query: {stepSetId: this.stepSet.id}});
         },
 
         createErrorMessage(exception) {
@@ -224,6 +262,11 @@ Component.register('eccb-step-set-detail', {
             })
             return error;
         },
+
+        updateCurrentTaxRate(payload) {
+            this.stepSet.taxId = payload;
+            this.onSave();
+        }
 
     },
 

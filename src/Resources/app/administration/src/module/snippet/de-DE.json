@@ -1,3 +1,76 @@
 {
-
+  "eccb": {
+    "general": {
+      "mainMenuItemGeneral": "Event Candy Bags",
+      "mainMenuItemSet": "Item Set List",
+      "descriptionTextModule": "Manage Candy Bags"
+    },
+    "column": {
+      "name": "Name",
+      "description": "Description",
+      "position": "Position",
+      "active": "Active",
+      "stepDescription": "Headline",
+      "purchasable": "Purchasable",
+      "terminal": "Terminal",
+      "itemSet": "Item Set",
+      "sequence": {
+        "stepDescription": "Step Headline"
+      }
+    },
+    "field": {
+      "name": "Name",
+      "description": "Description",
+      "image": "Image",
+      "active": "Active",
+      "purchasable": "Purchasable",
+      "terminal": "Terminal",
+      "stepDescription": "Headline",
+      "type": "Item Type",
+      "internalName": "Internal Name"
+    },
+    "node": {
+      "items": "Items",
+      "itemSets": "Item Sets",
+      "addChild": "Add Child Item",
+      "addItemSet": "Create new Item Set",
+      "selectItemSets": "Select Item Sets"
+    },
+    "button": {
+      "save": "Save",
+      "edit": "Edit",
+      "remove": "Remove",
+      "addNextStep": "Add Next Step"
+    },
+    "sequence": {
+      "list-title": "Sequence List",
+      "detail-title": "Sequence Details",
+      "addSequence": "Add Sequence",
+      "steps": "Steps",
+      "addStep": "Add Step",
+      "basePrice": "Base Price"
+    },
+    "itemCard": {
+      "newCard": "Create New Card",
+      "selectCard": "Select Existing Card",
+      "internalName": "Internal Name",
+      "product": "Product",
+      "addProduct": "Add a Product",
+      "showPrice": "Show Price"
+    },
+    "itemSet": {
+      "list-title": "Item Set List",
+      "addItemSet": "New Item Set",
+      "detail-title": "Item Set",
+      "internalName": "Internal Name",
+      "items": "Items",
+      "addItem": "Add Item",
+      "goToList": "All Item Sets  "
+    },
+    "error": "Something went wrong...",
+    "save-success" : {
+      "title": "",
+      "text": "Entity saved successfully!"
+    }
+  }
 }

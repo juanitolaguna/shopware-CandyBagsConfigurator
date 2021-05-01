@@ -2,9 +2,11 @@
     <sw-page class="eccb-step-set-detail">
 
         <template #smart-bar-header>
-            <img v-if="stepSet && !stepSet.active" class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1-inactive.svg' | asset">
+            <img v-if="stepSet && !stepSet.active" class="eccb-header-icon"
+                 :src="'eventcandycandybags/static/img/state-1-inactive.svg' | asset">
             <img v-else class="eccb-header-icon" :src="'eventcandycandybags/static/img/state-1.svg' | asset">
-            <h2 style="display: inline;" v-html="stepSet && stepSet.name ? stepSet.name : $tc('eccb.sequence.detail-title')"></h2>
+            <h2 style="display: inline;"
+                v-html="stepSet && stepSet.name ? stepSet.name : $tc('eccb.sequence.detail-title')"></h2>
         </template>
 
         <template #language-switch>
@@ -59,6 +61,31 @@
 
                     <sw-checkbox-field :label="$tc('eccb.field.active')"
                                        v-model="stepSet.active"></sw-checkbox-field>
+
+                    <sw-field
+                            type="select"
+                            :placeholder="$tc('sw-product.priceForm.placeholderTaxRate')"
+                            validation="required"
+                            :value="stepSet.taxId"
+                            @change="updateCurrentTaxRate"
+                            :label="$tc('eccb.sequence.basePrice')"
+                    >
+                        <option
+                                v-for="tax in taxes"
+                                :key="tax.id"
+                                :value="tax.id"
+                                :selected="stepSet.taxId === tax.id">
+                            {{ tax.name }}
+                        </option>
+                    </sw-field>
+
+                    <sw-price-field
+                            v-if="stepSet && stepSet.price"
+                            :taxRate="stepSet.tax"
+                            :price="stepSet.price"
+                            :currency="defaultCurrency">
+                    </sw-price-field>
+
 
                 </sw-card>
 

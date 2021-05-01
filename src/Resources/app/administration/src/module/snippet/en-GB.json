@@ -47,7 +47,8 @@
       "detail-title": "Sequence Details",
       "addSequence": "Add Sequence",
       "steps": "Steps",
-      "addStep": "Add Step"
+      "addStep": "Add Step",
+      "basePrice": "Base Price"
     },
     "itemCard": {
       "newCard": "Create New Card",
