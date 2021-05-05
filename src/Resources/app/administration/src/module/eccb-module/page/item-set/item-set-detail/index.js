@@ -106,7 +106,10 @@ Component.register('eccb-item-set-detail', {
     methods: {
         async createdComponent() {
             try {
-                this.itemSet = await this.itemSetRepository.get(this.$route.params.id, Context.api, new Criteria());
+                const criteria = new Criteria();
+                criteria.addAssociation('treeNodes');
+
+                this.itemSet = await this.itemSetRepository.get(this.$route.params.id, Context.api, criteria);
                 this.items = await this.itemRepository.search(this.itemCriteria, Context.api)
                 this.total = this.items.total;
 

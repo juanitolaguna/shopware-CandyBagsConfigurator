@@ -107,6 +107,7 @@ Component.register('eccb-tree-node-detail', {
             const criteria = new Criteria();
             criteria.addAssociation('media');
             criteria.addAssociation('product');
+            criteria.addAssociation('items.treeNode');
             return criteria;
         },
 

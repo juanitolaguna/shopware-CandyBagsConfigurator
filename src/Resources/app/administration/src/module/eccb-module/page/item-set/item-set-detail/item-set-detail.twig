@@ -48,7 +48,23 @@
                             :label="$tc('eccb.itemSet.internalName')"
                             v-model="itemSet.internalName">
                     </sw-text-field>
+
+                    <template v-if="itemSet && itemSet.treeNodes.length">
+                        <p style="margin-bottom: 1em;">
+                            <strong>{{ $tc('eccb.itemSet.assignedToNodes') }}</strong>
+                        </p>
+                        <router-link v-for="item in itemSet.treeNodes"
+                                     class="eccb-product-link"
+                                     :to="{ name: 'eccb.plugin.tree-node.detail', params: { id: item.id } }"
+                                     :style="{ 'color': '#00A1FF', 'display': 'block' }">
+                            <sw-icon name="default-web-link" small></sw-icon>&nbsp;
+                            {{ item.stepDescription ? item.stepDescription : item.id }}
+                        </router-link>
+                        <br>
+                    </template>
                 </sw-card>
+
+
 
                 <sw-card :large="false" v-if="!itemSet._isNew">
                     <template #title>

@@ -1,5 +1,6 @@
 {
   "eccb": {
+    "settings" : "Settings",
     "general": {
       "mainMenuItemGeneral": "Event Candy Bags",
       "mainMenuItemSet": "Item Set List",
@@ -57,7 +58,8 @@
       "internalName": "Internal Name",
       "product": "Product",
       "addProduct": "Add a Product",
-      "showPrice": "Show Price"
+      "showPrice": "Show Price",
+      "assignedToNodes": "This card is assigned to multiple nodes"
     },
     "itemSet": {
       "list-title": "Item Set List",
@@ -66,7 +68,8 @@
       "internalName": "Internal Name",
       "items": "Items",
       "addItem": "Add Item",
-      "goToList": "All Item Sets  "
+      "goToList": "All Item Sets ",
+      "assignedToNodes": "This ItemSet is assigned to following nodes:"
     },
     "error": "Something went wrong...",
     "save-success" : {

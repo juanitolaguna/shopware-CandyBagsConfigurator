@@ -4,6 +4,7 @@ namespace EventCandyCandyBags\Core\Content\ItemSet;
 
 use EventCandyCandyBags\Core\Content\Item\ItemCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\Aggregate\ItemSetTranslation\ItemSetTranslationCollection;
+use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetCollection;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -34,6 +35,7 @@ class ItemSetEntity extends Entity {
      * @var TreeNodeCollection|null
      */
     protected $treeNodes;
+
 
     /**
      * @return string|null
@@ -98,6 +100,7 @@ class ItemSetEntity extends Entity {
     {
         $this->childNode = $childNode;
     }
+
 
 
 

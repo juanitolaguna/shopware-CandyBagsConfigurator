@@ -78,7 +78,7 @@
         @click.prevent="openProductData"
     >
       {{ snippet.productDetails}}
-    </span> <br><br>
+    </span>
 
     <button @click.prevent="addToCart" type="button" class="btn btn-primary" :disabled="!buttonEnabled">
       {{ snippet.addToCart }}

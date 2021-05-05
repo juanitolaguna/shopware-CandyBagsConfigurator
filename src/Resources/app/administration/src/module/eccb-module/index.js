@@ -151,8 +151,15 @@ Module.register('eccb-plugin', {
             id: 'eccb-item-set-list',
             label: 'eccb.general.mainMenuItemSet',
             path: 'eccb.plugin.item-set.list',
-            icon: 'default-text-editor-list',
-            color: '#a9a9a9',
+            parent: 'eccb-step-set'
+        },
+        {
+            id: 'eccb-config',
+            label: 'eccb.settings',
+            path: 'sw.plugin.settings',
+            params: {
+                namespace: "EventCandyCandyBags"
+            },
             parent: 'eccb-step-set'
         }
     ]

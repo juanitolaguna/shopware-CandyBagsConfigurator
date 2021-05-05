@@ -68,7 +68,7 @@ class ItemCardDefinition extends EntityDefinition
             ),
 
             //Welchen Items bin ich zugewiesen
-            (new OneToManyAssociationField('items', ItemDefinition::class, 'item_set_id', 'id')),
+            (new OneToManyAssociationField('items', ItemDefinition::class, 'item_card_id', 'id')),
 
             new TranslatedField('name'),
             new TranslatedField('description'),
