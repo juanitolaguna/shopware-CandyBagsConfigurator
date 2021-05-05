@@ -6,6 +6,7 @@ use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -34,8 +35,8 @@ class ItemCardTranslationDefinition extends EntityTranslationDefinition {
     {
         return new FieldCollection([
             (new StringField('name', 'name'))->addFlags(new Required()),
-            (new StringField('description', 'description'))->addFlags(new AllowHtml()),
-            (new StringField('additional_data', 'additionalData'))->addFlags(new AllowHtml())
+            (new LongTextField('description', 'description'))->addFlags(new AllowHtml()),
+            (new LongTextField('additional_data', 'additionalData'))->addFlags(new AllowHtml())
         ]);
     }
 }

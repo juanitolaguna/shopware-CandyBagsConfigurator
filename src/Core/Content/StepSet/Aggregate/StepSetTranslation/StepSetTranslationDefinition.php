@@ -38,7 +38,7 @@ class StepSetTranslationDefinition extends EntityTranslationDefinition
             (new StringField('name', 'name'))->addFlags(new Required()),
             (new LongTextField('description', 'description'))
                 ->addFlags(new AllowHtml()),
-            (new StringField('additional_data', 'additionalData'))->addFlags(new AllowHtml())
+            (new LongTextField('additional_data', 'additionalData'))->addFlags(new AllowHtml())
         ]);
     }
 }

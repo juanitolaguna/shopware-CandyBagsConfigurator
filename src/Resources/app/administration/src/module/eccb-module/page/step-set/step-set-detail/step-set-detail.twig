@@ -59,8 +59,18 @@
                     >
                     </eccb-media-field>
 
+                    <eccb-media-field
+                            :label="$tc('eccb.sequence.baseImage')"
+                            v-model="stepSet.selectionBaseImageId"
+                            :showUploadField="false"
+                            :showControls="false"
+                            :mediaFolderName="mediaFolderName"
+                    >
+                    </eccb-media-field>
+
                     <sw-checkbox-field :label="$tc('eccb.field.active')"
                                        v-model="stepSet.active"></sw-checkbox-field>
+
 
                     <sw-field
                             type="select"

@@ -68,6 +68,13 @@ class StepSetDefinition extends EntityDefinition
                 MediaDefinition::class
             ),
 
+            new FkField('selection_base_image_id', 'selectionBaseImageId', MediaDefinition::class),
+            new ManyToOneAssociationField(
+                'selectionBaseImage',
+                'selection_base_image_id',
+                MediaDefinition::class
+            ),
+
             new TranslatedField('name'),
             new TranslatedField('description'),
             new TranslatedField('additionalData'),

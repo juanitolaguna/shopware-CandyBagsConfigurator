@@ -20,7 +20,7 @@
     },
     "field": {
       "name": "Name",
-      "description": "Description",
+      "description": "Product Data",
       "image": "Image",
       "active": "Active",
       "purchasable": "Purchasable",
@@ -48,7 +48,8 @@
       "addSequence": "Add Sequence",
       "steps": "Steps",
       "addStep": "Add Step",
-      "basePrice": "Base Price"
+      "basePrice": "Base Price",
+      "baseImage": "Selection Base Image"
     },
     "itemCard": {
       "newCard": "Create New Card",

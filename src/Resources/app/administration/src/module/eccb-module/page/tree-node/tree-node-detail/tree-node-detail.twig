@@ -152,11 +152,11 @@
                             v-model="itemCard.name">
                     </sw-text-field>
 
-                    <sw-text-field
+                    <sw-text-editor
                             v-if="itemCard"
                             :label="$tc('eccb.field.description')"
                             v-model="itemCard.description">
-                    </sw-text-field>
+                    </sw-text-editor>
 
                     <eccb-media-field
                             v-if="itemCard"

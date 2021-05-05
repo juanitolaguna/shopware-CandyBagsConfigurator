@@ -1,8 +1,11 @@
 {
   "candy-bags": {
     "selected": "Your Selection:",
-    "inactive" :"There was something... Maybe you'll come back later!",
+    "notActive": "There was something... Maybe you\\'ll come back later!",
     "addToCart": "Add To Cart",
-    "basePrice": "Baseprice"
+    "basePrice": "Baseprice",
+    "closeProductDataModal": "Close",
+    "printProductData": "Print",
+    "productDetails": "Productdetails"
   }
 }

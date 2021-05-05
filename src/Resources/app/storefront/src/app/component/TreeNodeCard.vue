@@ -1,26 +1,65 @@
 <template>
-  <div @click="onSelect" :class="['card ec-card ', {selected: child.item.selected}]">
-    <div class="card-image-top-wrapper" style="width: inherit">
-      <img class="card-img-top" :src="image" :alt="child.item.itemCard.name">
+  <div>
+    <div @click="onSelect" :class="['card ec-card ', {selected: child.item.selected}]">
+      <div class="card-image-top-wrapper" style="width: inherit">
+        <img class="card-img-top" :src="image" :alt="child.item.itemCard.name">
+      </div>
+      <div class="card-body">
+        <h5 class="card-title"
+            :style="{paddingBottom: '0px'}">
+          {{ translate(child.item.itemCard, 'name') }}
+        </h5>
+
+        <span
+            v-if="hasProductDetails"
+            :class="[config.pdButtonType]"
+            style="cursor: pointer;"
+            :style="config.pdButtonInlineStyle"
+            v-on:click.stop="openProductData"
+        >{{ snippet.productDetails }}</span>
+
+        <div class="ec-price" v-if="_price"><strong>{{ _price }} {{ currency }}</strong></div>
+        <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
+      </div>
     </div>
-    <div class="card-body">
-      <h5 class="card-title"
-          :style="{paddingBottom: '0px'}">
-        {{ translate(child.item.itemCard, 'name') }}
-      </h5>
-      <div class="ec-price" v-if="_price"><strong>{{_price}} {{currency}}</strong></div>
-      <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
-    </div>
+
+    <ProductDataModal
+        :modalActive="modalActive"
+        :data="[child.item.itemCard.description]"
+        @close-product-modal="closeProducDataModal"
+    />
   </div>
 </template>
 
 <script>
 import {translate, price} from "../utils/utils.js"
+import ProductDataModal from "./ProductDataModal.vue";
 
 export default {
-  props: ["child", "assets", "parentNode"],
+  props: ["child", "assets", "parentNode", "config"],
+
+
+  components: {
+    ProductDataModal
+  },
+
+
+  data() {
+    return {
+      modalActive: false,
+    }
+  },
+
 
   computed: {
+    snippet() {
+      return window.snippets;
+    },
+
+    hasProductDetails() {
+      return this.child.item.itemCard.description;
+    },
+
     displayNext() {
       return !this.terminal() && (this.nextStep() || this.hasNextRootNodeChildren())
     },
@@ -87,6 +126,14 @@ export default {
       if (this.hasNextRootNodeChildren()) {
         return this.$emit('next-root-node');
       }
+    },
+
+    openProductData() {
+      this.modalActive = true;
+    },
+
+    closeProducDataModal() {
+      this.modalActive = false;
     }
   }
 }

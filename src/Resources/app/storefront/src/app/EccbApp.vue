@@ -20,6 +20,7 @@
                     :assets="assets"
                     :child="child"
                     :parentNode="parent"
+                    :config="config"
                     @next-root-node="getTreeNode(nextRootNode(parent).id, nextRootNode(parent), {parentIndex, childIndex}, 'treeNode')"
                     @next-node="getTreeNode(child.id, parent, {parentIndex, childIndex}, 'treeNode')"
                     @terminal-node="selectTerminal({parentIndex, childIndex}, 'treeNode')"
@@ -35,6 +36,7 @@
                         :child="itemSetItem"
                         :childNode="itemSet.childNode"
                         :parentNode="parent"
+                        :config="config"
                         @next-root-node="getTreeNode(nextRootNode(parent).id, nextRootNode(parent), {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
                         @next-node="getTreeNode(itemSet.childNode.id, parent, {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
                         @terminal-node="selectTerminal({parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
@@ -57,6 +59,8 @@
             @remove-item="removeItem($event)"
             :treeNodes="treeNodes"
             :stepSet="stepSet"
+            :config="config"
+            :productData="productData"
         />
       </div>
     </div>
@@ -90,7 +94,8 @@ export default {
       product: null,
       firstLoad: true,
       timer: null,
-      WAIT_INTERVAL: 500
+      WAIT_INTERVAL: 500,
+      config: null
     }
   },
 
@@ -121,6 +126,30 @@ export default {
 
     assets() {
       return window.img;
+    },
+
+    productData() {
+      const selected = [];
+      this.treeNodes.forEach((node) => {
+
+        const children = node.children.filter((child) => child.item.selected === true);
+        if (children.length) {
+          if (children[0].item.itemCard.description) {
+            selected.push(children[0].item.itemCard.description);
+          }
+        }
+
+        node.itemSets.forEach((itemSet) => {
+          const items = itemSet.items.filter((item) => item.selected === true);
+          if (items.length) {
+            if (items[0].itemCard.description) {
+              selected.push(items[0].itemCard.description);
+            }
+          }
+        });
+
+      });
+      return selected;
     }
   },
 
@@ -130,6 +159,7 @@ export default {
 
     async mountedComponent() {
       this.isLoading = true;
+      await this.getConfig();
       this.shortcuts();
       await this.setLanguage();
       const result = await this.getRootNodes();
@@ -148,10 +178,34 @@ export default {
       return fetch("/store-api/v3/context", requestOptions)
     },
 
+    async getConfig() {
+
+      const requestOptions = {
+        method: 'GET',
+        headers: this.headers,
+        redirect: 'follow'
+      };
+
+      return await new Promise((resolve, reject) => {
+        return fetch(`/store-api/v{version}/eccb/get-config`, requestOptions)
+            .then(result => result.text())
+            .then(response => {
+              try {
+                const parsed = JSON.parse(response);
+                this.config = parsed
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+      });
+    },
+
+
     async getStepSet() {
       const raw = JSON.stringify({
         includes: {
-          eccb_step_set: ["id", "price", "media", "name", "translated"]
+          eccb_step_set: ["id", "price", "media", "selectionBaseImage", "name", "translated"]
         }
       });
 

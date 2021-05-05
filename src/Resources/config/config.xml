@@ -1,14 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
-    <card>
-        <title>#EventCandyCandyBags# Settings</title>
-        <title lang="de-DE">#EventCandyCandyBags# Einstellungen</title>
 
+
+    <card>
+        <title>Show Product Details Button for Selected Elements</title>
+        <title lang="de-DE">Zeige den Produktdetails Button für die Auswahl an.</title>
         <input-field type="bool">
-            <name>active</name>
+            <name>showProductDetailsInSelection</name>
             <label>Active</label>
             <label lang="de-DE">Aktiviert</label>
         </input-field>
+    </card>
+
+    <card>
+        <title>Produktdaten Einstellungen</title>
+
+        <input-field type="single-select">
+            <name>pdButtonType</name>
+            <options>
+                <option>
+                    <id>btn btn-primary btn-sm</id>
+                    <name>Button Primary</name>
+                </option>
+                <option>
+                    <id>btn btn-secondary btn-sm</id>
+                    <name>Button Secondary</name>
+                </option>
+                <option>
+                    <id>btn btn-outline-primary btn-sm</id>
+                    <name>Button Outline Primary</name>
+                </option>
+                <option>
+                    <id>btn btn-outline-secondary btn-sm</id>
+                    <name>Button Outline Secondary</name>
+                </option>
+                <option>
+                    <id>badge badge-primary</id>
+                    <name>Badge Primary</name>
+                </option>
+                <option>
+                    <id>badge badge-secondary</id>
+                    <name>Badge Secondary</name>
+                </option>
+                <option>
+                    <id>badge badge-light white-badge</id>
+                    <name>Badge White</name>
+                </option>
+            </options>
+            <defaultValue>btn btn-secondary btn-sm</defaultValue>
+            <label>Button Type</label>
+        </input-field>
+
+        <input-field>
+            <name>pdButtonInlineStyle</name>
+            <placeholder>text-decoration: underline;</placeholder>
+            <label>PDB Button Inline Style</label>
+            <label lang="de-DE">PDB Button Inline Style</label>
+        </input-field>
+
+
+        <input-field type="single-select">
+            <name>pdButtonTypeResult</name>
+            <options>
+                <option>
+                    <id>btn btn-primary btn-sm</id>
+                    <name>Button Primary</name>
+                </option>
+                <option>
+                    <id>btn btn-secondary btn-sm</id>
+                    <name>Button Secondary</name>
+                </option>
+                <option>
+                    <id>btn btn-outline-primary btn-sm</id>
+                    <name>Button Outline Primary</name>
+                </option>
+                <option>
+                    <id>btn btn-outline-secondary btn-sm</id>
+                    <name>Button Outline Secondary</name>
+                </option>
+                <option>
+                    <id>badge badge-primary</id>
+                    <name>Badge Primary</name>
+                </option>
+                <option>
+                    <id>badge badge-secondary</id>
+                    <name>Badge Secondary</name>
+                </option>
+                <option>
+                    <id>badge badge-light white-badge</id>
+                    <name>Badge White</name>
+                </option>
+            </options>
+            <defaultValue>btn btn-secondary btn-sm</defaultValue>
+            <label>Button Type Result</label>
+        </input-field>
+
+        <input-field>
+            <name>pdButtonSelectedInlineStyle</name>
+            <placeholder>text-decoration: underline;</placeholder>
+            <label>PDB Button Selected Inline Style</label>
+            <label lang="de-DE">PDB Button Selected Inline Style</label>
+        </input-field>
+    </card>
+
+    <card>
+    <title>Snippets (double escape quotes \\' for the js part)</title>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Message - if no Products</label>
+            <snippet>candy-bags.notActive</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Add To Cart Button</label>
+            <snippet>candy-bags.addToCart</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Selected</label>
+            <snippet>candy-bags.selected</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Base Price</label>
+            <snippet>candy-bags.basePrice</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Close Product Data Modal</label>
+            <snippet>candy-bags.closeProductDataModal</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Print Product Data</label>
+            <snippet>candy-bags.printProductData</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Product Details Button</label>
+            <snippet>candy-bags.productDetails</snippet>
+        </component>
+
     </card>
 </config>

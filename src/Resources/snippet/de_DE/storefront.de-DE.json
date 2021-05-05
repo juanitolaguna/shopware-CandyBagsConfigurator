@@ -1,8 +1,11 @@
 {
   "candy-bags": {
     "selected": "Deine Auswahl:",
-    "inactive" : "Da war mal was... <br><br>komm später vieleicht nochmal vorbei!",
+    "notActive": "Da war mal was... komm später vieleicht nochmal vorbei!",
     "addToCart": "In den Warenkorb",
-    "basePrice": "Grundpreis"
+    "basePrice": "Grundpreis",
+    "closeProductDataModal": "Schließen",
+    "printProductData": "Drucken",
+    "productDetails": "Produktdetails"
   }
 }

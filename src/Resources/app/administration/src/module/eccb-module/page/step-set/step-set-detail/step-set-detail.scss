@@ -12,8 +12,8 @@
   }
 }
 
-.sw-media-field {
-  z-index: 99;
+.sw-media-field .sw-media-field__expanded-content {
+  z-index: 999 !important;
 }
 
 .eccb-header-icon {

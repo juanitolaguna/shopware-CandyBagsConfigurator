@@ -138,6 +138,7 @@ Component.register('eccb-step-set-detail', {
         async getStepSet() {
             const criteria = new Criteria();
             criteria.addAssociation('media');
+            criteria.addAssociation('selectionBaseImage');
             this.stepSet = await this.stepSetRepository.get(this.$route.params.id, Context.api, criteria);
             await this.loadTaxes();
             await this.loadCurrencies()

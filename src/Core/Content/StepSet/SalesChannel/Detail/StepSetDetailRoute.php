@@ -39,6 +39,7 @@ class StepSetDetailRoute
         $criteria
             ->setIds([$stepSetId])
             ->addAssociation('media')
+            ->addAssociation('selectionBaseImage')
             ->addAssociation('steps');
 
         return new StepSetDetailRouteResponse($this->stepSetRepository->search($criteria, $context->getContext()));

@@ -3,7 +3,7 @@
 
     <h3 class="mb-2">{{ snippet.selected }}</h3>
 
-    <template v-if="basePrice && basePrice > 0">
+    <div class="card" v-if="stepSetThumbnail">
       <div class="row no-gutters ec-selection_card pb-1">
         <div class="w-25">
           <img :src="stepSetThumbnail" class="img-fluid" alt="">
@@ -14,13 +14,13 @@
               <h4>{{ translate(stepSet, 'name') }}</h4>
             </div>
 
-            <div class="ec-price-selected" style="display: inline;" v-if="basePrice">
+            <div class="ec-price-selected" style="display: inline;" v-if="basePrice && basePrice > 0">
               {{ snippet.basePrice }}: {{ basePrice }} {{ currency }}
             </div>
           </div>
         </div>
       </div>
-    </template>
+    </div>
 
     <p v-if="!selected.length" style="font-size: 2rem">...</p>
 
@@ -34,7 +34,8 @@
             <div class="card-block px-2 mt-2">
               <div class="selected-list-item-header">
                 <h4>{{ translate(item.item.itemCard, 'name') }}</h4>
-                <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;" :src="assets.close">
+                <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;"
+                     :src="assets.close">
               </div>
 
               <div class="ec-price-selected" style="display: inline;" v-if="price(item.item)">
@@ -55,7 +56,8 @@
 
               <div class="selected-list-item-header">
                 <h4>{{ translate(item.itemCard, 'name') }}</h4>
-                <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;" :src="assets.close">
+                <img @click="removeItem(index)" :class="['ec-icon-selected']" style="width: 24px; height: 24px;"
+                     :src="assets.close">
               </div>
 
               <div class="ec-price-selected" style="display: inline;" v-if="price(item)">
@@ -68,6 +70,16 @@
 
     </div>
 
+    <span
+        v-if="hasProductDetails"
+        :class="[config.pdButtonType]"
+        style="cursor: pointer;"
+        :style="config.pdButtonInlineStyle"
+        @click.prevent="openProductData"
+    >
+      {{ snippet.productDetails}}
+    </span> <br><br>
+
     <button @click.prevent="addToCart" type="button" class="btn btn-primary" :disabled="!buttonEnabled">
       {{ snippet.addToCart }}
     </button>
@@ -75,20 +87,42 @@
     <div class="ec-price-selected" style="display: inline;" v-if="calculatedPrice !== 0"><strong>{{ calculatedPrice }}
       {{ currency }}</strong></div>
 
+    <ProductDataModal
+        :modalActive="modalActive"
+        :data="productData"
+        @close-product-modal="closeProducDataModal"
+    />
+
 
   </div>
+
 </template>
 
 <script>
 import {translate, price} from "../utils/utils.js"
+import ProductDataModal from "./ProductDataModal.vue";
 
 export default {
-  props: ["treeNodes", "stepSet"],
+  components: {
+    ProductDataModal,
+  },
+  props: ["treeNodes", "stepSet", "config", "productData"],
+
+  data() {
+    return {
+      modalActive: false,
+    }
+  },
 
   computed: {
 
+    hasProductDetails() {
+      return this.config.showProductDetailsInSelection && (this.productData.length > 0);
+    },
+
     stepSetThumbnail() {
-      const thumbnail =  this.stepSet.media.thumbnails.filter((el) => el.width === 800);
+      if (this.stepSet.selectionBaseImage == null) return false;
+      const thumbnail = this.stepSet.selectionBaseImage.thumbnails.filter((el) => el.width === 800);
       return thumbnail.length ? thumbnail[0].url : window.img.placeholder;
     },
 
@@ -115,7 +149,7 @@ export default {
 
     calculatedPrice() {
       let price = 0;
-      if(this.basePrice) price = this.basePrice;
+      if (this.basePrice) price = this.basePrice;
       this.selected.forEach((item) => {
         if (item.itemCard) {
           price += this.price(item);
@@ -196,6 +230,14 @@ export default {
     addToCart() {
       if (!this.buttonEnabled) return;
       window.alert('Noch nicht implementiert!');
+    },
+
+    openProductData() {
+      this.modalActive = true;
+    },
+
+    closeProducDataModal() {
+      this.modalActive = false;
     }
   }
 }

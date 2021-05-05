@@ -6,6 +6,11 @@
   }
 }
 
+.eccb-show-front-modal {
+  display: block;
+  background: #000000b3;
+}
+
 .ec-entity-description {
   font-size: 1rem;
 }
@@ -50,7 +55,12 @@
 
 .ec-configurator {
 
-  .card {
+  .modal-dialog {
+    max-width: 50rem;
+  }
+
+
+    .card {
     margin-bottom: 2em;
     box-sizing: content-box;
     .card-header {

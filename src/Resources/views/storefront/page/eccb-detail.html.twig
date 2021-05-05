@@ -67,6 +67,13 @@
         window['snippets']['addToCart'] = '{{ 'candy-bags.addToCart'|trans|raw }}';
         window['snippets']['selected'] = '{{ 'candy-bags.selected'|trans|raw }}';
         window['snippets']['basePrice'] = '{{ 'candy-bags.basePrice'|trans|raw }}';
+        window['snippets']['closeProductDataModal'] = '{{ 'candy-bags.closeProductDataModal'|trans|raw }}';
+        window['snippets']['printProductData'] = '{{ 'candy-bags.printProductData'|trans|raw }}';
+        window['snippets']['notActive'] = '{{ 'candy-bags.notActive'|trans|raw }}';
+        window['snippets']['productDetails'] = '{{ 'candy-bags.productDetails'|trans|raw }}';
+
+        window.config = {};
+        window.config = '{{ shopware.config.EventCandyCandyBags.config.pdButtonType  }}';
 
     </script>
     {{ parent() }}

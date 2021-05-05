@@ -47,6 +47,11 @@ class StepSetEntity extends Entity
     protected $media;
 
     /**
+     * @var MediaEntity
+     */
+    protected $selectionBaseImage;
+
+    /**
      * @var TreeNodeCollection|null
      */
     protected $steps;
@@ -183,5 +188,22 @@ class StepSetEntity extends Entity
     {
         $this->tax = $tax;
     }
+
+    /**
+     * @return MediaEntity|null
+     */
+    public function getSelectionBaseImage(): ?MediaEntity
+    {
+        return $this->selectionBaseImage;
+    }
+
+    /**
+     * @param MediaEntity|null $selectionBaseImage
+     */
+    public function setSelectionBaseImage(?MediaEntity $selectionBaseImage): void
+    {
+        $this->selectionBaseImage = $selectionBaseImage;
+    }
+
 
 }
