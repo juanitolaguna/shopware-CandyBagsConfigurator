@@ -58,7 +58,7 @@
                                      :to="{ name: 'eccb.plugin.tree-node.detail', params: { id: item.id } }"
                                      :style="{ 'color': '#00A1FF', 'display': 'block' }">
                             <sw-icon name="default-web-link" small></sw-icon>&nbsp;
-                            {{ item.stepDescription ? item.stepDescription : item.id }}
+                            {{ item.stepDescription ? item.stepDescription + ' - ' + item.id : item.id }}
                         </router-link>
                         <br>
                     </template>
