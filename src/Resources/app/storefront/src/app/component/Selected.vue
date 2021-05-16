@@ -70,6 +70,7 @@
 
     </div>
 
+    <div>
     <span
         v-if="hasProductDetails"
         :class="[config.pdButtonType]"
@@ -77,8 +78,9 @@
         :style="config.pdButtonInlineStyle"
         @click.prevent="openProductData"
     >
-      {{ snippet.productDetails}}
-    </span>
+      {{ snippet.productDetails }}
+    </span><br><br>
+    </div>
 
     <button @click.prevent="addToCart" type="button" class="btn btn-primary" :disabled="!buttonEnabled">
       {{ snippet.addToCart }}
