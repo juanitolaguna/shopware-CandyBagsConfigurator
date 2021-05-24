@@ -59,6 +59,7 @@ Component.register('eccb-item-set-list-component', {
             criteria.addAssociation('itemSet');
             criteria.addAssociation('childNode.item');
             criteria.addSorting(Criteria.sort('childNode.item.position', 'desc'));
+            criteria.limit = 500;
             return criteria;
         },
 
