@@ -2,45 +2,25 @@
 
 namespace EventCandyCandyBags\Controller;
 
-use ErrorException;
-use EventCandy\LabelMe\Core\Content\CandyPackage\CandyPackageEntity;
-use EventCandy\LabelMe\Core\Content\Event\EventEntity;
-use EventCandy\LabelMe\Core\Content\Label\LabelEntity;
-use EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber;
-use EventCandy\Sets\Utils;
+use EventCandyCandyBags\Utils;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartPersister;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\Price\PriceRounding;
-use Shopware\Core\Checkout\Cart\Price\ReferencePriceCalculator;
-use Shopware\Core\Checkout\Cart\Price\Struct\ReferencePrice;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartResponse;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
-use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Product\SalesChannel\Price\ProductPriceDefinitionBuilder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Shopware\Storefront\Framework\Twig\Extension\SwSanitizeTwigFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @RouteScope(scopes={"store-api"})
@@ -58,15 +38,29 @@ class ApiController extends AbstractController
      */
     private $mediaRepository;
 
+    /**
+     * @var CartService
+     */
+    private $cartService;
 
-    public function __construct(
-        EntityRepositoryInterface $mediaRepository,
-        SystemConfigService $systemConfigService
+    /**
+     * @var CartPersister
+     */
+    private $cartPersister;
 
-    )
+    /**
+     * ApiController constructor.
+     * @param SystemConfigService $systemConfigService
+     * @param EntityRepositoryInterface $mediaRepository
+     * @param CartService $cartService
+     * @param CartPersister $cartPersister
+     */
+    public function __construct(SystemConfigService $systemConfigService, EntityRepositoryInterface $mediaRepository, CartService $cartService, CartPersister $cartPersister)
     {
-        $this->mediaRepository = $mediaRepository;
         $this->systemConfigService = $systemConfigService;
+        $this->mediaRepository = $mediaRepository;
+        $this->cartService = $cartService;
+        $this->cartPersister = $cartPersister;
     }
 
 
@@ -78,29 +72,60 @@ class ApiController extends AbstractController
      */
     public function getPluginConfig(Request $request, Context $context): JsonResponse
     {
-
         $config = $this->systemConfigService->get('EventCandyCandyBags.config');
-
-//        if (key_exists('arrowImage', $config)) {
-//            $config['arrowUrl'] = $this->getImageUrl('arrowImage', $config, $context);
-//        }
-//
-//        if (key_exists('placeholderImage', $config)) {
-//            $config['placeholderImageUrl'] = $this->getImageUrl('placeholderImage', $config, $context);
-//        }
-
         return new JsonResponse($config);
     }
 
-    private function getImageUrl(string $configMediaKey, array $config, Context $context)
-    {
-        $id = $config[$configMediaKey];
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('id', $id));
 
-        /** @var MediaEntity $mediaEntity */
-        $mediaEntity = $this->mediaRepository->search($criteria, $context)->first();
-        return $mediaEntity ? $mediaEntity->getUrl() : 'noimage';
+    /**
+     * @Route("/store-api/v{version}/eccb/add-line-item", name="api.eccb.add-line-item", methods={"POST"}, defaults={"XmlHttpRequest": true})
+     * @param Cart $cart
+     * @param RequestDataBag $requestDataBag
+     * @param Request $request
+     * @param SalesChannelContext $salesChannelContext
+     */
+    public function addLineItems(Cart $cart, RequestDataBag $requestDataBag, Request $request, SalesChannelContext $salesChannelContext)
+    {
+
+
+        $lineItemData = $requestDataBag->all();
+
+        try {
+            $id = '';
+            foreach ($lineItemData['selected'] as $data) {
+                if (isset($data['id'])) {
+                    $id .= $data['id'];
+                }
+            }
+
+            $uuid = hash('md5', $id);
+
+            $lineItem = new LineItem(
+                $uuid,
+                'event-candy-candy-bags',
+                $uuid,
+                1
+            );
+
+            $lineItem->setPayload($lineItemData);
+            $lineItem->setStackable(true);
+            $lineItem->setRemovable(true);
+
+ //          Utils::log(print_r($request->getContent(), true));
+
+//            $content = json_decode($request->getContent(), true);
+//            $cart->setToken($content['sw-context-token']);
+
+
+            $this->cartService->add($cart, $lineItem, $salesChannelContext);
+            $this->cartPersister->save($cart, $salesChannelContext);
+
+        } catch (Exception $exception) {
+            return new JsonResponse($exception->getMessage());
+        }
+
+        return $this->redirectToRoute('frontend.cart.offcanvas');
     }
+
 
 }

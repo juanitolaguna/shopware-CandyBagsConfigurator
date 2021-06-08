@@ -108,7 +108,7 @@ export default {
   components: {
     ProductDataModal,
   },
-  props: ["treeNodes", "stepSet", "config", "productData"],
+  props: ["treeNodes", "stepSet", "config", "productData", "headers"],
 
   data() {
     return {
@@ -172,12 +172,14 @@ export default {
 
         const children = node.children.filter((child) => child.item.selected === true);
         if (children.length) {
+          children[0]['cardType'] = 'treeNodeCard'
           selected.push(children[0]);
         }
 
         node.itemSets.forEach((itemSet) => {
           const items = itemSet.items.filter((item) => item.selected === true);
           if (items.length) {
+            items[0]['cardType'] = 'itemCard'
             selected.push(items[0]);
           }
         });
@@ -229,18 +231,67 @@ export default {
       return !!(item.item && item.item.itemCard);
     },
 
-    addToCart() {
-      if (!this.buttonEnabled) return;
-      window.alert('Noch nicht implementiert!');
-    },
-
     openProductData() {
       this.modalActive = true;
     },
 
     closeProducDataModal() {
       this.modalActive = false;
-    }
+    },
+
+    addToCart() {
+      if (!this.buttonEnabled) return;
+
+
+      const selected = {
+            'selected' : this.selected,
+            'price' : this.calculatedPrice
+          }
+
+      const requestOptions = {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(selected),
+        redirect: 'follow'
+      };
+
+      fetch(`/store-api/v{version}/eccb/add-line-item`, requestOptions)
+          .then(result => result.text())
+          .then(response => {
+            // const res = JSON.parse(response);
+            // console.log(res);
+          })
+          .catch(error => console.log('error', error));
+    },
+
+
+
+    // insertCart() {
+    //   // this.httpClient.getBasicHeaders();
+    //   const thumbnail = this.result.eclm_package.thumbnails.filter((e) => e.width === 400)[0];
+    //   const result = this.result;
+    //   result.eclm_package.thumbnail = thumbnail;
+    //   result['selectedQuantity'] = this.selectedQuantity;
+    //   //remove unused data
+    //   // delete result.eclm_package.thumbnails;
+    //
+    //   return this.httpClient.post(
+    //       'store-api/v{version}/eclm/add-line-item',
+    //       JSON.stringify(result),
+    //       this.onPost);
+    // },
+    //
+    // onPost(res) {
+    //   // console.log(res)
+    //   // const cartWidgetEl = DomAccess.querySelector(this.cartEl, '[data-cart-widget]');
+    //   // const cartWidgetInstance = this.pluginManager.getPluginInstanceFromElement(cartWidgetEl, 'CartWidget');
+    //   // cartWidgetInstance.fetch();
+    //   const offCanvasCartEl = DomAccess.querySelector(document, '[data-offcanvas-cart]');
+    //   const offCanvasCartInstance = this.pluginManager.getPluginInstanceFromElement(offCanvasCartEl, 'OffCanvasCart');
+    //   offCanvasCartInstance.openOffCanvas(window.router['frontend.cart.offcanvas'], false);
+    // },
+
+
   }
 }
 </script>

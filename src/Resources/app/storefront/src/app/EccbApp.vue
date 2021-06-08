@@ -61,6 +61,7 @@
             :stepSet="stepSet"
             :config="config"
             :productData="productData"
+            :headers="headers"
         />
       </div>
     </div>

@@ -5,14 +5,34 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartProcessor" public="true">
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber"/>
+
+            <!-- inject before product processor (5000) -->
+            <tag name="shopware.cart.processor" priority="6000"/>
+            <tag name="shopware.cart.collector" priority="6000"/>
+        </service>
+
+        <!-- LineItemFactory -->
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsLineItemFactory">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\PriceDefinitionFactory"/>
+            <tag name="shopware.cart.line_item.factory"/>
+        </service>
+
         <!-- Controller -->
         <service id="EventCandyCandyBags\Controller\StepSetController" public="true">
             <argument id="Shopware\Storefront\Page\GenericPageLoader" type="service"/>
         </service>
 
         <service id="EventCandyCandyBags\Controller\ApiController" public="true">
-            <argument type="service" id="media.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
         </service>
 
         <!-- SeoUrl -->

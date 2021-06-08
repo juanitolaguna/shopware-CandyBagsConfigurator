@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace EventCandyCandyBags\Commands;
@@ -36,7 +36,6 @@ class EccbCommands extends Command
      * @var Connection
      */
     private $connection;
-
 
 
     /**
@@ -96,9 +95,26 @@ class EccbCommands extends Command
 
         $output->writeln("generate uuid's");
 
-        for ($i = 0; $i < $input->getOption('uuids'); $i++) {
-            $uuid = Uuid::randomHex();
-            $output->writeln($uuid);
-        }
+//        for ($i = 0; $i < $input->getOption('uuids'); $i++) {
+//            $uuid = Uuid::randomHex();
+//            $output->writeln($uuid);
+//        }
+
+        $uuid1 = Uuid::randomHex();
+        $output->writeln($uuid1);
+
+        $uuid2 = Uuid::randomHex();
+        $output->writeln($uuid2);
+
+        $uuid3 = Uuid::randomHex();
+        $output->writeln($uuid3);
+
+        $base = hash('md5', $uuid1 . $uuid2 . $uuid3 . $uuid3);
+
+        $output->writeln($base);
+
+
+        $uuid3 = Uuid::isValid($base);
+        $output->writeln($uuid3);
     }
 }
