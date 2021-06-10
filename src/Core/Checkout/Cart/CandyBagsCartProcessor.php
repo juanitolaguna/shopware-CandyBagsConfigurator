@@ -13,28 +13,24 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryTime;
 use Shopware\Core\Checkout\Cart\LineItem\CartDataCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\QuantityInformation;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
+use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\Cart\ProductGatewayInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use function count;
 
 class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollectorInterface
 {
-
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
-
 
     /**
      * @var ProductGatewayInterface
@@ -47,6 +43,16 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
      */
     private $connection;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $mediaRepository;
+
+    /**
+     * @var QuantityPriceCalculator
+     */
+    private $calculator;
+
 
     public const TYPE = 'event-candy-candy-bags';
     public const DATA_KEY = 'eccb-';
@@ -55,17 +61,20 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     public const PURCHASE_STEPS = 1;
     public const SHIPPING_FREE = false;
 
+
     /**
      * CandyBagsCartProcessor constructor.
-     * @param SalesChannelRepositoryInterface $productRepository
      * @param ProductGatewayInterface $productGateway
      * @param Connection $connection
+     * @param EntityRepositoryInterface $mediaRepository
+     * @param QuantityPriceCalculator $calculator
      */
-    public function __construct(SalesChannelRepositoryInterface $productRepository, ProductGatewayInterface $productGateway, Connection $connection)
+    public function __construct(ProductGatewayInterface $productGateway, Connection $connection, EntityRepositoryInterface $mediaRepository, QuantityPriceCalculator $calculator)
     {
-        $this->productRepository = $productRepository;
         $this->productGateway = $productGateway;
         $this->connection = $connection;
+        $this->mediaRepository = $mediaRepository;
+        $this->calculator = $calculator;
     }
 
 
@@ -75,9 +84,10 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             ->getLineItems()
             ->filterType(self::TYPE);
 
-        if (\count($lineItems) === 0) {
+        if (count($lineItems) === 0) {
             return;
         }
+
 
         // fetch lineItem products and subproducts
         // add them to CartDataCollection
@@ -87,25 +97,32 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
                 $products = $this->fetchProductsForLineItem($lineItem, $context);
                 $productsAry = $this->getSubProducts($products, $context);
                 $data->set($key, $productsAry);
-            }
-        }
 
+                $formattedInfo = $this->createLabelAndFlinkData($productsAry, $lineItem);
+                $lineItem->setPayload(['line_item_sub_products' => $formattedInfo['flinkAggregate']]);
+                $lineItem->setPayload(['cart_info' => $formattedInfo['cartInfo']]);
+            }
+
+        }
 
         foreach ($lineItems as $lineItem) {
             if ($this->isComplete($lineItem) && !$lineItem->isModified()) {
                 return;
             }
-            // ToDo: hard coded values
-            $lineItem->setLabel('Candy Bags Product');
-            $lineItem->setDescription('product description');
+
+            $stepSet = $lineItem->getPayloadValue('stepSet');
+            $lineItem->setLabel($stepSet['name']);
+
+            $id = $stepSet['selectionBaseImage']['id'] ?? null;
+            if ($id) {
+                $image = $this->getLineItemImage($id, $context);
+                $lineItem->setCover($image);
+            }
 
             $deliveryTime = $this->getDeliveryTimeFromProducts($lineItem, $data);
             $availableStock = $this->getAvailableStock($lineItem, $data);
             $weight = $this->calculateWeight($lineItem, $data);
             $restockTime = $this->calculateRestockTime($lineItem, $data);
-
-            Utils::log($restockTime);
-
 
             $lineItem->setDeliveryInformation(
                 new DeliveryInformation(
@@ -131,37 +148,29 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     {
         $lineItems = $original->getLineItems()->filterType(self::TYPE);
 
-        if (\count($lineItems) === 0) {
+        if (count($lineItems) === 0) {
             return;
         }
 
         foreach ($lineItems as $lineItem) {
 
-            $key = self::DATA_KEY . $lineItem->getReferencedId();
+            $payload = $lineItem->getPayload();
+            $taxId = $payload['stepSet']['taxId'] ?? $this->getProductWithHighestTaxRate($lineItem, $data)->getTaxId();
+            $taxRules = $context->buildTaxRules($taxId);
+            $currencyPrice = $this->getProductCurrencyPrice($lineItem, $data, $context);
+
+            $quantityPriceDefinition = new QuantityPriceDefinition(
+                $currencyPrice,
+                $taxRules,
+                $context->getContext()->getCurrencyPrecision(),
+                $lineItem->getQuantity(),
+                true
+            );
 
 
-            $taxCollection = new CalculatedTaxCollection([
-                new CalculatedTax(
-                    0.19,
-                    10,
-                    10
-                )
-            ]);
-
-            $taxRules = new TaxRuleCollection([
-                new TaxRule(0.19)
-            ]);
-
-            $lineItem->setPrice(new CalculatedPrice(
-                99,
-                99,
-                $taxCollection,
-                $taxRules
-            ));
-
-
+            $calculatedPrice = $this->calculator->calculate($quantityPriceDefinition, $context);
+            $lineItem->setPrice($calculatedPrice);
             $toCalculate->add($lineItem);
-
         }
 
     }
@@ -199,15 +208,20 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
         /** @var array $item */
         foreach ($lineItem->getPayload()['selected'] as $item) {
             if ($item['cardType'] == 'treeNodeCard') {
-                $id = $item['item']['itemCard']['productId'];
+
+                $itemCard = $item['item']['itemCard'];
+                $id = $itemCard['productId'];
 
                 if ($id !== null) {
-                    $filteredProductIds[] = $item['item']['itemCard']['productId'];
+                    $filteredProductIds[] = $id;
                 }
             } else {
-                $id = $item['itemCard']['productId'];
+
+                $itemCard = $item['itemCard'];
+                $id = $itemCard['productId'];
+
                 if ($id !== null) {
-                    $filteredProductIds[] = $item['itemCard']['productId'];
+                    $filteredProductIds[] = $id;
                 }
             }
 
@@ -238,6 +252,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     {
         $productsFetched = [];
         foreach ($products as $product) {
+
             $relatedProducts = $this->getRelatedProducts($product, $context) ?? [];
             //Mix them together with main product
             $relatedProducts['product'] = $product;
@@ -399,5 +414,148 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
 
         return $calculatedRestockTime->getRestockTime();
     }
-}
 
+    /**
+     * Get Maximum value
+     * @param LineItem $lineItem
+     * @param CartDataCollection $data
+     * @return int
+     */
+    private function getProductWithHighestTaxRate(LineItem $lineItem, CartDataCollection $data): ProductEntity
+    {
+        $key = self::DATA_KEY . $lineItem->getReferencedId();
+        /** @var SalesChannelProductEntity[] $products */
+        $products = array_column($data->get($key), 'product');
+
+        /** @var ProductEntity $productWithHighestTax */
+        $productWithHighestTax = array_reduce($products, function (SalesChannelProductEntity $p1, SalesChannelProductEntity $p2) {
+            $taxRate1 = $p1->getTax()->getTaxRate();
+            $taxRate2 = $p2->getTax()->getTaxRate();
+            return $taxRate1 > $taxRate2 ? $p1 : $p2;
+        }, $products[0]);
+
+        return $productWithHighestTax;
+    }
+
+
+    private function getProductCurrencyPrice(LineItem $lineItem, CartDataCollection $data, SalesChannelContext $context): float
+    {
+        $key = self::DATA_KEY . $lineItem->getReferencedId();
+        /** @var SalesChannelProductEntity[] $products */
+        $products = array_column($data->get($key), 'product');
+        $currencyId = $context->getCurrency()->getId();
+
+        /** @var float $calculatedPrice */
+        $calculatedPrice = array_reduce($products, function (float $price, SalesChannelProductEntity $product) use ($currencyId, $context) {
+            $priceClass = $product->getPrice()->getCurrencyPrice($currencyId);
+            $priceNetOrGross = $this->netOrGross($priceClass, $context);
+            $recalculated = $this->recalculateCurrencyIfNeeded($priceNetOrGross, $priceClass, $context);
+            $price += $recalculated;
+            return $price;
+        }, 0.0);
+
+
+        // Add BasePrice if exists
+        $stepSet = $lineItem->getPayloadValue('stepSet');
+        $basePrice = $stepSet['price'][0] ?? null;
+
+        if ($basePrice) {
+            if ($context->getTaxState() === CartPrice::TAX_STATE_GROSS) {
+                $calculatedPrice += $basePrice['gross'];
+            } else {
+                $calculatedPrice += $basePrice['net'];
+            }
+            if ($basePrice['currencyId'] !== $context->getCurrency()->getId()) {
+                $calculatedPrice *= $context->getContext()->getCurrencyFactor();
+            }
+        }
+
+        return $calculatedPrice;
+    }
+
+    private function netOrGross(Price $price, SalesChannelContext $context): float
+    {
+        if ($context->getTaxState() === CartPrice::TAX_STATE_GROSS) {
+            return $price->getGross() ?? 0.0;
+        } else {
+            return $price->getNet() ?? 0.0;
+        }
+    }
+
+    private function recalculateCurrencyIfNeeded(float $value, Price $price, SalesChannelContext $context): float
+    {
+        if ($price->getCurrencyId() !== $context->getCurrency()->getId()) {
+            $value *= $context->getContext()->getCurrencyFactor();
+        }
+        return $value;
+    }
+
+    private function getLineItemImage(string $id, SalesChannelContext $context): MediaEntity
+    {
+        $criteria = new Criteria([$id]);
+        /** @var MediaEntity $media */
+        $media = $this->mediaRepository->search($criteria, $context->getContext())->first();
+
+        return $media;
+    }
+
+    /**
+     * @param array $productsAry
+     * @param LineItem $lineItem
+     * @return string[]
+     *
+     * [ 'flinkAggregate' => $flinkAggregate,
+     * 'cartInfo' => $cartInfo ]
+     *
+     */
+    private function createLabelAndFlinkData(array $productsAry, LineItem $lineItem): array
+    {
+        $flinkAggregate = "";
+        $cartInfo = "";
+        foreach ($lineItem->getPayload()['selected'] as $item) {
+            if ($item['cardType'] == 'treeNodeCard') {
+                $itemCard = $item['item']['itemCard'];
+                $id = $itemCard['productId'];
+                if ($id !== null) {
+                    $productInfo = $this->getProductById($productsAry, $id);
+                    $flinkAggregate .= $productInfo['sub_product_flink_formatted'];
+                    /** @var ProductEntity $productEntity */
+                    $productEntity =$productInfo['product'];
+                    $cartInfo .=  "- " . $productEntity->getTranslation('name') . "\n";
+                } else {
+                    $flinkAggregate .= "- " . $itemCard['name'] . "\n";
+                    $cartInfo .= "- " . $itemCard['name'] . "\n";
+                }
+            } else {
+
+                $itemCard = $item['itemCard'];
+                $id = $itemCard['productId'];
+                if ($id !== null) {
+                    $productInfo = $this->getProductById($productsAry, $id);
+                    $flinkAggregate .= $productInfo['sub_product_flink_formatted'];
+                    /** @var ProductEntity $productEntity */
+                    $productEntity = $productInfo['product'];
+                    $cartInfo .= "- " . $productEntity->getTranslation('name') . "\n";
+                } else {
+                    $flinkAggregate .= "- " . $itemCard['name'] . "\n";
+                    $cartInfo .= "- " . $itemCard['name'] . "\n";
+                }
+            }
+
+        }
+
+        return [
+            'flinkAggregate' => $flinkAggregate,
+            'cartInfo' => $cartInfo
+        ];
+    }
+
+    private function getProductById(array $productsAry, $id)
+    {
+        $filtered = array_filter($productsAry, function ($product) use ($id) {
+            return $product['product']->getId() == $id;
+        });
+
+        return array_values($filtered)[0] ;
+    }
+}

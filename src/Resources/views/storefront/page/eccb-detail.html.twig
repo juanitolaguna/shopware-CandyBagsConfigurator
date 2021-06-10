@@ -1,9 +1,9 @@
 {% sw_extends '@Storefront/storefront/base.html.twig' %}
-{#{% sw_extends '@Storefront/storefront/page/content/index.html.twig' %}#}
+{# {% sw_extends '@Storefront/storefront/page/content/index.html.twig' %} #}
 
 
 {% block base_content %}
-   <div class="container-main">
+    <div class="container-main">
         <div class="cms-page eccb-outer-container" style="min-height: 100vh;">
             <div class="row mb-3">
                 <div class="col-lg-4 col-md-5 col-12">
@@ -31,6 +31,15 @@
                     <div class="card-body">
                         <h1>{{ entry.translated.name }}</h1>
                         <div class="card-text ec-entity-description">{{ entry.translated.description|raw }}</div>
+                    </div>
+                    <div class="pt-2">
+
+                        {% for stepSet in stepSetNavigation %}
+                            <a href="{{ seoUrl('eccb.candybags', {'stepSetId': stepSet.id}) }}">
+                                <button type="button" class="btn btn-light">{{ stepSet.translated.name }}</button>
+                            </a>
+                        {% endfor %}
+                        <span>{{ 'candy-bags.cbMenuDescription'|trans|raw }}</span>
                     </div>
                 </div>
             </div>
@@ -73,7 +82,7 @@
         window['snippets']['productDetails'] = '{{ 'candy-bags.productDetails'|trans|raw }}';
 
         window.config = {};
-        window.config = '{{ shopware.config.EventCandyCandyBags.config.pdButtonType  }}';
+        window.config = '{{ shopware.config.EventCandyCandyBags.config.pdButtonType }}';
 
     </script>
     {{ parent() }}

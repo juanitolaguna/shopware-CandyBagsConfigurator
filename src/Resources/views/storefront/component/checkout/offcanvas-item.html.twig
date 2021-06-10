@@ -1,7 +1,8 @@
 {% sw_extends '@Storefront/storefront/component/checkout/offcanvas-item.html.twig' %}
 
-{% block component_offcanvas_product_total_price %}
+{% block component_offcanvas_product_details %}
     {{ parent() }}
-    {# ToDo: debug info, remove later   #}
-    <div>weight: {{ lineItem.deliveryInformation.weight }}</div>
+    {% if lineItem.payload['cart_info'] %}
+        {{ lineItem.payload['cart_info']|nl2br }}
+    {% endif %}
 {% endblock %}

@@ -159,7 +159,7 @@ export default {
           price += this.price(item.item);
         }
       });
-      return price;
+      return (price !== 0) ? (price).toFixed(2) : 0;
     },
 
     currency() {
@@ -245,7 +245,8 @@ export default {
 
       const selected = {
             'selected' : this.selected,
-            'price' : this.calculatedPrice
+            'price' : this.calculatedPrice,
+            'stepSet' : this.stepSet
           }
 
       const requestOptions = {
@@ -257,41 +258,17 @@ export default {
 
       fetch(`/store-api/v{version}/eccb/add-line-item`, requestOptions)
           .then(result => result.text())
-          .then(response => {
-            // const res = JSON.parse(response);
-            // console.log(res);
+          .then(() => {
+            this.openCartWidget();
           })
           .catch(error => console.log('error', error));
     },
 
-
-
-    // insertCart() {
-    //   // this.httpClient.getBasicHeaders();
-    //   const thumbnail = this.result.eclm_package.thumbnails.filter((e) => e.width === 400)[0];
-    //   const result = this.result;
-    //   result.eclm_package.thumbnail = thumbnail;
-    //   result['selectedQuantity'] = this.selectedQuantity;
-    //   //remove unused data
-    //   // delete result.eclm_package.thumbnails;
-    //
-    //   return this.httpClient.post(
-    //       'store-api/v{version}/eclm/add-line-item',
-    //       JSON.stringify(result),
-    //       this.onPost);
-    // },
-    //
-    // onPost(res) {
-    //   // console.log(res)
-    //   // const cartWidgetEl = DomAccess.querySelector(this.cartEl, '[data-cart-widget]');
-    //   // const cartWidgetInstance = this.pluginManager.getPluginInstanceFromElement(cartWidgetEl, 'CartWidget');
-    //   // cartWidgetInstance.fetch();
-    //   const offCanvasCartEl = DomAccess.querySelector(document, '[data-offcanvas-cart]');
-    //   const offCanvasCartInstance = this.pluginManager.getPluginInstanceFromElement(offCanvasCartEl, 'OffCanvasCart');
-    //   offCanvasCartInstance.openOffCanvas(window.router['frontend.cart.offcanvas'], false);
-    // },
-
-
+    openCartWidget() {
+      const offCanvasCart = document.querySelectorAll('[data-offcanvas-cart=true]')[0];
+      const offCanvasCartPLugin = window.PluginManager.getPluginInstanceFromElement(offCanvasCart, 'OffCanvasCart');
+      offCanvasCartPLugin.openOffCanvas(window.router['frontend.cart.offcanvas'], false);
+    }
   }
 }
 </script>

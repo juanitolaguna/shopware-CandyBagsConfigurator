@@ -7,10 +7,10 @@
     <services>
 
         <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartProcessor" public="true">
-            <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber"/>
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator"/>
 
             <!-- inject before product processor (5000) -->
             <tag name="shopware.cart.processor" priority="6000"/>

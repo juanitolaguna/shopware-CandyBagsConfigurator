@@ -148,5 +148,11 @@
             <snippet>candy-bags.productDetails</snippet>
         </component>
 
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Candy Bag submenu    description</label>
+            <snippet>candy-bags.cbMenuDescription</snippet>
+        </component>
+
     </card>
 </config>

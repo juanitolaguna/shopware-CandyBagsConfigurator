@@ -7,7 +7,9 @@ use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoaderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -52,8 +54,16 @@ class StepSetController extends StorefrontController
         $criteria = new Criteria([$stepSetId]);
         $criteria->addAssociations(['media']);
 
-
         $results = $stepSetRepository->search($criteria, $context->getContext())->getEntities();
+
+        $stepSetNavigationCriteria = new Criteria();
+        $stepSetNavigationCriteria->addFilter(
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [new EqualsFilter('id', $stepSetId)]
+            ));
+        $stepSetNavigation = $stepSetRepository->search($stepSetNavigationCriteria,  $context->getContext())->getEntities();
+
 
         /** @var StepSetEntity $entry */
         $entry = $results->first();
@@ -69,7 +79,8 @@ class StepSetController extends StorefrontController
 
         return $this->renderStorefront('@EventCandyCandyBags/storefront/page/eccb-detail.html.twig', [
             'page' => $page,
-            'entry' => $entry
+            'entry' => $entry,
+            'stepSetNavigation' => $stepSetNavigation
         ]);
 
     }

@@ -206,7 +206,7 @@ export default {
     async getStepSet() {
       const raw = JSON.stringify({
         includes: {
-          eccb_step_set: ["id", "price", "media", "selectionBaseImage", "name", "translated"]
+          eccb_step_set: ["id", "price", "taxId", "media", "selectionBaseImage", "name", "translated"]
         }
       });
 
