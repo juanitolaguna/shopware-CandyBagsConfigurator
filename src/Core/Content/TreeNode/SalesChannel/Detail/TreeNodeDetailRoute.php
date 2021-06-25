@@ -2,7 +2,7 @@
 
 namespace EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail;
 
-use EventCandyCandyBags\Core\Content\Item\ItemCollection;
+use EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetEntity;
@@ -34,14 +34,21 @@ class TreeNodeDetailRoute
     private $treeNodeItemSetRepository;
 
     /**
+     * @var ProductListingSubscriber
+     */
+    private $productListingSubscriber;
+
+    /**
      * TreeNodeDetailRoute constructor.
      * @param EntityRepositoryInterface $treeNodeRepository
      * @param EntityRepositoryInterface $treeNodeItemSetRepository
+     * @param ProductListingSubscriber $productListingSubscriber
      */
-    public function __construct(EntityRepositoryInterface $treeNodeRepository, EntityRepositoryInterface $treeNodeItemSetRepository)
+    public function __construct(EntityRepositoryInterface $treeNodeRepository, EntityRepositoryInterface $treeNodeItemSetRepository, ProductListingSubscriber $productListingSubscriber)
     {
         $this->treeNodeRepository = $treeNodeRepository;
         $this->treeNodeItemSetRepository = $treeNodeItemSetRepository;
+        $this->productListingSubscriber = $productListingSubscriber;
     }
 
 
@@ -76,13 +83,22 @@ class TreeNodeDetailRoute
         foreach ($children->getEntities() as $entity) {
             $item = $entity->getItem();
             $product = $item->getItemCard()->getProduct();
-            $price = $product ? $product->getCurrencyPrice($context->getContext()->getCurrencyId()): null;
-            $item->setCurrencyPrice($price);
+            if ($product) {
+                $price = $product->getCurrencyPrice($context->getContext()->getCurrencyId());
+                $item->setCurrencyPrice($price);
+                // Be aware to update this logic on change for ItemSets inside the ItemCollection Class
+                $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
+                    && $product->getCustomFields()['ec_is_set'];
+                if ($keyIsTrue) {
+                    $availableStock = $this->productListingSubscriber->getAvailableStock($product->getId(), $context);
+                    $product->setAvailableStock($availableStock);
+                }
+            }
         }
 
 
         // Get the ItemSets
-        // ToDo: Sorting... muss mit loop gemacht werden.
+        // Sorting... wird in loop gemacht werden.
         $treeNodeItemSetCriteria = new Criteria();
         $treeNodeItemSetCriteria->addFilter(new EqualsFilter('treeNodeId', $entry->getId()))
             ->addAssociation('itemSet.items.itemCard.media')
@@ -96,7 +112,6 @@ class TreeNodeDetailRoute
         $itemSetsSearchResult = $this->treeNodeItemSetRepository->search($treeNodeItemSetCriteria, $context->getContext());
 
 
-
         /** @var TreeNodeItemSetEntity[] $itemSets */
         $itemSets = [];
 
@@ -106,8 +121,9 @@ class TreeNodeDetailRoute
             /** @var ItemSetEntity $itemSet */
             $itemSet = $entity->getItemSet();
             $itemSet->getItems()->filterByActive();
-
             $itemSet->getItems()->sortByPosition();
+            // Be aware to update this logic on change for the TreeNode Class
+            $itemSet->getItems()->correctAvailableStock($this->productListingSubscriber, $context);
 
             // enrich with currency Price
             $itemSet->getItems()->getPrices($context->getContext()->getCurrencyId());

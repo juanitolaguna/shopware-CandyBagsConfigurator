@@ -8,8 +8,12 @@
               <h4 style="margin-bottom: 0">
                 {{ translate(parent, 'stepDescription') }}
               </h4>
-              <img :class="['ec-icon-header', {expanded: parent.active}]" style="width: 24px; height: 24px;"
-                   :src="assets.arrowRight">
+              <div class="ec-search" style="display: flex; align-items: center;">
+<!--                <input style="margin-right: 16px; margin-top: -9px; margin-bottom: -9px;" type="email" class="form-control" id="searchInput" placeholder="Suche">-->
+                <img :class="['ec-icon-header', {expanded: parent.active}]" style="width: 24px; height: 24px;"
+                     :src="assets.arrowRight">
+              </div>
+
             </div>
 
             <div :class="['ec-cards', {active: parent.active}]">

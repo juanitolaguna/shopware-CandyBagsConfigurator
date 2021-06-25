@@ -2,10 +2,12 @@
 
 namespace EventCandyCandyBags\Core\Content\Item;
 
+use EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Util\AfterSort;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * @method void                add(ItemEntity $entity)
@@ -35,8 +37,28 @@ class ItemCollection extends EntityCollection
 
         foreach ($elements as $item) {
             $product = $item->getItemCard()->getProduct();
-            $price = $product ? $product->getCurrencyPrice($currencyId): null;
+            $price = $product ? $product->getCurrencyPrice($currencyId) : null;
             $item->setCurrencyPrice($price);
+        }
+
+        return $this;
+    }
+
+    public function correctAvailableStock(ProductListingSubscriber $productListingSubscriber, SalesChannelContext $context): self
+    {
+        /** @var ItemEntity[] $elements */
+        $elements = $this->elements;
+
+        foreach ($elements as $item) {
+            $product = $item->getItemCard()->getProduct();
+            if ($product) {
+                $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
+                    && $product->getCustomFields()['ec_is_set'];
+                if ($keyIsTrue) {
+                    $availableStock = $productListingSubscriber->getAvailableStock($product->getId(), $context);
+                    $product->setAvailableStock($availableStock);
+                }
+            }
         }
 
         return $this;
@@ -46,7 +68,7 @@ class ItemCollection extends EntityCollection
     {
         $elements = $this->elements;
         // pre-sort elements to pull elements without an after id parent to the front
-        uasort($elements, function (ItemEntity $a, ItemEntity $b){
+        uasort($elements, function (ItemEntity $a, ItemEntity $b) {
             if ($a->getPosition() < $b->getPosition()) {
                 return 1;
             }

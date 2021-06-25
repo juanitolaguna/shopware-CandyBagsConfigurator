@@ -2,17 +2,16 @@
 
 namespace EventCandyCandyBags\Controller;
 
-use EventCandyCandyBags\Utils;
+use EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartProcessor;
 use Exception;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartPersister;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Product\Cart\ProductGatewayInterface;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -49,18 +48,25 @@ class ApiController extends AbstractController
     private $cartPersister;
 
     /**
+     * @var ProductGatewayInterface
+     */
+    private $productGateway;
+
+    /**
      * ApiController constructor.
      * @param SystemConfigService $systemConfigService
      * @param EntityRepositoryInterface $mediaRepository
      * @param CartService $cartService
      * @param CartPersister $cartPersister
+     * @param ProductGatewayInterface $productGateway
      */
-    public function __construct(SystemConfigService $systemConfigService, EntityRepositoryInterface $mediaRepository, CartService $cartService, CartPersister $cartPersister)
+    public function __construct(SystemConfigService $systemConfigService, EntityRepositoryInterface $mediaRepository, CartService $cartService, CartPersister $cartPersister, ProductGatewayInterface $productGateway)
     {
         $this->systemConfigService = $systemConfigService;
         $this->mediaRepository = $mediaRepository;
         $this->cartService = $cartService;
         $this->cartPersister = $cartPersister;
+        $this->productGateway = $productGateway;
     }
 
 
@@ -111,14 +117,29 @@ class ApiController extends AbstractController
             $lineItem->setStackable(true);
             $lineItem->setRemovable(true);
 
- //          Utils::log(print_r($request->getContent(), true));
-
-//            $content = json_decode($request->getContent(), true);
-//            $cart->setToken($content['sw-context-token']);
 
 
-            $this->cartService->add($cart, $lineItem, $salesChannelContext);
-            $this->cartPersister->save($cart, $salesChannelContext);
+            $products = CandyBagsCartProcessor::getProductIdsForLineItem($lineItem);
+            $subProducts = $this->productGateway->get($products, $salesChannelContext);
+            /** @var SalesChannelProductEntity $availableStock */
+            $availableStock = array_reduce($subProducts->getElements(), function (SalesChannelProductEntity $p1, SalesChannelProductEntity $p2) {
+                $stock1 = $p1->getAvailableStock();
+                $stock2 = $p2->getAvailableStock();
+                return $stock1 < $stock2 ? $p1 : $p2;
+            }, $subProducts->first());
+
+
+
+
+
+            if ($availableStock->getAvailableStock() <= 0) {
+                $lineItem->setPayloadValue('outOfStock', true);
+            } else {
+                $cart = $this->cartService->add($cart, $lineItem, $salesChannelContext);
+                $this->cartPersister->save($cart, $salesChannelContext);
+            }
+
+
 
         } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage());

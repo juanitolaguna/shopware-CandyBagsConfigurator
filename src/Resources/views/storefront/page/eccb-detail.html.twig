@@ -35,8 +35,8 @@
                     <div class="pt-2">
 
                         {% for stepSet in stepSetNavigation %}
-                            <a href="{{ seoUrl('eccb.candybags', {'stepSetId': stepSet.id}) }}">
-                                <button type="button" class="btn btn-light">{{ stepSet.translated.name }}</button>
+                            <a href="{{ seoUrl('eccb.candybags', {'stepSetId': stepSet.id}) }}" style="text-decoration: none;">
+                                <button type="button" class="btn btn-outline-primary">{{ stepSet.translated.name }}</button>&nbsp;&nbsp;
                             </a>
                         {% endfor %}
                         <span>{{ 'candy-bags.cbMenuDescription'|trans|raw }}</span>

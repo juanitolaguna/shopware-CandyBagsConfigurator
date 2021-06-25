@@ -5,7 +5,9 @@ namespace EventCandyCandyBags\Commands;
 
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +31,7 @@ class EccbCommands extends Command
     /**
      * @var EntityRepositoryInterface
      */
-    private $mediaFolderRepository;
+    private $productRepository;
 
 
     /**
@@ -40,13 +42,13 @@ class EccbCommands extends Command
 
     /**
      * @param Connection $connection
-     * @param EntityRepositoryInterface $mediaFolderRepository
+     * @param EntityRepositoryInterface $productRepository
      */
-    public function __construct(Connection $connection, EntityRepositoryInterface $mediaFolderRepository)
+    public function __construct(Connection $connection, EntityRepositoryInterface $productRepository)
     {
         parent::__construct();
         $this->connection = $connection;
-        $this->mediaFolderRepository = $mediaFolderRepository;
+        $this->productRepository = $productRepository;
     }
 
 
@@ -87,6 +89,11 @@ class EccbCommands extends Command
     private function tinker(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('Tinker...');
+
+        $criteria = new Criteria(['b8365eddd43e4ceaadd9ceb6442e2700', 'b8365eddd43e4ceaadd9ceb6442e2700', 'b8365eddd43e4ceaadd9ceb6442e2700']);
+        $products = $this->productRepository->search($criteria, Context::createDefaultContext());
+
+        $output->writeln(count($products));
 
     }
 

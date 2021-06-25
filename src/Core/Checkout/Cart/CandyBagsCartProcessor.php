@@ -3,7 +3,8 @@
 namespace EventCandyCandyBags\Core\Checkout\Cart;
 
 use Doctrine\DBAL\Connection;
-use EventCandyCandyBags\Utils;
+use EventCandy\LabelMe\Core\Checkout\Cart\EclmCartProcessor;
+use EventCandy\Sets\Core\Checkout\Cart\SetProductCartProcessor;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartBehavior;
 use Shopware\Core\Checkout\Cart\CartDataCollectorInterface;
@@ -37,7 +38,6 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
      */
     private $productGateway;
 
-
     /**
      * @var Connection
      */
@@ -52,7 +52,6 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
      * @var QuantityPriceCalculator
      */
     private $calculator;
-
 
     public const TYPE = 'event-candy-candy-bags';
     public const DATA_KEY = 'eccb-';
@@ -94,7 +93,13 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
         foreach ($lineItems as $lineItem) {
             $key = self::DATA_KEY . $lineItem->getReferencedId();
             if (!$data->has($key)) {
+
+                // fetch product Ids for all LineItems
+                // get all LineItems
                 $products = $this->fetchProductsForLineItem($lineItem, $context);
+
+                /** @link fetchProductsForLineItem -> adding extension for reducer */
+                $context->removeExtension('lineItem');
                 $productsAry = $this->getSubProducts($products, $context);
                 $data->set($key, $productsAry);
 
@@ -113,6 +118,8 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             $stepSet = $lineItem->getPayloadValue('stepSet');
             $lineItem->setLabel($stepSet['name']);
 
+            $lineItem->setDescription('test description');
+
             $id = $stepSet['selectionBaseImage']['id'] ?? null;
             if ($id) {
                 $image = $this->getLineItemImage($id, $context);
@@ -120,7 +127,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             }
 
             $deliveryTime = $this->getDeliveryTimeFromProducts($lineItem, $data);
-            $availableStock = $this->getAvailableStock($lineItem, $data);
+            $availableStock = self::getAvailableStock($lineItem, $data);
             $weight = $this->calculateWeight($lineItem, $data);
             $restockTime = $this->calculateRestockTime($lineItem, $data);
 
@@ -154,6 +161,21 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
 
         foreach ($lineItems as $lineItem) {
 
+            /*
+             * ToDo: ...comment
+             * Behaves strange
+             * removes lineItem from Cart but
+             * does not trigger out of Stock error...
+             *
+            if ($lineItem->getPayloadValue('outOfStock')) {
+                $original->remove($lineItem->getId());
+                $toCalculate->addErrors(
+                    new ProductOutOfStockError($lineItem->getId(), $lineItem->getLabel())
+                );
+                continue;
+            }*/
+
+
             $payload = $lineItem->getPayload();
             $taxId = $payload['stepSet']['taxId'] ?? $this->getProductWithHighestTaxRate($lineItem, $data)->getTaxId();
             $taxRules = $context->buildTaxRules($taxId);
@@ -166,7 +188,6 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
                 $lineItem->getQuantity(),
                 true
             );
-
 
             $calculatedPrice = $this->calculator->calculate($quantityPriceDefinition, $context);
             $lineItem->setPrice($calculatedPrice);
@@ -197,12 +218,23 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
      */
     private function fetchProductsForLineItem(LineItem $lineItem, SalesChannelContext $context): ProductCollection
     {
-        $ids = $this->getProductIdsForLineItem($lineItem);
+        $ids = self::getProductIdsForLineItem($lineItem);
+
+        /**
+         * Add lineItem to prevent self calculations inside the reducer
+         * @link collect -> remove extension, after stock calculation
+         */
+        $context->addExtension("lineItem", $lineItem);
         return $this->productGateway->get($ids, $context);
     }
 
 
-    private function getProductIdsForLineItem(LineItem $lineItem): array
+    /**
+     * Method used in CandyBagsSubProductCartReducer
+     * @param LineItem $lineItem
+     * @return array
+     */
+    public static function getProductIdsForLineItem(LineItem $lineItem): array
     {
         $filteredProductIds = [];
         /** @var array $item */
@@ -230,6 +262,10 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     }
 
     /**
+     * Contains duplicated code
+     * #dup - @link SetProductCartProcessor
+     * #dup - @link EclmCartProcessor
+     *
      * change ProductCollection to Array, add SubProduct Data & SubProduct String for Fljnk App
      *
      * [
@@ -358,20 +394,20 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     }
 
     /**
-     * Available Stock of each product in Collection is allready corrected by
+     * Available Stock of each product in Collection is already corrected by
      * the ProductListingSubscriber
      *
      * @param LineItem $lineItem
      * @param CartDataCollection $data
      * @return int
      */
-    private function getAvailableStock(LineItem $lineItem, CartDataCollection $data): int
+    public static function getAvailableStock(LineItem $lineItem, CartDataCollection $data): int
     {
         $key = self::DATA_KEY . $lineItem->getReferencedId();
         /** @var SalesChannelProductEntity[] $products */
         $products = array_column($data->get($key), 'product');
 
-        /** @var ProductEntity $availableStock */
+        /** @var SalesChannelProductEntity $availableStock */
         $availableStock = array_reduce($products, function (SalesChannelProductEntity $p1, SalesChannelProductEntity $p2) {
             $stock1 = $p1->getAvailableStock();
             $stock2 = $p2->getAvailableStock();
@@ -520,8 +556,8 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
                     $productInfo = $this->getProductById($productsAry, $id);
                     $flinkAggregate .= $productInfo['sub_product_flink_formatted'];
                     /** @var ProductEntity $productEntity */
-                    $productEntity =$productInfo['product'];
-                    $cartInfo .=  "- " . $productEntity->getTranslation('name') . "\n";
+                    $productEntity = $productInfo['product'];
+                    $cartInfo .= "- " . $productEntity->getTranslation('name') . "\n";
                 } else {
                     $flinkAggregate .= "- " . $itemCard['name'] . "\n";
                     $cartInfo .= "- " . $itemCard['name'] . "\n";
@@ -556,6 +592,6 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             return $product['product']->getId() == $id;
         });
 
-        return array_values($filtered)[0] ;
+        return array_values($filtered)[0];
     }
 }

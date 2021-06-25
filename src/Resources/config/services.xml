@@ -17,6 +17,10 @@
             <tag name="shopware.cart.collector" priority="6000"/>
         </service>
 
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsSubProductCartReducer">
+            <tag name="ec.sets.cart_reducer"/>
+        </service>
+
         <!-- LineItemFactory -->
         <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsLineItemFactory">
             <argument type="service" id="Shopware\Core\Checkout\Cart\PriceDefinitionFactory"/>
@@ -33,6 +37,7 @@
             <argument type="service" id="media.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
+            <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>
         </service>
 
         <!-- SeoUrl -->
@@ -62,6 +67,7 @@
         <service id="EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail\TreeNodeDetailRoute" public="true">
             <argument type="service" id="eccb_tree_node.repository"/>
             <argument type="service" id="eccb_tree_node_item_set.repository"/>
+            <argument type="service" id="EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber"/>
         </service>
 
 
@@ -149,7 +155,7 @@
         <!-- Commands  -->
         <service id="EventCandyCandyBags\Commands\EccbCommands">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="media_folder.repository"/>
+            <argument type="service" id="product.repository"/>
             <tag name="console.command"/>
         </service>
 
