@@ -60,7 +60,13 @@ class ApiController extends AbstractController
      * @param CartPersister $cartPersister
      * @param ProductGatewayInterface $productGateway
      */
-    public function __construct(SystemConfigService $systemConfigService, EntityRepositoryInterface $mediaRepository, CartService $cartService, CartPersister $cartPersister, ProductGatewayInterface $productGateway)
+    public function __construct(
+        SystemConfigService $systemConfigService,
+        EntityRepositoryInterface $mediaRepository,
+        CartService $cartService,
+        CartPersister $cartPersister,
+        ProductGatewayInterface $productGateway
+    )
     {
         $this->systemConfigService = $systemConfigService;
         $this->mediaRepository = $mediaRepository;
@@ -90,7 +96,12 @@ class ApiController extends AbstractController
      * @param Request $request
      * @param SalesChannelContext $salesChannelContext
      */
-    public function addLineItems(Cart $cart, RequestDataBag $requestDataBag, Request $request, SalesChannelContext $salesChannelContext)
+    public function addLineItems(
+        Cart $cart,
+        RequestDataBag $requestDataBag,
+        Request $request,
+        SalesChannelContext $salesChannelContext
+    )
     {
 
 
@@ -118,33 +129,33 @@ class ApiController extends AbstractController
             $lineItem->setRemovable(true);
 
 
-
             $products = CandyBagsCartProcessor::getProductIdsForLineItem($lineItem);
+            $salesChannelContext->addExtension("lineItem", $lineItem);
             $subProducts = $this->productGateway->get($products, $salesChannelContext);
+            $salesChannelContext->removeExtension('lineItem');
+
             /** @var SalesChannelProductEntity $availableStock */
-            $availableStock = array_reduce($subProducts->getElements(), function (SalesChannelProductEntity $p1, SalesChannelProductEntity $p2) {
+            $availableStock = array_reduce($subProducts->getElements(), function (
+                SalesChannelProductEntity $p1,
+                SalesChannelProductEntity $p2
+            ) {
                 $stock1 = $p1->getAvailableStock();
                 $stock2 = $p2->getAvailableStock();
                 return $stock1 < $stock2 ? $p1 : $p2;
             }, $subProducts->first());
 
 
-
-
-
             if ($availableStock->getAvailableStock() <= 0) {
                 $lineItem->setPayloadValue('outOfStock', true);
-            } else {
-                $cart = $this->cartService->add($cart, $lineItem, $salesChannelContext);
-                $this->cartPersister->save($cart, $salesChannelContext);
             }
 
+            $cart = $this->cartService->add($cart, $lineItem, $salesChannelContext);
+            $this->cartPersister->save($cart, $salesChannelContext);
 
 
         } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage());
         }
-
         return $this->redirectToRoute('frontend.cart.offcanvas');
     }
 

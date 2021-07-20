@@ -21,6 +21,11 @@
             <tag name="ec.sets.cart_reducer"/>
         </service>
 
+        <!-- LineItemFunctions -->
+        <service id="EventCandyCandyBags\Core\Content\CandyBagsLineItemStockUpdaterFunctions">
+            <tag name="ec.sets.stock_updater_functions"/>
+        </service>
+
         <!-- LineItemFactory -->
         <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsLineItemFactory">
             <argument type="service" id="Shopware\Core\Checkout\Cart\PriceDefinitionFactory"/>

@@ -5,6 +5,7 @@ namespace EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard;
 use EventCandyCandyBags\Core\Content\Item\Aggregate\ItemCard\ItemCardTranslation\ItemCardTranslationDefinition;
 use EventCandyCandyBags\Core\Content\Item\ItemDefinition;
 use Shopware\Core\Content\Media\MediaDefinition;
+use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
@@ -15,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
@@ -66,6 +68,8 @@ class ItemCardDefinition extends EntityDefinition
                 'product_id',
                 ProductDefinition::class
             ),
+            // ToDo, implement version id field.
+            //(new ReferenceVersionField(ProductDefinition::class))->addFlags(new Required()),
 
             //Welchen Items bin ich zugewiesen
             (new OneToManyAssociationField('items', ItemDefinition::class, 'item_card_id', 'id')),
@@ -73,7 +77,7 @@ class ItemCardDefinition extends EntityDefinition
             new TranslatedField('name'),
             new TranslatedField('description'),
             new TranslatedField('additionalData'),
-            new TranslationsAssociationField(ItemCardTranslationDefinition::class, 'eccb_item_card_id'),
+            new TranslationsAssociationField(ItemCardTranslationDefinition::class, 'eccb_item_card_id')
         ]);
 
     }

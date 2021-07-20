@@ -19,6 +19,8 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\Cart\ProductGatewayInterface;
+use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
+use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -77,6 +79,13 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     }
 
 
+    /**
+     * ToDo: Warum wird collect so ofr aufgerufen?
+     * @param CartDataCollection $data
+     * @param Cart $original
+     * @param SalesChannelContext $context
+     * @param CartBehavior $behavior
+     */
     public function collect(CartDataCollection $data, Cart $original, SalesChannelContext $context, CartBehavior $behavior): void
     {
         $lineItems = $original
@@ -91,6 +100,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
         // fetch lineItem products and subproducts
         // add them to CartDataCollection
         foreach ($lineItems as $lineItem) {
+
             $key = self::DATA_KEY . $lineItem->getReferencedId();
             if (!$data->has($key)) {
 
@@ -103,9 +113,27 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
                 $productsAry = $this->getSubProducts($products, $context);
                 $data->set($key, $productsAry);
 
+
+                $productStockInfo = [];
+                foreach ($productsAry as $product) {
+                    /** @var SalesChannelProductEntity $mainProduct */
+                    $mainProduct = $product['product'];
+                    $productStockInfo[] = [
+                        'mainProduct' => [
+                            'product_number' => $mainProduct->getProductNumber(),
+                            'name' => $mainProduct->getTranslation('name'),
+                            'product_id' => $mainProduct->getId(),
+                            'product_version_id' => $mainProduct->getVersionId(),
+                            'quantity' => 1,
+                        ],
+                        'subProducts' => $product['sub_product_payload']
+                    ];
+                }
+
                 $formattedInfo = $this->createLabelAndFlinkData($productsAry, $lineItem);
                 $lineItem->setPayload(['line_item_sub_products' => $formattedInfo['flinkAggregate']]);
                 $lineItem->setPayload(['cart_info' => $formattedInfo['cartInfo']]);
+                $lineItem->setPayload(['order_line_item_products' => $productStockInfo]);
             }
 
         }
@@ -130,6 +158,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             $availableStock = self::getAvailableStock($lineItem, $data);
             $weight = $this->calculateWeight($lineItem, $data);
             $restockTime = $this->calculateRestockTime($lineItem, $data);
+
 
             $lineItem->setDeliveryInformation(
                 new DeliveryInformation(
@@ -163,17 +192,39 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
 
             /*
              * ToDo: ...comment
-             * Behaves strange
+             * This code snippet behaves strange
              * removes lineItem from Cart but
              * does not trigger out of Stock error...
              *
-            if ($lineItem->getPayloadValue('outOfStock')) {
+             *
+             */
+//            if ($lineItem->getPayloadValue('outOfStock')) {
+//                Utils::log('outOfStock');
+//                $toCalculate->addErrors(
+//                    new ProductOutOfStockError($lineItem->getId(), $lineItem->getLabel())
+//                );
+//            }
+
+
+
+            if ($lineItem->getQuantityInformation()->getMaxPurchase() <= 0) {
                 $original->remove($lineItem->getId());
+
                 $toCalculate->addErrors(
                     new ProductOutOfStockError($lineItem->getId(), $lineItem->getLabel())
                 );
                 continue;
-            }*/
+            }
+
+
+            if ($lineItem->getQuantityInformation()->getMaxPurchase() < $lineItem->getQuantity()) {
+                $maxQuantity = $lineItem->getQuantityInformation()->getMaxPurchase();
+                $lineItem->setQuantity($maxQuantity);
+
+                $toCalculate->addErrors(
+                    new ProductStockReachedError($lineItem->getId(), $lineItem->getLabel(), $maxQuantity)
+                );
+            }
 
 
             $payload = $lineItem->getPayload();
@@ -263,26 +314,14 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
 
     /**
      * Contains duplicated code
-     * #dup - @link SetProductCartProcessor
-     * #dup - @link EclmCartProcessor
-     *
-     * change ProductCollection to Array, add SubProduct Data & SubProduct String for Fljnk App
-     *
-     * [
-     *      ['product' (1) => ProductEntity
-     *      'sub_product_payload' =>  array
-     *      'sub_product_flink_formatted' => array
-     *      ],
-     *
-     *      ['product' (1) => ProductEntity
-     *      'sub_product_payload' =>  array
-     *      'sub_product_flink_formatted' => array
-     *      ]
-     * ]
-     *
-     * @param ProductCollection $products
+     * #dup - @param ProductCollection $products
      * @param SalesChannelContext $context
+     * @param LineItem $lineItem
+     * @param CartDataCollection $data
      * @return array
+     * @return DeliveryTime|null
+     * @link SetProductCartProcessor
+     * #dup
      */
     private function getSubProducts(ProductCollection $products, SalesChannelContext $context): array
     {
@@ -301,18 +340,18 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     private function getRelatedProducts(ProductEntity $product, SalesChannelContext $context): array
     {
         $sqlSetProducts = 'select
-                            	pp.product_version_id,
-                            	pp.product_id,
-                            	pp.quantity,
-                            	pt.name,
-                            	p.product_number
-                            from
-                            	ec_product_product as pp
-                            	left join product_translation pt on pp.product_id = pt.product_id
-                            	left join product p on pp.product_id = p.id
-                            where
-                            	pp.set_product_id = :id
-                            	and pt.language_id = :languageId';
+      pp.product_version_id,
+      pp.product_id,
+      pp.quantity,
+      pt.name,
+      p.product_number
+      from
+      ec_product_product as pp
+      left join product_translation pt on pp.product_id = pt.product_id
+      left join product p on pp.product_id = p.id
+      where
+      pp.set_product_id = :id
+      and pt.language_id = :languageId';
 
         $rows = $this->connection->fetchAll(
             $sqlSetProducts,
@@ -323,7 +362,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
         );
 
         $setProducts = [];
-        $subProductsString = "\n" . $product->getTranslation('name') . "\n";
+        $subProductsString = $product->getTranslation('name') . "\n";
 
         foreach ($rows as $row) {
             $setProducts[] = [
@@ -355,9 +394,22 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
     }
 
     /**
-     * @param LineItem $lineItem
-     * @param CartDataCollection $data
-     * @return DeliveryTime|null
+     * @link EclmCartProcessor
+     *
+     * change ProductCollection to Array, add SubProduct Data & SubProduct String for Fljnk App
+     *
+     * [
+     *      ['product' (1) => ProductEntity
+     *      'sub_product_payload' =>  array
+     *      'sub_product_flink_formatted' => array
+     *      ],
+     *
+     *      ['product' (1) => ProductEntity
+     *      'sub_product_payload' =>  array
+     *      'sub_product_flink_formatted' => array
+     *      ]
+     * ]
+     *
      */
     private function getDeliveryTimeFromProducts(LineItem $lineItem, CartDataCollection $data): ?DeliveryTime
     {
@@ -549,17 +601,18 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
         $flinkAggregate = "";
         $cartInfo = "";
         foreach ($lineItem->getPayload()['selected'] as $item) {
+
             if ($item['cardType'] == 'treeNodeCard') {
                 $itemCard = $item['item']['itemCard'];
                 $id = $itemCard['productId'];
                 if ($id !== null) {
                     $productInfo = $this->getProductById($productsAry, $id);
-                    $flinkAggregate .= $productInfo['sub_product_flink_formatted'];
+                    $flinkAggregate .= $productInfo['sub_product_flink_formatted'] . "\n";
                     /** @var ProductEntity $productEntity */
                     $productEntity = $productInfo['product'];
                     $cartInfo .= "- " . $productEntity->getTranslation('name') . "\n";
                 } else {
-                    $flinkAggregate .= "- " . $itemCard['name'] . "\n";
+                    $flinkAggregate .= "- " . $itemCard['name'] . "\n\n";
                     $cartInfo .= "- " . $itemCard['name'] . "\n";
                 }
             } else {
@@ -568,12 +621,12 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
                 $id = $itemCard['productId'];
                 if ($id !== null) {
                     $productInfo = $this->getProductById($productsAry, $id);
-                    $flinkAggregate .= $productInfo['sub_product_flink_formatted'];
+                    $flinkAggregate .= $productInfo['sub_product_flink_formatted'] . "\n";
                     /** @var ProductEntity $productEntity */
                     $productEntity = $productInfo['product'];
                     $cartInfo .= "- " . $productEntity->getTranslation('name') . "\n";
                 } else {
-                    $flinkAggregate .= "- " . $itemCard['name'] . "\n";
+                    $flinkAggregate .= "- " . $itemCard['name'] . "\n\n";
                     $cartInfo .= "- " . $itemCard['name'] . "\n";
                 }
             }
