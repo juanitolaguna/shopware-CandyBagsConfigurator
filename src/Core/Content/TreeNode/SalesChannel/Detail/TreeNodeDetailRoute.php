@@ -90,6 +90,7 @@ class TreeNodeDetailRoute
                 $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
                     && $product->getCustomFields()['ec_is_set'];
                 if ($keyIsTrue) {
+                    // ToDo: add self to context
                     $availableStock = $this->productListingSubscriber->getAvailableStock($product->getId(), $context);
                     $product->setAvailableStock($availableStock);
                 }
@@ -123,6 +124,7 @@ class TreeNodeDetailRoute
             $itemSet->getItems()->filterByActive();
             $itemSet->getItems()->sortByPosition();
             // Be aware to update this logic on change for the TreeNode Class
+            // ToDo add self to Context
             $itemSet->getItems()->correctAvailableStock($this->productListingSubscriber, $context);
 
             // enrich with currency Price
