@@ -21,4 +21,4 @@ docker cp shopware:/var/www/html/custom/plugins/$pluginName/src/Resources/public
 timestamp=$(date +%m-%d-%Y-%s)
 git add .
 git commit -m "build-${timestamp}"
-git push origin master
+git push origin main
