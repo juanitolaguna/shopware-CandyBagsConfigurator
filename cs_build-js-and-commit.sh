@@ -1,0 +1,24 @@
+#!/bin/sh
+
+. .env
+
+pluginName=$PLUGINNAME
+
+#docker exec -it shopware /var/www/html/bin/build-js.sh
+
+#copy new storefront build
+sudo rm -rf ./src/Resources/app/storefront/dist/storefront
+docker cp shopware:/var/www/html/custom/plugins/$pluginName/src/Resources/app/storefront/dist/. \
+./src/Resources/app/storefront/dist
+
+#copy new administration
+sudo rm -rf ./src/Resources/public/administration
+docker cp shopware:/var/www/html/custom/plugins/$pluginName/src/Resources/public/. \
+./src/Resources/public
+
+
+#commit build with new timestamp
+timestamp=$(date +%m-%d-%Y-%s)
+git add .
+git commit -m "build-${timestamp}"
+git push origin master
