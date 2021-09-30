@@ -43,13 +43,13 @@ class EventCandyCandyBags extends Plugin
         $this->deleteSeoUrls($uninstallContext->getContext());
         $this->deleteSeoUrlTemplate($uninstallContext->getContext());
 
-        $this->container->get(Connection::class)->exec("
+        $this->container->get(Connection::class)->exec('
             SET FOREIGN_KEY_CHECKS = 0;
-            ALTER TABLE eccb_tree_node DROP COLUMN tree_node_item_set_id
-            SET FOREIGN_KEY_CHECKS = 1;
-        ");
+            ALTER TABLE eccb_tree_node DROP FOREIGN KEY `fk.eccb_tree_node.tree_node_item_set_id`;
+            ALTER TABLE eccb_tree_node DROP COLUMN tree_node_item_set_id;
+            SET FOREIGN_KEY_CHECKS = 1;');
 
-        $this->container->get(Connection::class)->exec('DROP TRIGGER eccb_before_item_set_delete');
+        $this->container->get(Connection::class)->exec('DROP TRIGGER IF EXISTS eccb_before_item_set_delete');
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_tree_node_item_set');
 
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_item_translation');
@@ -66,6 +66,7 @@ class EventCandyCandyBags extends Plugin
 
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set_translation');
         $this->container->get(Connection::class)->exec('DROP TABLE IF EXISTS eccb_step_set');
+
 
 
     }
