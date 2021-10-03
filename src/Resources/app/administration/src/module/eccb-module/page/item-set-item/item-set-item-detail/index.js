@@ -1,5 +1,5 @@
 import {Component, Context, Mixin} from 'src/core/shopware';
-import Criteria from 'src/core/data-new/criteria.data';
+const {Criteria} = Shopware.Data;
 
 import template from '../item-set-item-detail/item-set-item-detail.twig';
 import './item-set-item-detail.scss';

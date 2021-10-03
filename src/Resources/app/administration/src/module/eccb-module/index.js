@@ -46,7 +46,7 @@ import './page/tree-node/component/item-set-list';
 
 
 Module.register('eccb-plugin', {
-    type: 'plugin',
+    type: 'core',
     name: 'Candy Bags',
     title: 'eccb.general.mainMenuItemGeneral',
     description: 'eccb.general.descriptionTextModule',
@@ -146,6 +146,8 @@ Module.register('eccb-plugin', {
             path: 'eccb.plugin.index',
             icon: 'default-object-lab-flask',
             color: '#ed1c24',
+            position: 72
+
         },
         {
             id: 'eccb-item-set-list',
@@ -156,7 +158,7 @@ Module.register('eccb-plugin', {
         {
             id: 'eccb-config',
             label: 'eccb.settings',
-            path: 'sw.plugin.settings',
+            path: 'sw.extension.config',
             params: {
                 namespace: "EventCandyCandyBags"
             },

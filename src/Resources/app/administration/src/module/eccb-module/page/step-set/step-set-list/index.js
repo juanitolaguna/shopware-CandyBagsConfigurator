@@ -1,5 +1,5 @@
 import {Component, Context} from 'src/core/shopware';
-import Criteria from 'src/core/data-new/criteria.data';
+const {Criteria} = Shopware.Data;
 
 import template from './eccb-step-set-list.twig'
 

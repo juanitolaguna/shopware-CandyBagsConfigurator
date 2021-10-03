@@ -235,9 +235,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             $quantityPriceDefinition = new QuantityPriceDefinition(
                 $currencyPrice,
                 $taxRules,
-                $context->getContext()->getCurrencyPrecision(),
-                $lineItem->getQuantity(),
-                true
+                $lineItem->getQuantity()
             );
 
             $calculatedPrice = $this->calculator->calculate($quantityPriceDefinition, $context);

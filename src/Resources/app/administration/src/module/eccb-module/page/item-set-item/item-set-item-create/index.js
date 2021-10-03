@@ -1,5 +1,4 @@
-import {Component, Mixin, Context} from 'src/core/shopware';
-import Criteria from 'src/core/data-new/criteria.data';
+import {Component, Context} from 'src/core/shopware';
 
 import template from '../item-set-item-detail/item-set-item-detail.twig';
 

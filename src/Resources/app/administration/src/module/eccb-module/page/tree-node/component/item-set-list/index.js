@@ -1,5 +1,5 @@
 import {Component, Mixin, Context} from 'src/core/shopware';
-import Criteria from 'src/core/data-new/criteria.data';
+const {Criteria} = Shopware.Data;
 const { debounce, get } = Shopware.Utils;
 
 import template from './item-set-list.twig'

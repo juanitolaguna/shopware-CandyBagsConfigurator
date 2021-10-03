@@ -2,7 +2,7 @@
   "eccb": {
     "settings" : "Settings",
     "general": {
-      "mainMenuItemGeneral": "Event Candy Bags",
+      "mainMenuItemGeneral": "CandyBags",
       "mainMenuItemSet": "Item Set List",
       "descriptionTextModule": "Manage Candy Bags"
     },

@@ -1,7 +1,8 @@
 import {Component, Context} from 'src/core/shopware';
-import Criteria from 'src/core/data-new/criteria.data';
+const {Criteria} = Shopware.Data;
 
 Component.extend('eccb-tree-node-create', 'eccb-tree-node-detail', {
+    inject: ['repositoryFactory'],
 
     data() {
         return {
