@@ -23,7 +23,7 @@ class CandyBagsLineItemStockUpdaterFunctions implements LineItemStockUpdaterFunc
         $lineItemQuantity = $lineItem->getQuantity();
         $subProducts = $lineItem->getPayload()['order_line_item_products'];
 
-        Utils::log(print_r($subProducts, true));
+        //Utils::log(print_r($subProducts, true));
 
         $orderLineItems = [];
         foreach ($subProducts as $product) {

@@ -10,6 +10,7 @@ use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -49,34 +50,34 @@ class ItemCardDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))
-                ->addFlags(new Required(), new PrimaryKey()),
+                ->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
 
-            new BoolField('show_price', 'showPrice'),
+            (new BoolField('show_price', 'showPrice'))->addFlags(new ApiAware()),
 
             new StringField('internal_name', 'internalName'),
 
-            new FkField('media_id', 'mediaId', MediaDefinition::class),
-            new ManyToOneAssociationField(
+            (new FkField('media_id', 'mediaId', MediaDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField(
                 'media',
                 'media_id',
                 MediaDefinition::class
-            ),
+            ))->addFlags(new ApiAware()),
 
-            (new FkField('product_id', 'productId', ProductDefinition::class)),
-            new ManyToOneAssociationField(
+            (new FkField('product_id', 'productId', ProductDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField(
                 'product',
                 'product_id',
                 ProductDefinition::class
-            ),
+            ))->addFlags(new ApiAware()),
             // ToDo, implement version id field.
             //(new ReferenceVersionField(ProductDefinition::class))->addFlags(new Required()),
 
             //Welchen Items bin ich zugewiesen
-            (new OneToManyAssociationField('items', ItemDefinition::class, 'item_card_id', 'id')),
+            (new OneToManyAssociationField('items', ItemDefinition::class, 'item_card_id', 'id'))->addFlags(new ApiAware()),
 
-            new TranslatedField('name'),
-            new TranslatedField('description'),
-            new TranslatedField('additionalData'),
+            (new TranslatedField('name'))->addFlags(new ApiAware()),
+            (new TranslatedField('description'))->addFlags(new ApiAware()),
+            (new TranslatedField('additionalData'))->addFlags(new ApiAware()),
             new TranslationsAssociationField(ItemCardTranslationDefinition::class, 'eccb_item_card_id')
         ]);
 

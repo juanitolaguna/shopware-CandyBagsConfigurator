@@ -6,6 +6,7 @@ use EventCandyCandyBags\Core\Content\ItemSet\ItemSetDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -36,19 +37,19 @@ class TreeNodeItemSetDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            (new IdField( 'id', 'id' ) )
-                ->addFlags( new Required(), new PrimaryKey()),
+            (new IdField('id', 'id'))
+                ->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
 
             (new FkField('tree_node_id', 'treeNodeId', TreeNodeDefinition::class))
-                ->addFlags(new Required() ),
+                ->addFlags(new Required(), new ApiAware()),
 
             (new FkField('item_set_id', 'itemSetId', ItemSetDefinition::class))
-                ->addFlags(new Required()),
+                ->addFlags(new Required(), new ApiAware()),
 
-            new ManyToOneAssociationField('treeNode', 'tree_node_id', TreeNodeDefinition::class),
-            new ManyToOneAssociationField('itemSet', 'item_set_id', ItemSetDefinition::class),
+            (new ManyToOneAssociationField('treeNode', 'tree_node_id', TreeNodeDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField('itemSet', 'item_set_id', ItemSetDefinition::class))->addFlags(new ApiAware()),
 
-            (new OneToOneAssociationField('childNode', 'id', 'tree_node_item_set_id', TreeNodeDefinition::class, false))
+            (new OneToOneAssociationField('childNode', 'id', 'tree_node_item_set_id', TreeNodeDefinition::class, false))->addFlags(new ApiAware())
         ]);
     }
 }

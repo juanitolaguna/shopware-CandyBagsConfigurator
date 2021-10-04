@@ -6,6 +6,7 @@ use EventCandyCandyBags\Core\Content\Item\ItemDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetDefinition;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -38,20 +39,20 @@ class ItemSetDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))
-                ->addFlags(new Required(), new PrimaryKey()),
+                ->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
 
             (new StringField('internal_name', 'internalName'))->addFlags(new Required()),
             (new OneToManyAssociationField('items', ItemDefinition::class, 'item_set_id', 'id'))
-                ->addFlags(new CascadeDelete()),
+                ->addFlags(new CascadeDelete(), new ApiAware()),
 
 
-            new ManyToManyAssociationField(
+            (new ManyToManyAssociationField(
                 'treeNodes',
                 TreeNodeDefinition::class,
                 TreeNodeItemSetDefinition::class,
                 'item_set_id',
                 'tree_node_id'
-            )
+            ))->addFlags(new ApiAware())
 
         ]);
     }

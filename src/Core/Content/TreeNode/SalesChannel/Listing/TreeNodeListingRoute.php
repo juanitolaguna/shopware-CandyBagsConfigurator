@@ -2,10 +2,12 @@
 
 namespace EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Listing;
 
+use EventCandyCandyBags\Utils;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\Entity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -30,7 +32,6 @@ class TreeNodeListingRoute
         $this->treeNodeRepositoy = $treeNodeRepositoy;
     }
 
-
     /**
      * @Entity("eccb_tree_node")
      * @Route("/store-api/v{version}/tree-node-listing/{stepSetId}", name="store-api.tree-node.listing", methods={"POST"})
@@ -45,7 +46,9 @@ class TreeNodeListingRoute
             ->addAssociation('itemSets')
             ->addSorting(new FieldSorting('item.position', FieldSorting::DESCENDING));
 
-        return new TreeNodeListingRouteResponse($this->treeNodeRepositoy->search($criteria, $context->getContext()));
+        $result = $this->treeNodeRepositoy->search($criteria, $context->getContext());
+
+        return new TreeNodeListingRouteResponse($result);
 
     }
 

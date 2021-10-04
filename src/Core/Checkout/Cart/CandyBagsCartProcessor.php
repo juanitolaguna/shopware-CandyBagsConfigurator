@@ -498,7 +498,7 @@ class CandyBagsCartProcessor implements CartProcessorInterface, CartDataCollecto
             return $restockTime1 > $restockTime2 ? $p1 : $p2;
         }, $products[0]);
 
-        return $calculatedRestockTime->getRestockTime();
+        return $calculatedRestockTime->getRestockTime() ?? 0;
     }
 
     /**

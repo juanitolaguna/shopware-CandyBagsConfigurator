@@ -35,6 +35,10 @@
         <!-- Controller -->
         <service id="EventCandyCandyBags\Controller\StepSetController" public="true">
             <argument id="Shopware\Storefront\Page\GenericPageLoader" type="service"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="EventCandyCandyBags\Controller\ApiController" public="true">
@@ -43,6 +47,10 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
             <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <!-- SeoUrl -->
@@ -74,7 +82,6 @@
             <argument type="service" id="eccb_tree_node_item_set.repository"/>
             <argument type="service" id="EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber"/>
         </service>
-
 
 
         <!-- Core/Content -->
@@ -123,13 +130,13 @@
 
         <!-- Subscribers -->
         <service id="EventCandyCandyBags\Subscriber\EntityDeletedSubscriber">
-<!--            <argument type="service" id="Doctrine\DBAL\Connection"/>-->
-<!--            <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition"/>-->
-<!--            <argument type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheClearer"/>-->
-<!--            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Cache\EntityCacheKeyGenerator"/>-->
-<!--            <argument type="service"-->
-<!--                      id="labelme.stock-updater-related"/>-->
-<!--            <argument type="string">event-candy-label-me</argument>-->
+            <!--            <argument type="service" id="Doctrine\DBAL\Connection"/>-->
+            <!--            <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition"/>-->
+            <!--            <argument type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheClearer"/>-->
+            <!--            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Cache\EntityCacheKeyGenerator"/>-->
+            <!--            <argument type="service"-->
+            <!--                      id="labelme.stock-updater-related"/>-->
+            <!--            <argument type="string">event-candy-label-me</argument>-->
             <tag name="kernel.event_subscriber"/>
         </service>
 

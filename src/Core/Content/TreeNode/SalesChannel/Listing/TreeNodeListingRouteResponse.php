@@ -2,6 +2,7 @@
 
 namespace EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Listing;
 
+use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 

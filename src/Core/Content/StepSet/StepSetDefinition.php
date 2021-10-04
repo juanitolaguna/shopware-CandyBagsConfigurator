@@ -9,6 +9,7 @@ use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
@@ -48,36 +49,36 @@ class StepSetDefinition extends EntityDefinition
         return new FieldCollection([
 
             (new IdField('id', 'id'))
-                ->addFlags(new Required(), new PrimaryKey()),
+                ->addFlags(new Required(), new PrimaryKey(), new ApiAware()),
 
-            new IntField('position', 'position'),
-            new BoolField('active', 'active'),
+            (new IntField('position', 'position'))->addFlags(new ApiAware()),
+            (new BoolField('active', 'active'))->addFlags(new ApiAware()),
 
-            new PriceField('price', 'price'),
+            (new PriceField('price', 'price'))->addFlags(new ApiAware()),
 
-            new FkField('tax_id', 'taxId', TaxDefinition::class),
-            new ManyToOneAssociationField('tax', 'tax_id', TaxDefinition::class, 'id', true),
+            (new FkField('tax_id', 'taxId', TaxDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField('tax', 'tax_id', TaxDefinition::class, 'id', true))->addFlags(new ApiAware()),
 
-            (new OneToManyAssociationField('steps', TreeNodeDefinition::class, 'step_set_id'))->addFlags(new CascadeDelete()),
+            (new OneToManyAssociationField('steps', TreeNodeDefinition::class, 'step_set_id'))->addFlags(new CascadeDelete(), new ApiAware()),
 
 
-            new FkField('media_id', 'mediaId', MediaDefinition::class),
-            new ManyToOneAssociationField(
+            (new FkField('media_id', 'mediaId', MediaDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField(
                 'media',
                 'media_id',
                 MediaDefinition::class
-            ),
+            ))->addFlags(new ApiAware()),
 
-            new FkField('selection_base_image_id', 'selectionBaseImageId', MediaDefinition::class),
-            new ManyToOneAssociationField(
+            (new FkField('selection_base_image_id', 'selectionBaseImageId', MediaDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField(
                 'selectionBaseImage',
                 'selection_base_image_id',
                 MediaDefinition::class
-            ),
+            ))->addFlags(new ApiAware()),
 
-            new TranslatedField('name'),
-            new TranslatedField('description'),
-            new TranslatedField('additionalData'),
+            (new TranslatedField('name'))->addFlags(new ApiAware()),
+            (new TranslatedField('description'))->addFlags(new ApiAware()),
+            (new TranslatedField('additionalData'))->addFlags(new ApiAware()),
             new TranslationsAssociationField(StepSetTranslationDefinition::class, 'eccb_step_set_id'),
         ]);
     }

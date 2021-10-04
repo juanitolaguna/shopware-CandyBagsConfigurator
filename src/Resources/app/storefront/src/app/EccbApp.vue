@@ -180,7 +180,7 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-      return fetch("/store-api/v3/context", requestOptions)
+      return fetch("/store-api/context", requestOptions)
     },
 
     async getConfig() {

@@ -11,6 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ChildrenAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -47,38 +48,38 @@ class TreeNodeDefinition extends EntityDefinition
     {
         return new FieldCollection([
 
-            (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
+            (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required(), new ApiAware()),
 
-            (new OneToOneAssociationField('item', 'id', 'tree_node_id', ItemDefinition::class)),
-
-
-            (new FkField('tree_node_item_set_id', 'treeNodeItemSetId', TreeNodeItemSetDefinition::class)),
-            (new OneToOneAssociationField('treeNodeItemSet', 'tree_node_item_set_id', 'id', TreeNodeItemSetDefinition::class)),
+            (new OneToOneAssociationField('item', 'id', 'tree_node_id', ItemDefinition::class))->addFlags(new ApiAware()),
 
 
-            new FkField('step_set_id', 'stepSetId', StepSetDefinition::class),
-            new ManyToOneAssociationField(
+            (new FkField('tree_node_item_set_id', 'treeNodeItemSetId', TreeNodeItemSetDefinition::class))->addFlags(new ApiAware()),
+            (new OneToOneAssociationField('treeNodeItemSet', 'tree_node_item_set_id', 'id', TreeNodeItemSetDefinition::class))->addFlags(new ApiAware()),
+
+
+            (new FkField('step_set_id', 'stepSetId', StepSetDefinition::class))->addFlags(new ApiAware()),
+            (new ManyToOneAssociationField(
                 'stepSet',
                 'step_set_id',
                 StepSetDefinition::class
-            ),
+            ))->addFlags(new ApiAware()),
 
-            new ParentFkField(self::class),
-            new ParentAssociationField(self::class, 'id'),
+            (new ParentFkField(self::class))->addFlags(new ApiAware()),
+            (new ParentAssociationField(self::class, 'id'))->addFlags(new ApiAware()),
 
-            new ChildrenAssociationField(self::class),
+            (new ChildrenAssociationField(self::class))->addFlags(new ApiAware()),
 
-            new TranslatedField('stepDescription'),
+            (new TranslatedField('stepDescription'))->addFlags(new ApiAware()),
             (new TranslationsAssociationField(TreeNodeTranslationDefinition::class, 'eccb_tree_node_id'))
                 ->addFlags(new Required()),
 
-            new ManyToManyAssociationField(
+            (new ManyToManyAssociationField(
                 'itemSets',
                 ItemSetDefinition::class,
                 TreeNodeItemSetDefinition::class,
                 'tree_node_id',
                 'item_set_id'
-            )
+            ))->addFlags(new ApiAware())
         ]);
     }
 }
