@@ -1,4 +1,4 @@
-import {Component, Mixin, Context} from 'src/core/shopware';
+const {Component, Mixin, Context} = Shopware;
 const {Criteria} = Shopware.Data;
 const { debounce, get } = Shopware.Utils;
 

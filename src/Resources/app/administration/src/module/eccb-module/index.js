@@ -1,4 +1,4 @@
-import { Module } from 'src/core/shopware';
+const { Module } = Shopware;
 
 /**
  * Overrides
@@ -146,7 +146,7 @@ Module.register('eccb-plugin', {
             path: 'eccb.plugin.index',
             icon: 'default-object-lab-flask',
             color: '#ed1c24',
-            position: 72
+            position: 75
 
         },
         {

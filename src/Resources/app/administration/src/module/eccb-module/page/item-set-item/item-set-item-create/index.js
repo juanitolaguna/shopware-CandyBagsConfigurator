@@ -1,4 +1,4 @@
-import {Component, Context} from 'src/core/shopware';
+const {Component, Context} = Shopware;
 
 import template from '../item-set-item-detail/item-set-item-detail.twig';
 

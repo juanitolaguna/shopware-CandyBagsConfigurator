@@ -1,4 +1,4 @@
-import {Component, Context} from 'src/core/shopware';
+const {Component, Context} = Shopware;
 const {Criteria} = Shopware.Data;
 
 import template from './eccb-step-set-list.twig'

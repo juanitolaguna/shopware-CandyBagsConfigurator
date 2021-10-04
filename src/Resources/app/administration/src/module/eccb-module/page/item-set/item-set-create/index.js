@@ -1,4 +1,4 @@
-import {Component, Context} from 'src/core/shopware';
+const {Component, Context} = Shopware;
 
 Component.extend('eccb-item-set-create', 'eccb-item-set-detail', {
     methods: {

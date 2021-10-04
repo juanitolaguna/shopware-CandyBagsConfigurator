@@ -1,4 +1,4 @@
-import {Component, Context, Mixin} from 'src/core/shopware';
+const {Component, Context, Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 
 import template from '../item-set-item-detail/item-set-item-detail.twig';
