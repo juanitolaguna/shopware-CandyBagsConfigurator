@@ -28,7 +28,10 @@
       "terminal": "Terminal",
       "stepDescription": "Headline",
       "type": "Item Type",
-      "internalName": "Internal Name"
+      "internalName": "Internal Name",
+      "keywords": "SEO: Keywords",
+      "keywordsPlaceholder": "comma, separated, keywords (max: 1024 characters)",
+      "revisitAfter": "SEO: revisit after N days"
     },
     "node": {
       "items": "Items",

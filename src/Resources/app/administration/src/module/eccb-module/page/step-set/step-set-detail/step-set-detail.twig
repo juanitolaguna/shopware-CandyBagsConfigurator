@@ -96,6 +96,21 @@
                             :currency="defaultCurrency">
                     </sw-price-field>
 
+                    <sw-number-field
+                            style="max-width: 50%"
+                            v-if="stepSet"
+                            v-model="stepSet.revisitAfter"
+                            :label="$tc('eccb.field.revisitAfter')"
+                            :placeholder="'15'"
+                    ></sw-number-field>
+
+                    <sw-text-field
+                            v-if="stepSet"
+                            :label="$tc('eccb.field.keywords')"
+                            :placeholder="$tc('eccb.field.keywordsPlaceholder')"
+                            v-model="stepSet.keywords">
+                    </sw-text-field>
+
 
                 </sw-card>
 

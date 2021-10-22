@@ -17,7 +17,7 @@ class Migration1611800092Item extends MigrationStep
         $connection->executeUpdate("
             CREATE TABLE `eccb_item` (
                 `id` BINARY(16) NOT NULL,
-                `position` INT(11) NOT NULL DEFAULT 0,
+                `position` INT NOT NULL DEFAULT 0,
                 `active` TINYINT(1) NULL DEFAULT 0,
                 `terminal` TINYINT(1) NULL DEFAULT 0,
                 `purchasable` TINYINT(1) NULL DEFAULT 0,

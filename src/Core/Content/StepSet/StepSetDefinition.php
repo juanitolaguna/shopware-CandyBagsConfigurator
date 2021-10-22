@@ -79,6 +79,9 @@ class StepSetDefinition extends EntityDefinition
             (new TranslatedField('name'))->addFlags(new ApiAware()),
             (new TranslatedField('description'))->addFlags(new ApiAware()),
             (new TranslatedField('additionalData'))->addFlags(new ApiAware()),
+            (new TranslatedField('keywords'))->addFlags(new ApiAware()),
+            (new TranslatedField('revisitAfter'))->addFlags(new ApiAware()),
+
             new TranslationsAssociationField(StepSetTranslationDefinition::class, 'eccb_step_set_id'),
         ]);
     }

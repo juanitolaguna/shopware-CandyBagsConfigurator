@@ -33,6 +33,18 @@ class StepSetTranslationEntity extends TranslationEntity
     protected $additionalData;
 
     /**
+     * @var string|null
+     */
+    protected $keywords;
+
+
+    /**
+     * @var int|null
+     */
+    protected $revisitAfter;
+
+
+    /**
      * @return string
      */
     public function getStepSetId(): string
@@ -110,5 +122,37 @@ class StepSetTranslationEntity extends TranslationEntity
     public function setAdditionalData(?string $additionalData): void
     {
         $this->additionalData = $additionalData;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getKeywords(): ?string
+    {
+        return $this->keywords;
+    }
+
+    /**
+     * @param string|null $keywords
+     */
+    public function setKeywords(?string $keywords): void
+    {
+        $this->keywords = $keywords;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRevisitAfter(): ?int
+    {
+        return $this->revisitAfter;
+    }
+
+    /**
+     * @param int|null $revisitAfter
+     */
+    public function setRevisitAfter(?int $revisitAfter): void
+    {
+        $this->revisitAfter = $revisitAfter;
     }
 }

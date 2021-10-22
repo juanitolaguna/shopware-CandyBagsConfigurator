@@ -6,6 +6,7 @@ use EventCandyCandyBags\Core\Content\StepSet\StepSetDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -38,6 +39,8 @@ class StepSetTranslationDefinition extends EntityTranslationDefinition
             (new StringField('name', 'name'))->addFlags(new Required()),
             (new LongTextField('description', 'description'))
                 ->addFlags(new AllowHtml()),
+            new LongTextField('keywords', 'keywords'),
+            new IntField('revisit_after', 'revisitAfter'),
             (new LongTextField('additional_data', 'additionalData'))->addFlags(new AllowHtml())
         ]);
     }

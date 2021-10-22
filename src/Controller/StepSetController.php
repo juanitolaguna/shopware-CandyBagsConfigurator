@@ -15,6 +15,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Page\GenericPageLoader;
+use Shopware\Storefront\Page\MetaInformation;
 use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +63,7 @@ class StepSetController extends StorefrontController
                 NotFilter::CONNECTION_AND,
                 [new EqualsFilter('id', $stepSetId)]
             ));
-        $stepSetNavigation = $stepSetRepository->search($stepSetNavigationCriteria,  $context->getContext())->getEntities();
+        $stepSetNavigation = $stepSetRepository->search($stepSetNavigationCriteria, $context->getContext())->getEntities();
 
 
         /** @var StepSetEntity $entry */
@@ -71,10 +72,20 @@ class StepSetController extends StorefrontController
         if (!$entry) {
             throw new PageNotFoundException($stepSetId);
         }
-
+        /** @var MetaInformation $metaInformation */
         $metaInformation = $page->getMetaInformation();
         $metaInformation->setMetaTitle($entry->getTranslated()['name']);
         $metaInformation->setMetaDescription($entry->getTranslated()['description']);
+        $metaInformation->setMetaKeywords($entry->getTranslation('keywords') ?? '');
+        $revisitAfter = $entry->getTranslation('revisitAfter');
+
+        if ($revisitAfter == 0 || $revisitAfter == null) {
+            $revisitAfter = '15 days';
+        } else {
+            $revisitAfter = (string)$revisitAfter . ' days';
+        }
+        $metaInformation->setRevisit($revisitAfter);
+
         $page->setMetaInformation($metaInformation);
 
         return $this->renderStorefront('@EventCandyCandyBags/storefront/page/eccb-detail.html.twig', [
