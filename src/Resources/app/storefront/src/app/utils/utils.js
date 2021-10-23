@@ -12,4 +12,26 @@ function price(item) {
     return false;
 }
 
-export {translate, price};
+function referenceUnitPrice(item) {
+    if (!price(item) || !_referenceUnitPriceAvailable(item.itemCard.product)) {
+        return false;
+    }
+    const product = item.itemCard.product;
+    return {
+        'referenceUnitPrice': ((price(item) / product.purchaseUnit) * product.referenceUnit).toFixed(2),
+        'referenceUnit': product.referenceUnit,
+        'purchaseUnit': product.purchaseUnit,
+        'unitName': translate(product.unit, 'name'),
+        'test': _referenceUnitPriceAvailable(item.itemCard.product)
+    };
+}
+
+function _referenceUnitPriceAvailable(product) {
+    const result = product.purchaseUnit !== null
+        && product.referenceUnit !== null
+        && product.unit !== null
+        && product.unit.name !== null;
+    return result;
+}
+
+export {translate, price, referenceUnitPrice};

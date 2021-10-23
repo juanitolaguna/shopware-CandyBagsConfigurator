@@ -18,7 +18,12 @@
             v-on:click.stop="openProductData"
         >{{ snippet.productDetails }}</span>
 
-        <div class="ec-price" v-if="_price"><strong>{{ _price }} {{ currency }}</strong></div>
+        <div class="ec-price" v-if="_price"><strong>{{ currency }}{{ _price }}</strong></div>
+
+        <div class="ec-price ec-reference-price" v-if="_referenceUnitPrice">
+          {{ currency }}{{ _referenceUnitPrice.referenceUnitPrice }}  / {{ _referenceUnitPrice.referenceUnit }}
+          {{ _referenceUnitPrice.unitName }}
+        </div>
         <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
       </div>
     </div>
@@ -31,7 +36,7 @@
 </template>
 
 <script>
-import {translate, price} from "../utils/utils.js"
+import {translate, price, referenceUnitPrice} from "../utils/utils.js"
 import ProductDataModal from "./ProductDataModal.vue";
 import VLazyImage from "v-lazy-image";
 
@@ -67,6 +72,10 @@ export default {
       return this.price(this.child);
     },
 
+    _referenceUnitPrice() {
+      return this.referenceUnitPrice(this.child);
+    },
+
     currency() {
       return window.currencySymbol;
     },
@@ -88,6 +97,7 @@ export default {
 
   methods: {
     price,
+    referenceUnitPrice,
     translate,
     terminal() {
       return this.child.terminal;

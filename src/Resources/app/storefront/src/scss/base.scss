@@ -90,6 +90,11 @@
     margin-left: 1em;
   }
 
+  .ec-reference-price {
+    padding-top: 5px;
+    font-size: small;
+  }
+
   .selected {
     border: 2px solid $primary !important;
   }
@@ -157,6 +162,7 @@
     border-radius: 6px;
     border: 2px solid white;
     max-width: 14rem;
+    //min-height: 340px;
     margin: 0.5em;
 
     @media (max-width: 575.98px) {
