@@ -25,6 +25,7 @@
                     :child="child"
                     :parentNode="parent"
                     :config="config"
+                    :placeholder="stepSetThumbnail"
                     @next-root-node="getTreeNode(nextRootNode(parent).id, nextRootNode(parent), {parentIndex, childIndex}, 'treeNode')"
                     @next-node="getTreeNode(child.id, parent, {parentIndex, childIndex}, 'treeNode')"
                     @terminal-node="selectTerminal({parentIndex, childIndex}, 'treeNode')"
@@ -41,6 +42,7 @@
                         :childNode="itemSet.childNode"
                         :parentNode="parent"
                         :config="config"
+                        :placeholder="stepSetThumbnail"
                         @next-root-node="getTreeNode(nextRootNode(parent).id, nextRootNode(parent), {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
                         @next-node="getTreeNode(itemSet.childNode.id, parent, {parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
                         @terminal-node="selectTerminal({parentIndex, itemSetIndex, itemSetItemIndex}, 'itemSet')"
@@ -131,6 +133,12 @@ export default {
 
     assets() {
       return window.img;
+    },
+
+    stepSetThumbnail() {
+      if (this.stepSet.selectionBaseImage == null) return false;
+      const thumbnail = this.stepSet.selectionBaseImage.thumbnails.filter((el) => el.width < 800);
+      return thumbnail.length ? thumbnail[0].url : window.img.placeholder;
     },
 
     productData() {

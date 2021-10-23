@@ -2,7 +2,7 @@
   <div>
     <div @click="onSelect" :class="['card ec-card ', {selected: child.item.selected}]">
       <div class="card-image-top-wrapper" style="width: inherit">
-        <img class="card-img-top" :src="image" :alt="child.item.itemCard.name">
+        <v-lazy-image class="card-img-top" :src="image" :alt="child.item.itemCard.name" :srcPlaceholder="placeholder"/>
       </div>
       <div class="card-body">
         <h5 class="card-title"
@@ -34,13 +34,15 @@
 <script>
 import {translate, price} from "../utils/utils.js"
 import ProductDataModal from "./ProductDataModal.vue";
+import VLazyImage from "v-lazy-image";
 
 export default {
-  props: ["child", "assets", "parentNode", "config"],
+  props: ["child", "assets", "parentNode", "config", "placeholder"],
 
 
   components: {
-    ProductDataModal
+    ProductDataModal,
+    VLazyImage
   },
 
 
@@ -79,7 +81,7 @@ export default {
     image() {
       const itemCard = this.child.item.itemCard;
       if (itemCard.media && itemCard.media.thumbnails) {
-        const image = itemCard.media.thumbnails.filter((tb) => tb.width === 800);
+        const image = itemCard.media.thumbnails.filter((tb) => tb.width < 800);
         if (image.length) {
           return image[0].url;
         } else {

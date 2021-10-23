@@ -124,7 +124,7 @@ export default {
 
     stepSetThumbnail() {
       if (this.stepSet.selectionBaseImage == null) return false;
-      const thumbnail = this.stepSet.selectionBaseImage.thumbnails.filter((el) => el.width === 800);
+      const thumbnail = this.stepSet.selectionBaseImage.thumbnails.filter((el) => el.width <= 800);
       return thumbnail.length ? thumbnail[0].url : window.img.placeholder;
     },
 
@@ -215,7 +215,7 @@ export default {
       }
 
       if (itemCard.media && itemCard.media.thumbnails) {
-        const image = itemCard.media.thumbnails.filter((tb) => tb.width === 800);
+        const image = itemCard.media.thumbnails.filter((tb) => tb.width < 800);
         if (image.length) {
           return image[0].url;
         } else {
