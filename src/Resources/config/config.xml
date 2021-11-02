@@ -150,7 +150,7 @@
 
         <component name="sw-snippet-field">
             <name>snippetField</name>
-            <label>Candy Bag submenu    description</label>
+            <label>Candy Bag submenu description</label>
             <snippet>candy-bags.cbMenuDescription</snippet>
         </component>
 
