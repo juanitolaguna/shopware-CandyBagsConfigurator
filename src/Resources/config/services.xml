@@ -6,20 +6,47 @@
 
     <services>
 
-        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartProcessor" public="true">
-            <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartCollector" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
+            <argument type="service" id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsDynamicProductService"/>
+            <argument type="service" id="EventCandy\Sets\Core\Content\DynamicProduct\Cart\DynamicProductGateway"/>
+            <argument type="service" id="EventCandy\Sets\Core\Checkout\Cart\Payload\PayloadService"/>
+            <argument type="service" id="EventCandy\Sets\Core\Checkout\Cart\CartProduct\CartProductService"/>
             <argument type="service" id="media.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator"/>
+            <argument type="service" id="EventCandy\Sets\Core\Checkout\Cart\LineItemPriceService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
 
-            <!-- inject before product processor (5000) -->
-            <tag name="shopware.cart.processor" priority="6000"/>
             <tag name="shopware.cart.collector" priority="6000"/>
         </service>
 
-        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsSubProductCartReducer">
-            <tag name="ec.sets.cart_reducer"/>
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCollectorOptimizer">
+            <argument type="service" id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsDynamicProductService"/>
+            <tag name="ec.sets.cart-optimizer"/>
         </service>
+
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartProcessor" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator"/>
+            <tag name="shopware.cart.processor" priority="6000"/>
+        </service>
+
+
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsDynamicProductService" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+
+
+
+<!--        <service id="EventCandyCandyBags\Core\Checkout\Cart\CandyBagsCartProcessorOld" public="true">-->
+<!--            <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>-->
+<!--            <argument type="service" id="Doctrine\DBAL\Connection"/>-->
+<!--            <argument type="service" id="media.repository"/>-->
+<!--            <argument type="service" id="Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator"/>-->
+
+<!--            &lt;!&ndash; inject before product processor (5000) &ndash;&gt;-->
+<!--            <tag name="shopware.cart.processor" priority="6000"/>-->
+<!--            <tag name="shopware.cart.collector" priority="6000"/>-->
+<!--        </service>-->
 
         <!-- LineItemFunctions -->
         <service id="EventCandyCandyBags\Core\Content\CandyBagsLineItemStockUpdaterFunctions">
@@ -80,7 +107,6 @@
         <service id="EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail\TreeNodeDetailRoute" public="true">
             <argument type="service" id="eccb_tree_node.repository"/>
             <argument type="service" id="eccb_tree_node_item_set.repository"/>
-            <argument type="service" id="EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber"/>
         </service>
 
 

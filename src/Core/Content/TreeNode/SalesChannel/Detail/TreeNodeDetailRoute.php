@@ -34,21 +34,15 @@ class TreeNodeDetailRoute
     private $treeNodeItemSetRepository;
 
     /**
-     * @var ProductListingSubscriber
-     */
-    private $productListingSubscriber;
-
-    /**
-     * TreeNodeDetailRoute constructor.
      * @param EntityRepositoryInterface $treeNodeRepository
      * @param EntityRepositoryInterface $treeNodeItemSetRepository
-     * @param ProductListingSubscriber $productListingSubscriber
      */
-    public function __construct(EntityRepositoryInterface $treeNodeRepository, EntityRepositoryInterface $treeNodeItemSetRepository, ProductListingSubscriber $productListingSubscriber)
-    {
+    public function __construct(
+        EntityRepositoryInterface $treeNodeRepository,
+        EntityRepositoryInterface $treeNodeItemSetRepository
+    ) {
         $this->treeNodeRepository = $treeNodeRepository;
         $this->treeNodeItemSetRepository = $treeNodeItemSetRepository;
-        $this->productListingSubscriber = $productListingSubscriber;
     }
 
 
@@ -63,7 +57,6 @@ class TreeNodeDetailRoute
             ->addAssociation('media');
         /** @var TreeNodeEntity $entry */
         $entry = $this->treeNodeRepository->search($criteria, $context->getContext())->first();
-
 
         // Set the Children.
         $childrenCriteria = new Criteria();
@@ -91,9 +84,9 @@ class TreeNodeDetailRoute
                 $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
                     && $product->getCustomFields()['ec_is_set'];
                 if ($keyIsTrue) {
-                    // ToDo: add self to context
-                    $availableStock = $this->productListingSubscriber->getAvailableStock($product->getId(), $context);
-                    $product->setAvailableStock($availableStock);
+                    // ToDo: subscriber
+                    //$availableStock = $this->productListingSubscriber->getAvailableStock($product->getId(), $context);
+                    //$product->setAvailableStock($availableStock);
                 }
             }
         }
@@ -126,8 +119,8 @@ class TreeNodeDetailRoute
             $itemSet->getItems()->filterByActive();
             $itemSet->getItems()->sortByPosition();
             // Be aware to update this logic on change for the TreeNode Class
-            // ToDo add self to Context
-            $itemSet->getItems()->correctAvailableStock($this->productListingSubscriber, $context);
+            // ToDo:subscriber
+            //$itemSet->getItems()->correctAvailableStock($this->productListingSubscriber, $context);
 
             // enrich with currency Price
             $itemSet->getItems()->getPrices($context->getContext()->getCurrencyId());
