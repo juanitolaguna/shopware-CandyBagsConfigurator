@@ -10,7 +10,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
             <argument type="service" id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsDynamicProductService"/>
             <argument type="service" id="EventCandy\Sets\Core\Content\DynamicProduct\Cart\DynamicProductGateway"/>
-            <argument type="service" id="EventCandy\Sets\Core\Checkout\Cart\Payload\PayloadService"/>
+            <argument type="service" id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsPayloadService"/>
             <argument type="service" id="EventCandy\Sets\Core\Checkout\Cart\CartProduct\CartProductService"/>
             <argument type="service" id="media.repository"/>
             <argument type="service" id="EventCandy\Sets\Core\Checkout\Cart\LineItemPriceService"/>
@@ -32,6 +32,11 @@
 
         <service id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsDynamicProductService" public="true">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <service id="EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsPayloadService">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="EventCandy\Sets\Core\Content\DynamicProduct\Cart\DynamicProductService"/>
         </service>
 
 
@@ -107,6 +112,7 @@
         <service id="EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail\TreeNodeDetailRoute" public="true">
             <argument type="service" id="eccb_tree_node.repository"/>
             <argument type="service" id="eccb_tree_node_item_set.repository"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
 

@@ -1,13 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail;
 
+use EventCandy\Sets\Core\Event\BoolStruct;
+use EventCandy\Sets\Core\Event\ProductLoadedEvent;
+use EventCandy\Sets\Core\Subscriber\SalesChannelProductSubscriber;
 use EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeEntity;
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -15,7 +23,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\Entity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntityLoadedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -34,15 +44,23 @@ class TreeNodeDetailRoute
     private $treeNodeItemSetRepository;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @param EntityRepositoryInterface $treeNodeRepository
      * @param EntityRepositoryInterface $treeNodeItemSetRepository
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         EntityRepositoryInterface $treeNodeRepository,
-        EntityRepositoryInterface $treeNodeItemSetRepository
+        EntityRepositoryInterface $treeNodeItemSetRepository,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->treeNodeRepository = $treeNodeRepository;
         $this->treeNodeItemSetRepository = $treeNodeItemSetRepository;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
 
@@ -50,9 +68,11 @@ class TreeNodeDetailRoute
      * @Entity("eccb_tree_node")
      * @Route("/store-api/v{version}/tree-node/{treeNodeId}", name="store-api.tree-node.detail", methods={"POST"})
      */
-    public function load(string $treeNodeId, SalesChannelContext $context, Criteria $criteria): TreeNodeDetailRouteResponse
-    {
-
+    public function load(
+        string $treeNodeId,
+        SalesChannelContext $context,
+        Criteria $criteria
+    ): TreeNodeDetailRouteResponse {
         $criteria->setIds([$treeNodeId])
             ->addAssociation('media');
         /** @var TreeNodeEntity $entry */
@@ -84,9 +104,10 @@ class TreeNodeDetailRoute
                 $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
                     && $product->getCustomFields()['ec_is_set'];
                 if ($keyIsTrue) {
-                    // ToDo: subscriber
-                    //$availableStock = $this->productListingSubscriber->getAvailableStock($product->getId(), $context);
-                    //$product->setAvailableStock($availableStock);
+                    $product->addExtension(SalesChannelProductSubscriber::SKIP_UNIQUE_ID, new BoolStruct(true));
+                    $this->eventDispatcher->dispatch(
+                        new ProductLoadedEvent($context, new ProductCollection([$product]), true)
+                    );
                 }
             }
         }
@@ -105,7 +126,10 @@ class TreeNodeDetailRoute
             ->addSorting(new FieldSorting('childNode.item.position', FieldSorting::DESCENDING));
 
         /** @var EntitySearchResult $itemSetsSearchResult */
-        $itemSetsSearchResult = $this->treeNodeItemSetRepository->search($treeNodeItemSetCriteria, $context->getContext());
+        $itemSetsSearchResult = $this->treeNodeItemSetRepository->search(
+            $treeNodeItemSetCriteria,
+            $context->getContext()
+        );
 
 
         /** @var TreeNodeItemSetEntity[] $itemSets */
@@ -113,14 +137,12 @@ class TreeNodeDetailRoute
 
         /** @var TreeNodeItemSetEntity $entity */
         foreach ($itemSetsSearchResult->getEntities() as $entity) {
-
             /** @var ItemSetEntity $itemSet */
             $itemSet = $entity->getItemSet();
             $itemSet->getItems()->filterByActive();
             $itemSet->getItems()->sortByPosition();
             // Be aware to update this logic on change for the TreeNode Class
-            // ToDo:subscriber
-            //$itemSet->getItems()->correctAvailableStock($this->productListingSubscriber, $context);
+            $itemSet->getItems()->correctAvailableStock($this->eventDispatcher, $context);
 
             // enrich with currency Price
             $itemSet->getItems()->getPrices($context->getContext()->getCurrencyId());
@@ -135,7 +157,6 @@ class TreeNodeDetailRoute
         $entry->setChildren(new TreeNodeCollection($children->getEntities()));
 
         return new TreeNodeDetailRouteResponse($entry);
-
     }
 
 }

@@ -1,13 +1,26 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace EventCandyCandyBags\Core\Content\Item;
 
+use EventCandy\Sets\Core\Event\BoolStruct;
+use EventCandy\Sets\Core\Event\ProductLoadedEvent;
+use EventCandy\Sets\Core\Subscriber\SalesChannelProductSubscriber;
 use EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber;
+use EventCandyCandyBags\Utils;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Util\AfterSort;
+use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntityLoadedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @method void                add(ItemEntity $entity)
@@ -44,7 +57,7 @@ class ItemCollection extends EntityCollection
         return $this;
     }
 
-    public function correctAvailableStock(ProductListingSubscriber $productListingSubscriber, SalesChannelContext $context): self
+    public function correctAvailableStock(EventDispatcherInterface $eventDispatcher, SalesChannelContext $context): self
     {
         /** @var ItemEntity[] $elements */
         $elements = $this->elements;
@@ -55,8 +68,10 @@ class ItemCollection extends EntityCollection
                 $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
                     && $product->getCustomFields()['ec_is_set'];
                 if ($keyIsTrue) {
-                    $availableStock = $productListingSubscriber->getAvailableStock($product->getId(), $context);
-                    $product->setAvailableStock($availableStock);
+                    $product->addExtension(SalesChannelProductSubscriber::SKIP_UNIQUE_ID, new BoolStruct(true));
+                    $eventDispatcher->dispatch(
+                        new ProductLoadedEvent($context, new ProductCollection([$product]), true)
+                    );
                 }
             }
         }

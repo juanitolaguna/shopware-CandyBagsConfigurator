@@ -16,6 +16,7 @@ use EventCandy\Sets\Core\Content\DynamicProduct\Cart\DynamicProductService;
 use EventCandy\Sets\Core\Content\DynamicProduct\DynamicProductEntity;
 use EventCandy\Sets\Utils;
 use EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsDynamicProductService;
+use EventCandyCandyBags\Core\Checkout\Cart\Extension\CandyBagsPayloadService;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartBehavior;
 use Shopware\Core\Checkout\Cart\CartDataCollectorInterface;
@@ -37,6 +38,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 class CandyBagsCartCollector implements CartDataCollectorInterface
 {
     public const TYPE = 'event-candy-candy-bags';
+    public const CART_INFO_KEY = 'cart_info';
     public const SHIPPING_FREE = false;
     public const MIN_PURCHASE = 1;
     public const PURCHASE_STEPS = 1;
@@ -57,7 +59,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
     private $dynamicProductGateway;
 
     /**
-     * @var PayloadService
+     * @var CandyBagsPayloadService
      */
     private $payloadService;
 
@@ -86,7 +88,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
      * @param CartPersisterInterface $cartPersister
      * @param CandyBagsDynamicProductService $dynamicProductService
      * @param DynamicProductGateway $dynamicProductGateway
-     * @param PayloadService $payloadService
+     * @param CandyBagsPayloadService $payloadService
      * @param CartProductService $cartProductService
      * @param EntityRepositoryInterface $mediaRepository
      * @param LineItemPriceService $lineItemPriceService
@@ -96,7 +98,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
         CartPersisterInterface $cartPersister,
         CandyBagsDynamicProductService $dynamicProductService,
         DynamicProductGateway $dynamicProductGateway,
-        PayloadService $payloadService,
+        CandyBagsPayloadService $payloadService,
         CartProductService $cartProductService,
         EntityRepositoryInterface $mediaRepository,
         LineItemPriceService $lineItemPriceService,
@@ -125,8 +127,9 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
             $original->isModified()
         );
         if (count($lineItemsChanged) === 0) {
-            return;
+            //return;
         }
+
         Utils::log('collectCB');
 
         $lineItems = $original->getLineItems()->filterFlatByType(self::TYPE);
@@ -170,9 +173,11 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
             /** @link PayloadService::loadPayloadDataForLineItem() $payloadItem */
             $payloadItem = $this->payloadService->buildPayloadObject($lineItem, $data);
             $payloadAssociative = $this->payloadService->makePayloadDataAssociative($payloadItem, self::TYPE);
-
+            $cartInfo = $this->payloadService->makeCartInfo($payloadItem, self::CART_INFO_KEY);
             $this->enrichLineItem($lineItem, $data, $context, $payloadItem);
             $lineItem->setPayload($payloadAssociative);
+            $lineItem->setPayload($cartInfo);
+            Utils::log(print_r($cartInfo, true));
         }
     }
 
