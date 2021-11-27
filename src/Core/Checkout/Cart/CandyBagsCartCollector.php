@@ -127,10 +127,10 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
             $original->isModified()
         );
         if (count($lineItemsChanged) === 0) {
-            //return;
+            return;
         }
 
-        Utils::log('collectCB');
+        //Utils::log('collectCB');
 
         $lineItems = $original->getLineItems()->filterFlatByType(self::TYPE);
 
@@ -139,8 +139,9 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
         // delete cart stock data for this lineItem type, because new Product wrappers will be generated.
         foreach ($lineItems as $lineItem) {
             $this->dynamicProductService->removeDynamicProductsByLineItemId($lineItem->getId(), $context->getToken());
-            $this->cartProductService->removeCartProductsByLineItem($lineItem->getId(), $context->getToken());
+            //$this->cartProductService->removeCartProductsByLineItem($lineItem->getId(), $context->getToken());
         }
+        $this->cartProductService->removeCartProductsByTokenAndType($context->getToken(), self::TYPE);
         $data->clear();
 
 
@@ -160,7 +161,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
          */
         foreach ($lineItems as $lineItem) {
             $this->payloadService->loadPayloadDataForLineItem($lineItem, $data, $context);
-            $cartProducts = $this->cartProductService->buildCartProductsFromPayload($lineItem, $data);
+            $cartProducts = $this->cartProductService->buildCartProductsFromPayload($lineItem, $data, self::TYPE);
             $this->cartProductService->saveCartProducts($cartProducts);
             $this->dynamicProductService->removeDynamicProductsFromCartDataByLineItemId($lineItem->getId(), $data);
         }
@@ -177,7 +178,6 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
             $this->enrichLineItem($lineItem, $data, $context, $payloadItem);
             $lineItem->setPayload($payloadAssociative);
             $lineItem->setPayload($cartInfo);
-            Utils::log(print_r($cartInfo, true));
         }
     }
 
@@ -302,7 +302,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
 
         try {
             $result = $this->connection->fetchAssociative($sql, [
-                'lineItemId' => Uuid::fromHexToBytes($lineItem->getId()),
+                'lineItemId' => $lineItem->getId(),
                 'token' => $context->getToken()
             ]);
         } catch (Exception $e) {
