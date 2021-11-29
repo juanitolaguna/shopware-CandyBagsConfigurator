@@ -62,7 +62,6 @@ class ItemCollection extends EntityCollection
         /** @var ItemEntity[] $elements */
         $elements = $this->elements;
 
-        \EventCandy\Sets\Utils::log(print_r($elements, true));
         foreach ($elements as $key => $item) {
             $product = $item->getItemCard()->getProduct();
             if ($product) {
