@@ -7,6 +7,7 @@ namespace EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail;
 use EventCandy\Sets\Core\Event\BoolStruct;
 use EventCandy\Sets\Core\Event\ProductLoadedEvent;
 use EventCandy\Sets\Core\Subscriber\SalesChannelProductSubscriber;
+use EventCandy\Sets\Utils;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetEntity;
@@ -90,7 +91,7 @@ class TreeNodeDetailRoute
 
 
         /** @var TreeNodeEntity $entity */
-        foreach ($children->getEntities() as $entity) {
+        foreach ($children->getEntities() as $key => $entity) {
             $item = $entity->getItem();
             $product = $item->getItemCard()->getProduct();
             if ($product) {
@@ -105,6 +106,11 @@ class TreeNodeDetailRoute
                         new ProductLoadedEvent($context, new ProductCollection([$product]), true)
                     );
                 }
+
+                if (!$product->getAvailable()) {
+                    $children->getEntities()->remove($key);
+                }
+
             }
         }
 

@@ -62,7 +62,8 @@ class ItemCollection extends EntityCollection
         /** @var ItemEntity[] $elements */
         $elements = $this->elements;
 
-        foreach ($elements as $item) {
+        \EventCandy\Sets\Utils::log(print_r($elements, true));
+        foreach ($elements as $key => $item) {
             $product = $item->getItemCard()->getProduct();
             if ($product) {
                 $keyIsTrue = array_key_exists('ec_is_set', $product->getCustomFields())
@@ -73,7 +74,12 @@ class ItemCollection extends EntityCollection
                         new ProductLoadedEvent($context, new ProductCollection([$product]), true)
                     );
                 }
+
+                if (!$product->getAvailable()) {
+                    $this->remove($item->getId($key));
+                }
             }
+
         }
 
         return $this;
