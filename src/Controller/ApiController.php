@@ -3,22 +3,22 @@ declare(strict_types=1);
 
 namespace EventCandyCandyBags\Controller;
 
+use EventCandy\Sets\Core\Event\BeforeLineItemAddToCartEvent;
 use Exception;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartPersister;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Content\Product\Cart\ProductGatewayInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @RouteScope(scopes={"store-api"})
@@ -32,11 +32,6 @@ class ApiController extends AbstractController
     private $systemConfigService;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $mediaRepository;
-
-    /**
      * @var CartService
      */
     private $cartService;
@@ -47,30 +42,26 @@ class ApiController extends AbstractController
     private $cartPersister;
 
     /**
-     * @var ProductGatewayInterface
+     * @var EventDispatcherInterface
      */
-    private $productGateway;
+    private $eventDispatcher;
 
     /**
-     * ApiController constructor.
      * @param SystemConfigService $systemConfigService
-     * @param EntityRepositoryInterface $mediaRepository
      * @param CartService $cartService
      * @param CartPersister $cartPersister
-     * @param ProductGatewayInterface $productGateway
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $mediaRepository,
         CartService $cartService,
         CartPersister $cartPersister,
-        ProductGatewayInterface $productGateway
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->systemConfigService = $systemConfigService;
-        $this->mediaRepository = $mediaRepository;
         $this->cartService = $cartService;
         $this->cartPersister = $cartPersister;
-        $this->productGateway = $productGateway;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
 
@@ -115,6 +106,8 @@ class ApiController extends AbstractController
             $lineItem->setPayload($lineItemData);
             $lineItem->setStackable(true);
             $lineItem->setRemovable(true);
+
+            //$this->eventDispatcher->dispatch(new BeforeLineItemAddToCartEvent($salesChannelContext, [$lineItem]));
 
             // skip stock validation here
             $cart = $this->cartService->add($cart, $lineItem, $salesChannelContext);

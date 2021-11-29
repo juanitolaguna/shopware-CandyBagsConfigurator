@@ -75,10 +75,9 @@
 
         <service id="EventCandyCandyBags\Controller\ApiController" public="true">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="media.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
-            <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductGateway"/>
+            <argument type="service" id="event_dispatcher"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
