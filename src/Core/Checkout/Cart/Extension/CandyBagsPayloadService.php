@@ -35,6 +35,12 @@ class CandyBagsPayloadService extends PayloadService
         return [$payloadKey => $cartInfo];
     }
 
+    /**
+     * Creates Data that is not derived from product, but is needed for commissioning
+     * @param LineItem $lineItem
+     * @param string $key
+     * @return array[]
+     */
     public function makePacklistData(LineItem $lineItem, string $key): array
     {
 
@@ -43,14 +49,18 @@ class CandyBagsPayloadService extends PayloadService
             if ($item['cardType'] == 'treeNodeCard') {
                 $itemCard = $item['item']['itemCard'];
                 $name = $itemCard['name'];
-                $productId = $itemCard['product'] ? $itemCard['product']['id'] : Uuid::randomHex();
-                $data[] = [$productId => $name];
+                $productId = $itemCard['product'] ? $itemCard['product']['id'] : false;
+                if(!$productId) {
+                    $data[] = $name;
+                }
 
             } else {
                 $itemCard = $item['itemCard'];
                 $name = $itemCard['name'];
-                $productId = $itemCard['product'] ? $itemCard['product']['id'] :  Uuid::randomHex();
-                $data[] = [$productId => $name];
+                $productId = $itemCard['product'] ? $itemCard['product']['id'] :  false;
+                if(!$productId) {
+                    $data[] = $name;
+                }
             }
         }
         return [$key => $data];
