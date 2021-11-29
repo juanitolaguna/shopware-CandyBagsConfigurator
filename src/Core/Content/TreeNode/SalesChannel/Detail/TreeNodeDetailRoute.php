@@ -7,25 +7,21 @@ namespace EventCandyCandyBags\Core\Content\TreeNode\SalesChannel\Detail;
 use EventCandy\Sets\Core\Event\BoolStruct;
 use EventCandy\Sets\Core\Event\ProductLoadedEvent;
 use EventCandy\Sets\Core\Subscriber\SalesChannelProductSubscriber;
-use EventCandy\Sets\Storefront\Page\Product\Subscriber\ProductListingSubscriber;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetCollection;
 use EventCandyCandyBags\Core\Content\ItemSet\ItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\Aggregate\TreeNodeItemSet\TreeNodeItemSetEntity;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeCollection;
 use EventCandyCandyBags\Core\Content\TreeNode\TreeNodeEntity;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
-use Shopware\Core\Framework\Routing\Annotation\Entity;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntityLoadedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Entity;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**

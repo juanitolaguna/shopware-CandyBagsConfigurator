@@ -39,6 +39,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
 {
     public const TYPE = 'event-candy-candy-bags';
     public const CART_INFO_KEY = 'cart_info';
+    public const PACKLIST_DATA_KEY = 'packlist_data';
     public const SHIPPING_FREE = false;
     public const MIN_PURCHASE = 1;
     public const PURCHASE_STEPS = 1;
@@ -174,10 +175,12 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
             /** @link PayloadService::loadPayloadDataForLineItem() $payloadItem */
             $payloadItem = $this->payloadService->buildPayloadObject($lineItem, $data);
             $payloadAssociative = $this->payloadService->makePayloadDataAssociative($payloadItem, self::TYPE);
-            $cartInfo = $this->payloadService->makeCartInfo($payloadItem, self::CART_INFO_KEY);
             $this->enrichLineItem($lineItem, $data, $context, $payloadItem);
             $lineItem->setPayload($payloadAssociative);
+            $cartInfo = $this->payloadService->makeCartInfo($lineItem, self::CART_INFO_KEY);
+            $packlistData = $this->payloadService->makePacklistData($lineItem, self::PACKLIST_DATA_KEY);
             $lineItem->setPayload($cartInfo);
+            $lineItem->setPayload($packlistData);
         }
     }
 

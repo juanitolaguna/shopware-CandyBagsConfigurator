@@ -1,25 +1,58 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace EventCandyCandyBags\Core\Checkout\Cart\Extension;
 
 
 use EventCandy\Sets\Core\Checkout\Cart\Payload\PayloadLineItem;
 use EventCandy\Sets\Core\Checkout\Cart\Payload\PayloadService;
+use EventCandy\Sets\Core\Subscriber\LineItemAddToCartSubscriber;
+use EventCandy\Sets\Utils;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class CandyBagsPayloadService extends PayloadService
 {
 
     /**
-     * @param PayloadLineItem $payloadLineItem
+     * @param LineItem $lineItem
      * @param string $payloadKey
      * @return string[]
      */
-    public function makeCartInfo(PayloadLineItem $payloadLineItem,string $payloadKey ): array
+    public function makeCartInfo(LineItem $lineItem, string $payloadKey): array
     {
         $cartInfo = "";
-        foreach ($payloadLineItem->getProducts() as $product) {
-            $cartInfo .= "- " . $product->getName() . "\n";
+        foreach ($lineItem->getPayload()['selected'] as $item) {
+            if ($item['cardType'] == 'treeNodeCard') {
+                $itemCard = $item['item']['itemCard'];
+                $cartInfo .= "- " . $itemCard['name'] . "\n";
+            } else {
+                $itemCard = $item['itemCard'];
+                $cartInfo .= "- " . $itemCard['name'] . "\n";
+            }
         }
         return [$payloadKey => $cartInfo];
+    }
+
+    public function makePacklistData(LineItem $lineItem, string $key): array
+    {
+
+        $data = [];
+        foreach ($lineItem->getPayload()['selected'] as $item) {
+            if ($item['cardType'] == 'treeNodeCard') {
+                $itemCard = $item['item']['itemCard'];
+                $name = $itemCard['name'];
+                $productId = $itemCard['product'] ? $itemCard['product']['id'] : Uuid::randomHex();
+                $data[] = [$productId => $name];
+
+            } else {
+                $itemCard = $item['itemCard'];
+                $name = $itemCard['name'];
+                $productId = $itemCard['product'] ? $itemCard['product']['id'] :  Uuid::randomHex();
+                $data[] = [$productId => $name];
+            }
+        }
+        return [$key => $data];
     }
 }
