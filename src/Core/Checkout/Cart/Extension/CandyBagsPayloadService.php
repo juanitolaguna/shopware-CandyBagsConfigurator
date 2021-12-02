@@ -41,7 +41,7 @@ class CandyBagsPayloadService extends PayloadService
      * @param string $key
      * @return array[]
      */
-    public function makePacklistData(LineItem $lineItem, string $key): array
+    public function makePacklistDataWithoutProducts(LineItem $lineItem, string $key): array
     {
 
         $data = [];
@@ -62,6 +62,26 @@ class CandyBagsPayloadService extends PayloadService
                     $data[] = $name;
                 }
             }
+        }
+        return [$key => $data];
+    }
+
+    /**
+     * @param LineItem $lineItem
+     * @param string $key
+     * @return array[]
+     */
+    public function makePacklistDataWithProducts(LineItem $lineItem, string $key): array
+    {
+        $data = [];
+        foreach ($lineItem->getPayload()['selected'] as $item) {
+            if ($item['cardType'] == 'treeNodeCard') {
+                $itemCard = $item['item']['itemCard'];
+            } else {
+                $itemCard = $item['itemCard'];
+            }
+            $name = $itemCard['name'];
+            $data[] = $name;
         }
         return [$key => $data];
     }
