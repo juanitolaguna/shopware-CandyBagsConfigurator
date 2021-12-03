@@ -149,7 +149,7 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
 
         $dynamicProducts = $this->dynamicProductService->createDynamicProductCollection(
             $lineItems,
-            $context->getToken()
+            $original->getToken()
         );
         $dynamicProductIds = $this->dynamicProductService->getDynamicProductIdsFromCollection($dynamicProducts);
         $this->dynamicProductService->saveDynamicProductsToDb($dynamicProducts);
