@@ -1,0 +1,20 @@
+{% sw_extends '@Storefront/storefront/page/checkout/checkout-item.html.twig' %}
+
+{% set CANDY_BAGS_TYPE = constant('EventCandyCandyBags\\Core\\Checkout\\Cart\\CandyBagsCartCollector::TYPE') %}
+
+ {% block page_checkout_item_info_image_container %}
+     {% if lineItem.type == CANDY_BAGS_TYPE %}
+
+         {% block page_checkout_item_info_image_link %}
+             <div class="cart-item-img-container">
+                 {% block page_checkout_item_info_image_element %}
+                     {{ parent() }}
+                 {% endblock %}
+             </div>
+         {% endblock %}
+
+
+     {% else %}
+         {{ parent() }}
+     {% endif %}
+ {% endblock %}

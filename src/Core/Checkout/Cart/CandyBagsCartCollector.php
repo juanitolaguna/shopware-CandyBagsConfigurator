@@ -123,6 +123,12 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
         SalesChannelContext $context,
         CartBehavior $behavior
     ): void {
+
+        //Products can be deleted from Admin. Skip data collection.
+        if ($context->getToken() !== $original->getToken()) {
+            return;
+        }
+
         $lineItemsChanged = $this->getNotCompleted(
             $data,
             $original->getLineItems()->getElements(),
@@ -131,8 +137,6 @@ class CandyBagsCartCollector implements CartDataCollectorInterface
         if (count($lineItemsChanged) === 0) {
             return;
         }
-
-        //Utils::log('collectCB');
 
         $lineItems = $original->getLineItems()->filterFlatByType(self::TYPE);
 
