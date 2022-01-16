@@ -218,13 +218,15 @@
                 {# Child Grid #}
                 <sw-card :large="false" v-if="!treeNode._isNew">
                     <template #title>
-                        <h2>
+                        <h2 style="display: inline;">
                             {{ $tc('eccb.node.items') }}
                         </h2>
+                        (#deprecated)
                     </template>
 
                     <template #toolbar>
                         <sw-button
+                                :disabled="true"
                                 v-if="!treeNode._isNew"
                                 variant="primary"
                                 :routerLink="createChildRoute"
