@@ -10,21 +10,35 @@
           {{ translate(child.itemCard, 'name') }}
         </h5>
 
+
+        <div class="product-data-price-wrapper">
+
         <span
             v-if="hasProductDetails"
             :class="[config.pdButtonType]"
             style="cursor: pointer;"
-            :style="config.pdButtonInlineStyle"
+            :style="[config['pdButtonInlineStyle'],  (!_price ? {margin: 'auto', marginTop: '5px'} : {}) ]"
             v-on:click.stop="openProductData"
         >{{ snippet.productDetails }}</span>
 
-        <div class="ec-price" v-if="_price"><strong>{{ currency }}{{ _price }}</strong></div>
 
-        <div class="ec-price ec-reference-price" v-if="_referenceUnitPrice">
-          {{ currency }}{{ _referenceUnitPrice.referenceUnitPrice }}  / {{ _referenceUnitPrice.referenceUnit }}
-          {{ _referenceUnitPrice.unitName }}
+          <div class="ec-price" v-if="_price"><strong>{{ currency }}{{ _price }}</strong></div>
+
         </div>
-        <img class="ec-icon" v-if="displayNext" :src="assets.next" alt="next" title="next">
+
+
+        <div class="weight-info-wrapper">
+          <div class="badge badge-pill badge-info" v-if="_referenceUnitPrice">
+            {{ _referenceUnitPrice.purchaseUnit }}{{ _referenceUnitPrice.unitShortCode }}
+          </div>
+
+          <div class="ec-price ec-reference-price" v-if="_referenceUnitPrice">
+            {{ currency }}{{ _referenceUnitPrice.referenceUnitPrice }} / {{ _referenceUnitPrice.referenceUnit }}
+            {{ _referenceUnitPrice.unitName }}
+          </div>
+        </div>
+        <!-- turn off arrow -->
+        <img class="ec-icon" v-if="displayNext && false" :src="assets.next" alt="next" title="next">
       </div>
     </div>
     <ProductDataModal

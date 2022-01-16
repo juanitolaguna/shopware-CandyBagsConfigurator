@@ -22,6 +22,7 @@ function referenceUnitPrice(item) {
         'referenceUnit': product.referenceUnit,
         'purchaseUnit': product.purchaseUnit,
         'unitName': translate(product.unit, 'name'),
+        'unitShortCode': translate(product.unit, 'shortCode'),
         'test': _referenceUnitPriceAvailable(item.itemCard.product)
     };
 }

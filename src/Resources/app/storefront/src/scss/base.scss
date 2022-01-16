@@ -84,10 +84,30 @@
     }
   }
 
+  .weight-info-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 10px;
+    width: 100%;
+    .badge {
+      min-width: fit-content;
+    }
+  }
+
+  .product-data-price-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 10px;
+    width: 100%;
+
+  }
+
   .ec-price {
     float: right;
     margin-right: 1em;
-    margin-left: 1em;
+    margin-left: auto;
   }
 
   .ec-reference-price {
