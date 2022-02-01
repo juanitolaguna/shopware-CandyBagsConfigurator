@@ -70,8 +70,7 @@
 
     </div>
 
-    <div>
-    <span
+    <div
         v-if="hasProductDetails"
         :class="[config.pdButtonType]"
         style="cursor: pointer;"
@@ -79,10 +78,13 @@
         @click.prevent="openProductData"
     >
       {{ snippet.productDetails }}
-    </span><br><br>
     </div>
 
-    <button @click.prevent="addToCart" type="button" class="btn btn-primary" :disabled="!buttonEnabled">
+    <button @click.prevent="addToCart"
+            :ref="addToCartRef"
+            type="button"
+            class="btn btn-primary"
+            :disabled="!buttonEnabled">
       {{ snippet.addToCart }}
     </button>
 
@@ -104,6 +106,8 @@
 import {translate, price} from "../utils/utils.js"
 import ProductDataModal from "./ProductDataModal.vue";
 
+const ADD_TO_CART = 'addToCart';
+
 export default {
   components: {
     ProductDataModal,
@@ -117,6 +121,10 @@ export default {
   },
 
   computed: {
+
+    addToCartRef() {
+      return ADD_TO_CART;
+    },
 
     hasProductDetails() {
       return this.config.showProductDetailsInSelection && (this.productData.length > 0);
@@ -244,10 +252,10 @@ export default {
 
 
       const selected = {
-            'selected' : this.selected,
-            'price' : this.calculatedPrice,
-            'stepSet' : this.stepSet
-          }
+        'selected': this.selected,
+        'price': this.calculatedPrice,
+        'stepSet': this.stepSet
+      }
 
       const requestOptions = {
         method: 'POST',

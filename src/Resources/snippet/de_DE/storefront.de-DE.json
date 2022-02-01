@@ -7,6 +7,10 @@
     "closeProductDataModal": "Schließen",
     "printProductData": "Drucken",
     "productDetails": "Produktdetails",
-    "cbMenuDescription": "(Weitere Candy Bags Themen)"
+    "cbMenuDescription": "(Weitere Candy Bags Themen)",
+    "finishModalTitle": "This is the end",
+    "finishModal": "You reached your Maximum selection of Products",
+    "finishModalCTA": "Allright",
+    "finishModalCheckbox": "Do not show again"
   }
 }

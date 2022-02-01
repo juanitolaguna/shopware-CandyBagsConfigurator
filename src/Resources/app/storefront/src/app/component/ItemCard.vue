@@ -23,7 +23,6 @@
 
 
           <div class="ec-price" v-if="_price"><strong>{{ currency }}{{ _price }}</strong></div>
-
         </div>
 
 

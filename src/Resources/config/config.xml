@@ -154,5 +154,29 @@
             <snippet>candy-bags.cbMenuDescription</snippet>
         </component>
 
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Modal Title Text (%% to leave empty)</label>
+            <snippet>candy-bags.finishModalTitle</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Modal Text</label>
+            <snippet>candy-bags.finishModal</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Modal Button Text</label>
+            <snippet>candy-bags.finishModalCTA</snippet>
+        </component>
+
+        <component name="sw-snippet-field">
+            <name>snippetField</name>
+            <label>Modal Checkbox Text</label>
+            <snippet>candy-bags.finishModalCheckbox</snippet>
+        </component>
+
     </card>
 </config>

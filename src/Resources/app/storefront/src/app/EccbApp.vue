@@ -9,7 +9,7 @@
                 {{ translate(parent, 'stepDescription') }}
               </h4>
               <div class="ec-search" style="display: flex; align-items: center;">
-<!--                <input style="margin-right: 16px; margin-top: -9px; margin-bottom: -9px;" type="email" class="form-control" id="searchInput" placeholder="Suche">-->
+                <!--                <input style="margin-right: 16px; margin-top: -9px; margin-bottom: -9px;" type="email" class="form-control" id="searchInput" placeholder="Suche">-->
                 <img :class="['ec-icon-header', {expanded: parent.active}]" style="width: 24px; height: 24px;"
                      :src="assets.arrowRight">
               </div>
@@ -68,8 +68,19 @@
             :config="config"
             :productData="productData"
             :headers="headers"
+            :ref="selection"
         />
       </div>
+
+      <Modal :finishModal="snippet.finishModal"
+            :finishModalTitle="snippet.finishModalTitle"
+             :finishModalActive="showFinishModal"
+             :finishModalCTA="snippet.finishModalCTA"
+             :finishModalCheckbox="snippet.finishModalCheckbox"
+             @close-modal="closeModal"
+      />
+
+
     </div>
   </div>
 </template>
@@ -80,14 +91,19 @@ import TreeNodeCard from "./component/TreeNodeCard.vue";
 import ItemCard from "./component/ItemCard.vue";
 import Spinner from "./component/Spinner.vue";
 import Selected from "./component/Selected.vue";
+import Modal from "./component/Modal.vue";
 import {translate} from "./utils/utils.js"
+
+const IS_LAST_ITEM = 'isLastItem';
+const SELECTION = 'selection';
 
 export default {
   components: {
     Selected,
     Spinner,
     TreeNodeCard,
-    ItemCard
+    ItemCard,
+    Modal
   },
 
   data() {
@@ -102,7 +118,8 @@ export default {
       firstLoad: true,
       timer: null,
       WAIT_INTERVAL: 500,
-      config: null
+      config: null,
+      showFinishModal: false
     }
   },
 
@@ -111,7 +128,12 @@ export default {
   },
 
   updated() {
-    if (this.lastView !== null) {
+    if (this.lastView === IS_LAST_ITEM) {
+      const selection = this.$refs[SELECTION]
+      selection.$refs['addToCart'].scrollIntoView({behavior: 'smooth', block: 'center'});
+      this.lastView = null;
+
+    } else if (this.lastView !== null) {
       if (!this.firstLoad) {
         this.$refs[this.lastView][0].scrollIntoView({behavior: 'smooth', block: 'start'});
         this.lastView = null;
@@ -119,6 +141,7 @@ export default {
         this.firstLoad = false;
       }
     }
+
   },
 
 
@@ -129,6 +152,10 @@ export default {
       headers.append("sw-context-token", window.contextToken);
       headers.append("Content-Type", "application/json");
       return headers;
+    },
+
+    selection() {
+      return SELECTION;
     },
 
     assets() {
@@ -163,6 +190,10 @@ export default {
 
       });
       return selected;
+    },
+
+    snippet() {
+      return window.snippets;
     }
   },
 
@@ -364,6 +395,10 @@ export default {
     selectTerminal(payload, selectedType) {
       this.markSelectedItems(payload, selectedType);
       this.chopOffFollowingSteps(payload);
+      // scroll to result
+      this.lastView = IS_LAST_ITEM;
+
+      this.showFinishModal = true;
     },
 
     toggleAccordeon(item) {
@@ -408,7 +443,13 @@ export default {
       this.deselectTreeNodes(index)
       this.deselectItemSets(index);
       this.treeNodes[index]['active'] = true;
+    },
+
+    closeModal() {
+      this.showFinishModal = false;
     }
-  }
+  },
+
+
 }
 </script>

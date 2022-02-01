@@ -1,4 +1,5 @@
 @import "_spinner.scss";
+@import "finish-modal.scss";
 
 @media (min-width: 576px) {
   .ec-entity-description {
@@ -49,6 +50,7 @@
     border-radius: 25%;
   }
 }
+
 .expanded {
   transform: rotate(90deg);
 }
@@ -60,9 +62,10 @@
   }
 
 
-    .card {
+  .card {
     margin-bottom: 2em;
     box-sizing: content-box;
+
     .card-header {
       border: 1px solid $primary;
       border-radius: 6px;
@@ -90,6 +93,7 @@
     align-items: baseline;
     padding: 0 10px;
     width: 100%;
+
     .badge {
       min-width: fit-content;
     }
