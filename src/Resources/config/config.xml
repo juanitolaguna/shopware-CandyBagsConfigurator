@@ -101,6 +101,12 @@
             <label>PDB Button Selected Inline Style</label>
             <label lang="de-DE">PDB Button Selected Inline Style</label>
         </input-field>
+
+        <input-field type="int">
+            <name>modalTimeout</name>
+            <label>Timeout to display the finish Modal (in miliseconds)</label>
+            <defaultValue>5000</defaultValue>
+        </input-field>
     </card>
 
     <card>

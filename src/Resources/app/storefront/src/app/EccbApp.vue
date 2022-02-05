@@ -73,10 +73,11 @@
       </div>
 
       <Modal :finishModal="snippet.finishModal"
-            :finishModalTitle="snippet.finishModalTitle"
+             :finishModalTitle="snippet.finishModalTitle"
              :finishModalActive="showFinishModal"
              :finishModalCTA="snippet.finishModalCTA"
              :finishModalCheckbox="snippet.finishModalCheckbox"
+             :progress="progress"
              @close-modal="closeModal"
       />
 
@@ -119,7 +120,8 @@ export default {
       timer: null,
       WAIT_INTERVAL: 500,
       config: null,
-      showFinishModal: false
+      showFinishModal: false,
+      progress: 0,
     }
   },
 
@@ -399,6 +401,13 @@ export default {
       this.lastView = IS_LAST_ITEM;
 
       this.showFinishModal = true;
+
+      const timeout = this.config.modalTimeout ? this.config.modalTimeout : 60000;
+      this.startProgressAnimation(timeout);
+
+      setTimeout(() => {
+        this.showFinishModal = false;
+      }, timeout);
     },
 
     toggleAccordeon(item) {
@@ -447,8 +456,21 @@ export default {
 
     closeModal() {
       this.showFinishModal = false;
+    },
+
+    startProgressAnimation(timeInMiliseconds) {
+      this.progress = 100;
+      let intervalID = setInterval(() => {
+        if (this.progress > 0) {
+          this.progress = this.progress - 1;
+        }
+      }, timeInMiliseconds / 110);
+
+      setTimeout(() => {
+        clearTimeout(intervalID);
+      }, timeInMiliseconds);
     }
-  },
+  }
 
 
 }
