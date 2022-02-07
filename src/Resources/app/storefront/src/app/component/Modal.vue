@@ -68,11 +68,7 @@ export default {
       }
     },
     onChecked() {
-      if (this.checked) {
-        sessionStorage.finishModalClicked = true;
-      } else {
-        sessionStorage.finishModalClicked = false;
-      }
+      sessionStorage.finishModalClicked = this.checked;
     }
   },
 

@@ -404,10 +404,6 @@ export default {
 
       const timeout = this.config.modalTimeout ? this.config.modalTimeout : 60000;
       this.startProgressAnimation(timeout);
-
-      setTimeout(() => {
-        this.showFinishModal = false;
-      }, timeout);
     },
 
     toggleAccordeon(item) {
@@ -463,12 +459,11 @@ export default {
       let intervalID = setInterval(() => {
         if (this.progress < 100) {
           this.progress = this.progress + 0.1;
+        } else {
+          clearTimeout(intervalID);
+          this.showFinishModal = false;
         }
       }, timeInMiliseconds / 1100);
-
-      setTimeout(() => {
-        clearTimeout(intervalID);
-      }, timeInMiliseconds);
     }
   }
 
