@@ -403,6 +403,7 @@ export default {
       this.showFinishModal = true;
 
       const timeout = this.config.modalTimeout ? this.config.modalTimeout : 60000;
+      console.log(timeout);
       this.startProgressAnimation(timeout);
     },
 
@@ -458,12 +459,12 @@ export default {
       this.progress = 0;
       let intervalID = setInterval(() => {
         if (this.progress < 100) {
-          this.progress = this.progress + 0.1;
+          this.progress = this.progress + 0.5;
         } else {
           clearTimeout(intervalID);
           this.showFinishModal = false;
         }
-      }, timeInMiliseconds / 1100);
+      }, timeInMiliseconds / 200);
     }
   }
 
