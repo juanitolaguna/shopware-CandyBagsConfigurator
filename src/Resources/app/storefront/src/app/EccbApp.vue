@@ -459,12 +459,12 @@ export default {
     },
 
     startProgressAnimation(timeInMiliseconds) {
-      this.progress = 100;
+      this.progress = 0;
       let intervalID = setInterval(() => {
-        if (this.progress > 0) {
-          this.progress = this.progress - 1;
+        if (this.progress < 100) {
+          this.progress = this.progress + 0.1;
         }
-      }, timeInMiliseconds / 110);
+      }, timeInMiliseconds / 1100);
 
       setTimeout(() => {
         clearTimeout(intervalID);
