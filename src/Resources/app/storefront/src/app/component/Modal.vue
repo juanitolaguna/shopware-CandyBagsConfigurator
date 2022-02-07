@@ -21,7 +21,7 @@
           <div class="modal-footer" style="justify-content: space-between;  padding-right: 3em; padding-left: 3em;">
             <div>
               <div v-if="finishModalCheckbox">
-                <input style="display: none;" type="checkbox" id="checkbox" v-model="checked">
+                <input style="display: none;" type="checkbox" id="checkbox" v-on:change="onChecked" v-model="checked">
                 <label for="checkbox">{{ finishModalCheckbox }}</label>
               </div>
 
@@ -66,12 +66,19 @@ export default {
       if (this.checked) {
         sessionStorage.finishModalClicked = true;
       }
+    },
+    onChecked() {
+      if (this.checked) {
+        sessionStorage.finishModalClicked = true;
+      } else {
+        sessionStorage.finishModalClicked = false;
+      }
     }
   },
 
   computed: {
     showModal() {
-      const storageNull = sessionStorage['finishModalClicked'] === undefined;
+      const storageNull = (sessionStorage['finishModalClicked'] === undefined) || (sessionStorage['finishModalClicked'] === 'false') ;
       return storageNull && this.finishModalActive;
     }
   }
